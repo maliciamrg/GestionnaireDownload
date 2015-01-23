@@ -19,37 +19,43 @@ public class Param
 
 	public static String workRepertoire;
 
-	public static String log4j_cheminComplet_error;
-	public static String log4j_cheminComplet_debug;
-	public static String log4j_cheminComplet_debugtransmisson;
-	public static String log4j_cheminComplet_info;
-	public static String log4j_cheminComplet_warn;
-	public static FileAppender faMaster;
-	public static FileAppender faDebug;
-	public static FileAppender faDebugtrans;
-	public static FileAppender faWarn;
-	public static FileAppender faInfo;
+	private static String log4j_cheminComplet_error;
+	private static String log4j_cheminComplet_debug;
+	private static String log4j_cheminComplet_debugtransmisson;
+	private static String log4j_cheminComplet_info;
+	private static String log4j_cheminComplet_warn;
+	private static FileAppender faMaster;
+	private static FileAppender faDebug;
+	private static FileAppender faDebugtrans;
+	private static FileAppender faWarn;
+	private static FileAppender faInfo;
 
 	public static Date dateLowValue;
 	public static Date dateHighValue;
 	public static Date dateDuJour;
 	public static Date dateDuJourUsa;
-
+	public static Date dateJourM30;
+	public static Date dateJourM300;
+	
 	private static Calendar calendareDuJour;
 
 	public static int nbtelechargementseriesimultaner;
 
-	public static String gestdownhttp;
-	public static String gestdownusername;
-	public static String gestdownpassword;
-
+	private static String gestdownhttp;
+	private static String gestdownusername;
+	private static String gestdownpassword;
+	public static TransmissionClient client;
+	
 	private static String dburl;
 	private static String dbuser;
 	private static String dbpasswd;
 	private static String dbbase;
 	public static Connection con;
+	public static Statement stmt;
+	
 
-	private static boolean debug;
+
+	public static boolean debug;
 
 
 	public Param() 
@@ -82,14 +88,7 @@ public class Param
 		CheminTemporaire = props.getProperty("CheminTemporaire");
 		Urlkickassusearch = props.getProperty("Urlkickassusearch");
 
-		calendareDuJour = Calendar.getInstance();
-		dateDuJour = calendareDuJour.getTime();
-		dateLowValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("01/01/0001");
-		dateHighValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("31/12/2099");
-
-		Calendar usaCal = calendareDuJour;
-		usaCal.add(Calendar.HOUR_OF_DAY, -49);
-		dateDuJourUsa = usaCal.getTime();
+		initialiser_dates();
 
 		if (debug)
 		{
@@ -99,6 +98,7 @@ public class Param
 		else
 		{
 			con = DriverManager.getConnection(dburl + dbbase, dbuser, dbpasswd);
+			stmt = con.createStatement();
 		}
 		/**
 		 * init_alisation fichier trace
@@ -108,10 +108,31 @@ public class Param
 		// capture stdout et stderr to log4j
 		tieSystemOutAndErrToLog();
 
-
+		ConnectClientTransmission();
 
 	}
 
+	public static String initialiser_dates()
+	{
+		calendareDuJour = Calendar.getInstance();
+		dateDuJour = calendareDuJour.getTime();
+		dateLowValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("01/01/0001");
+		dateHighValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("31/12/2099");
+
+		Calendar usaCal = calendareDuJour;
+		usaCal.add(Calendar.HOUR_OF_DAY, -49);
+		dateDuJourUsa = usaCal.getTime();
+
+		Calendar JourM30 = calendareDuJour;
+		JourM30.add(Calendar.DAY, -30);
+		dateJourM30 = JourM30.getTime();	 
+
+		Calendar JourM300 = calendareDuJour;
+		JourM300.add(Calendar.DAY, -300);
+		dateJourM300  = JourM300.getTime();
+	}
+		
+		
 	public static String currentPath(String defaultPath)
 	{
 		String workRepertoire = System.getProperty(("user.dir")) + File.separator;
@@ -196,7 +217,14 @@ public class Param
 		faInfo.activateOptions();
 		logger.addAppender(faInfo);
 	}
-
+	
+	public static void cloture() throws FileNotFoundException, IOException, InterruptedException
+	{
+			stmt.close();
+			con.close();
+			clotureTrace();
+	}
+	
 	public static void clotureTrace() throws FileNotFoundException, IOException, InterruptedException
 	{
 		if (debug)
@@ -292,7 +320,7 @@ public class Param
 
 	public static boolean copyFile(File source, File dest, Boolean append) throws FileNotFoundException, IOException
 	{
-		FileChannel in = null; // canal d'entr�e
+		FileChannel in = null; // canal d'entr?e
 		FileChannel out = null; // canal de sortie
 
 		if (!source.exists())
@@ -312,5 +340,63 @@ public class Param
 		return true;
 	}
 
+	public static boolean ConnectClientTransmission() 
+	{
+			/**
+			 * connect avec transmission
+			 */
 
+			int i = 0;
+			for (i = 1; i < 4; i++)
+			{
+				boolean isError = true;
+
+				url = new URL("http://" + gestdownusername + ":" + gestdownpassword + "@" + gestdownhttp + "");
+
+				/*
+				 * url = new URL("http://" + this.username + ":" + this.password
+				 * + "@" + this.http + ""); HttpURLConnection huc =
+				 * (HttpURLConnection) url.openConnection();
+				 * huc.setRequestMethod("GET"); huc.connect(); int code =
+				 * huc.getResponseCode(); client = new TransmissionClient(url);
+				 */
+
+				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+
+				if (huc.getContentLength() > 0)
+				{
+					// 4xx: client error, 5xx: server error. See:
+					// http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html.
+					// huc.setRequestMethod("GET");
+					// huc.connect();
+
+					int code = huc.getResponseCode();
+					isError = code >= 400;
+					if (code == 409)
+					{
+						isError = false;
+					}
+
+					logger.debug("huc.getResponseCode()=" + huc.getResponseCode());
+					// The normal input stream doesn't work in error-cases.
+
+					if (!isError)
+					{
+
+						client = new TransmissionClient(url);
+					}
+				}
+				if (client == null || isError)
+				{
+					logger.debug("transmission- connexion non effecuer");
+					Ssh.actionexec("/ffp/start/transmission.sh start", true);
+
+				}
+				else
+				{
+					i = 99;
+				}
+
+		}
+	}
 }
