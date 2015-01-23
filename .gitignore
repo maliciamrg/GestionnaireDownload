@@ -1,3 +1,14 @@
+# Applicatif
+*.properties
+*.html
+Log/
+libs/
+bin/
+
+# AndroidIDE
+*.dex
+*.zip
+
 *.class
 
 # Mobile Tools for Java (J2ME)
