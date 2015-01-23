@@ -35,7 +35,7 @@ public class Main
 	 *
 	 *alimentation bdd
 	 *	serie:
-	 *		ajouter de nouvelle series via fichier json (fichier suprimer apres utilisation)
+	 *		ajouter de nouvelle series -> fichier qr html
 	 *		mettre a non l indicateur encours de tout les episodes
 	 *		si date maj web > 30 jours 
 	 *			si derniere airdate < 300 jours
@@ -97,6 +97,9 @@ public class Main
 	public static void main(String[] args) throws IOException, ParseException, SQLException, InterruptedException
 	{
 		initialisation(args);
+		initialisation_bdd(args);
+		alimentation_bdd(args);
+		
 		cloture(args);
 	}
 
@@ -108,14 +111,121 @@ public class Main
 		System.out.println("+---+----+----+----+" );
 		System.out.println("+       Debut      +" + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(Calendar.getInstance().getTime()));
 	}
+
+    /**
+     * 
+     * 
+     * @throws SQLException
+     */
+	private void initialisationbdd(String[] args) throws SQLException
+	{
+		Param.stmt.executeUpdate("CREATE TABLE IF NOT EXISTS series "
+					+ "(nom VARCHAR(255) not NULL , "
+					+ " repertoire VARCHAR(255) , "
+					+ " date_maj_web DATE , "
+					+ " PRIMARY KEY ( nom ) "
+					+ ") "
+					+ " ");
+		
+		Param.stmt.executeUpdate("CREATE TABLE IF NOT EXISTS episodes "
+					+ "(serie VARCHAR(255) not NULL , "
+					+ " num_saison INTEGER  , "
+					+ " num_episodes INTEGER  , "
+					+ " nom  VARCHAR(255) , "
+					+ " airdate DATE , "
+					+ " encours BOOLEAN , "					
+					+ " timestamp_completer DATE , "
+					+ " chemin_complet  VARCHAR(255) , "
+					+ " PRIMARY KEY ( serie , num_saison , num_episodes  ) , "
+					+ "         KEY ( airdate ) "
+					+ ") "
+					+ " ");
+		
+		Param.stmt.executeUpdate("CREATE TABLE IF NOT EXISTS hash "
+					+ "(hash VARCHAR(255) not NULL , "
+					+ " classification  VARCHAR(255) , "
+					+ " magnet  VARCHAR(255) , "
+					+ " timestamp_ajout DATE , "
+					+ " timestamp_termine DATE , "
+					+ " PRIMARY KEY ( hash ) "
+					+ "         KEY ( timestamp_termine ) "
+					+ ") "
+					+ " ");
+
+	}
+
+	serie:
+
+
+    /**
+	*serie: 
+	*    ajouter de nouvelle series -> fichier qr html
+	*    mettre a non l indicateur encours de tout les episodes
+	*    si date maj web > 30 jours
+	*    -si derniere airdate < 300 jours
+	*    --recuperer/maj les listes d'episodes via filebot
+	*    -sinon
+	*    --proposer maj web -> fichier qr html
+	*transmission
+	*    ajouter a la bdd les non present entant que autres
+     * @throws SQLException
+     */
+	private void alimentation_bdd(String[] args) throws SQLException
+	{
+		FichierQR.AjouterNouvelleSerie();
+		
+		Param.stmt.executeUpdate("update episodes set encours = false ");
+
+      
+      ResultSet rs = Param.stmt.executeQuery( "SELECT series.nom , max(episodes.airdate) as MaxDate"
+	  + " FROM series "
+	  + " INNER join episodes "
+	  + "    on series.nom = episodes.serie "
+	  + " WHERE "
+	  + "      series.date_maj_web > " + Param.dateJourM30 
+	  + " GROUP BY "
+	  + "  series.nom"	  );
+      while(rs.next()){
+		if (rs("MaxDate")  > Param.dateJourM300){ 
+			FileBot.maj_liste_episodes(rs("nom"));
+		} else {
+			FichierQR.ForcerMajSerieWeb(rs("nom"));
+		}
+      }
+      rs.close();
+
+	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString });
+		for (TorrentStatus curr : torrents)
+		{
+				String hash = (String) curr.getField(TorrentField.hashString);
+				ResultSet rs = Param.stmt.executeQuery( "SELECT count(*) as NbHash "
+	  + " FROM episodes "
+	  + " WHERE "
+	  + "      hash = " + hash 
+	  + "  "	  );
+				if (rs("NbHash")=0){
+					Param.stmt.executeUpdate("insert into episodes hash( " 
+					+ " " + hash + " , "
+					+ " 'autres' , "
+					+ " '' , "
+					+ " " + dateDuJour + " , "
+					+ " '' "
+					+ " ) ");
+				}
+		}
+	  
+	}
 	
+
 	private static void cloture(String[] args) throws InterruptedException, IOException
 	{
-		Param.clotureTrace();
+		Param.cloture();
 		
 		System.out.println("+        Fin       +" + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(Calendar.getInstance().getTime()));
 		System.out.println("+---+----+----+----+" );
 		System.out.print("</pre>");
 	}
+	
+
 
 }
