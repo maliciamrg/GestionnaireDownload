@@ -7,6 +7,8 @@ import org.apache.log4j.*;
 import org.apache.log4j.varia.*;
 
 import java.util.Date;
+import ca.benow.transmission.*;
+import java.net.*;
 
 public class Param 
 {
@@ -112,7 +114,7 @@ public class Param
 
 	}
 
-	public static String initialiser_dates()
+	public static void initialiser_dates() throws ParseException
 	{
 		calendareDuJour = Calendar.getInstance();
 		dateDuJour = calendareDuJour.getTime();
@@ -124,11 +126,11 @@ public class Param
 		dateDuJourUsa = usaCal.getTime();
 
 		Calendar JourM30 = calendareDuJour;
-		JourM30.add(Calendar.DAY, -30);
+		JourM30.add(Calendar.DAY_OF_YEAR, -30);
 		dateJourM30 = JourM30.getTime();	 
 
 		Calendar JourM300 = calendareDuJour;
-		JourM300.add(Calendar.DAY, -300);
+		JourM300.add(Calendar.DAY_OF_YEAR, -300);
 		dateJourM300  = JourM300.getTime();
 	}
 		
@@ -218,7 +220,7 @@ public class Param
 		logger.addAppender(faInfo);
 	}
 	
-	public static void cloture() throws FileNotFoundException, IOException, InterruptedException
+	public static void cloture() throws FileNotFoundException, IOException, InterruptedException, SQLException
 	{
 			stmt.close();
 			con.close();
@@ -340,7 +342,7 @@ public class Param
 		return true;
 	}
 
-	public static boolean ConnectClientTransmission() 
+	public static void ConnectClientTransmission() throws MalformedURLException, IOException 
 	{
 			/**
 			 * connect avec transmission
@@ -351,7 +353,7 @@ public class Param
 			{
 				boolean isError = true;
 
-				url = new URL("http://" + gestdownusername + ":" + gestdownpassword + "@" + gestdownhttp + "");
+				URL url = new URL("http://" + gestdownusername + ":" + gestdownpassword + "@" + gestdownhttp + "");
 
 				/*
 				 * url = new URL("http://" + this.username + ":" + this.password
