@@ -1,11 +1,14 @@
-import ca.benow.transmission.TransmissionClient;
 import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
-import ca.benow.transmission.*;
+
 import java.io.*;
 import java.sql.*;
+import java.sql.Date;
 import java.text.*;
 import java.util.*;
+
+import javax.swing.Spring;
+
 import org.json.*;
 
 public class Main
@@ -103,8 +106,9 @@ public class Main
 	{
 		initialisation(args);
 		initialisation_bdd(args);
+		alimentation_bdd(args);		
 		transmisson(args);
-		alimentation_bdd(args);
+
 
 		cloture(args);
 	}
@@ -136,18 +140,76 @@ public class Main
 	 */
 	private static void transmisson(String[] args) throws JSONException, IOException, SQLException
 	{
-		ResultSet rs;
-	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString });
+		ResultSet rs = null;
+	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString ,TorrentField.files,TorrentField.name,TorrentField.percentDone });
 		for (TorrentStatus curr : torrents)
 		{
 			String hash = (String) curr.getField(TorrentField.hashString);
 			rs = Param.stmt.executeQuery("SELECT * "
-										 + " FROM episodes "
+										 + " FROM hash "
 										 + " WHERE "
-										 + "      hash = " + hash 
+										 + "      hash = '" + hash +"'"
 										 + "  ");
-
+			while (rs.next())
+			{
+					if (rs.getDate("timestamp_termine")!=null){
+						transmission.supprimer_hash(hash);
+					} else {
+						if (rs.getDate("timestamp_ajout").before(Param.dateJourM1)){
+							FichierQR.demanderClassificationEffacer((String)curr.getField(TorrentField.name),hash);
+						}
+						switch (rs.getString("classification")) {
+							case "serie": 
+								JSONArray listFile = (JSONArray) curr.getField(TorrentField.files);
+								int i = 0;
+								for (i = 0; i < listFile.length(); i++)
+								{
+									JSONObject n = (JSONObject) listFile.get(i);
+									String[] ret=conversionnom2episodes(n.getString("name"));
+									if (ret==null)
+									{
+										transmission.cancelFilenameOfTorrent(hash,i);
+									}else{
+										mettre_episode_a_encours(ret);
+									}
+								}
+							case "film": 
+								if ( (double) curr.getField(TorrentField.percentDone)==1.0)
+								{
+									if (transmission.fichier_absent(hash))
+									{
+										transmission.supprimer_hash(hash);
+										rs.updateDate("timestamp_termine",(Date) Param.dateDuJour);
+									} else {
+										transmission.deplacer_fichier(hash,Param.CheminTemporaire);
+									}
+								}
+								break;
+							case "effacer": 
+								transmission.supprimer_hash(hash);
+								rs.updateDate("timestamp_termine",(Date) Param.dateDuJour);
+								break;
+							case "ignorer": 
+								break;
+							case "autres": 
+								FichierQR.demanderClassification((String)curr.getField(TorrentField.name),hash);
+								break;
+						}
+					}
+			}
+			rs.close();
 		}
+	}
+
+
+	private static void mettre_episode_a_encours(String[] ret) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static String[] conversionnom2episodes(String string) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public static void initialisation(String[] args) throws IOException, ParseException, SQLException 
@@ -194,7 +256,7 @@ public class Main
 								 + " magnet  VARCHAR(255) , "
 								 + " timestamp_ajout DATE , "
 								 + " timestamp_termine DATE , "
-								 + " PRIMARY KEY ( hash ) "
+								 + " PRIMARY KEY ( hash ) ,"
 								 + "         KEY ( timestamp_termine ) "
 								 + ") "
 								 + " ");
@@ -228,7 +290,7 @@ public class Main
 									 + " INNER join episodes "
 									 + "    on series.nom = episodes.serie "
 									 + " WHERE "
-									 + "      series.date_maj_web > " + Param.dateJourM30 
+									 + "      series.date_maj_web > '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateJourM30) + "'"
 									 + " GROUP BY "
 									 + "  series.nom");
 		while (rs.next())
@@ -248,21 +310,25 @@ public class Main
 		for (TorrentStatus curr : torrents)
 		{
 			String hash = (String) curr.getField(TorrentField.hashString);
-			rs = Param.stmt.executeQuery("SELECT count(*) as NbHash "
-										 + " FROM episodes "
+			rs = Param.stmt.executeQuery("SELECT * "
+										 + " FROM hash "
 										 + " WHERE "
-										 + "      hash = " + hash 
+										 + "      hash = '" + hash + "'"
 										 + "  ");
-			if ((rs.getInt("NbHash")) == 0)
-			{
-				Param.stmt.executeUpdate("insert into episodes hash( " 
-										 + " " + hash + " , "
-										 + " 'autres' , "
-										 + " '' , "
-										 + " " + Param.dateDuJour + " , "
-										 + " '' "
-										 + " ) ");
+			rs.last();
+			if ( rs.getRow() == 0)
+			{				
+				String sql = "INSERT INTO hash "
+						 + " (hash, classification,timestamp_ajout) VALUES  " 
+						 + " ( "
+						 + " '" + hash + "' , "
+						 + " 'autres' , "
+						 + " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'  "
+						 + " ) ";
+				Param.stmt.executeUpdate(sql);
+
 			}
+			rs.close();
 		}
 
 	}

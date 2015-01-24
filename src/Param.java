@@ -36,6 +36,7 @@ public class Param
 	public static Date dateHighValue;
 	public static Date dateDuJour;
 	public static Date dateDuJourUsa;
+	public static Date dateJourM1;
 	public static Date dateJourM30;
 	public static Date dateJourM300;
 	
@@ -124,6 +125,10 @@ public class Param
 		Calendar usaCal = calendareDuJour;
 		usaCal.add(Calendar.HOUR_OF_DAY, -49);
 		dateDuJourUsa = usaCal.getTime();
+
+		Calendar JourM1 = calendareDuJour;
+		JourM1.add(Calendar.DAY_OF_YEAR, -1);
+		dateJourM1 = JourM1.getTime();	 
 
 		Calendar JourM30 = calendareDuJour;
 		JourM30.add(Calendar.DAY_OF_YEAR, -30);
