@@ -13,7 +13,7 @@ import java.net.*;
 public class Param 
 {
 
-	public static String CheminTemporaire;
+	private static String CheminTemporaire;
 
 	public static String Urlkickassusearch;
 
@@ -396,7 +396,7 @@ public class Param
 				if (client == null || isError)
 				{
 					logger.debug("transmission- connexion non effecuer");
-					Ssh.actionexec("/ffp/start/transmission.sh start", true);
+					Ssh.actionexec("/ffp/start/transmission.sh start");
 
 				}
 				else

@@ -7,8 +7,6 @@ import java.sql.Date;
 import java.text.*;
 import java.util.*;
 
-import javax.swing.Spring;
-
 import org.json.*;
 
 public class Main
@@ -81,6 +79,8 @@ public class Main
 	 *   film
 	 *
 	 *purger repertoire temporaire
+	 *	serie = repertojretmp + nom_series
+	 *	film = repertoiretmp + "film"
 	 *
 	 *analyser repertoire
 	 *	serie:
@@ -108,9 +108,77 @@ public class Main
 		initialisation_bdd(args);
 		alimentation_bdd(args);		
 		transmisson(args);
-
+		rangerdownload(args);
+		purgerrepertioiredetravail(args);
+		analyserrepertoire(args);
 
 		cloture(args);
+	}
+
+	private static void purgerrepertioiredetravail(String[] args)
+	{
+		//deplacer fichier a la racine
+		Ssh.actionexec("cd \"" + Param.CheminTemporaire + "\";find -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaire + "\"");
+		//purge rep=ertzooire v,wide
+		Ssh.actionexec("cd \"" + Param.CheminTemporaire + "\";find . -type d -empty -delete");
+	}
+
+	private static void rangerdownload(String[] args) throws SQLException
+	{
+
+		ResultSet rs = null;
+		rs = Param.stmt.executeQuery("SELECT * "
+									 + " FROM series "
+									 + "  ");
+		while (rs.next())
+		{
+			FileBot.rangerserie(Param.CheminTemporaire + File.pathSeparator + rs.getString("serie"), rs.getString("repertoire"));
+		}
+		rs.close();
+
+		FileBot.rangerfilm(Param.CheminTemporaire + File.pathSeparator + "film", rs.getString("repertoire"));
+
+	}
+
+	/**analyser repertoire
+	 *	serie:
+	 *		lister les episodes present (conversionnom2episodes) --> bdd episodes.chemincomplet & timestamp completer
+	 *
+	 */
+	private static void analyserrepertoire(String[] args) throws SQLException
+	{
+		List<Map> listeret = null;
+		ResultSet rs = null;
+		rs = Param.stmt.executeQuery("SELECT * "
+									 + " FROM series "
+									 + "  ");
+		while (rs.next())
+		{
+			String[] listeficher= Ssh.listeFichierDuRepertoire(rs.getString("repertoire"));
+			for (String st: listeficher)
+			{
+				Map<String, String> ret = conversionnom2episodes(st);
+				if (ret.get("serie") == null)
+				{
+					ret.put("chemin", st);	
+					listeret.add(ret);
+				}
+			}
+		}
+		rs.close();
+
+		for (Map curr:listeret)
+		{
+			Param.stmt.executeUpdate("UPDATE episodes "
+									 + " set chemin_complet = '" + curr.get("") + "'"
+									 + "WHERE "
+									 + " serie = '" + curr.get("serie") + "'"
+									 + " and num_saison = '" + curr.get("num_saison") + "'"
+									 + " and num_episodes = '" + curr.get("num_episodes") + "'"				 
+									 + " ");
+
+		}
+
 	}
 
 	/**
@@ -148,66 +216,77 @@ public class Main
 			rs = Param.stmt.executeQuery("SELECT * "
 										 + " FROM hash "
 										 + " WHERE "
-										 + "      hash = '" + hash +"'"
+										 + "      hash = '" + hash + "'"
 										 + "  ");
 			while (rs.next())
 			{
-					if (rs.getDate("timestamp_termine")!=null){
-						transmission.supprimer_hash(hash);
-					} else {
-						if (rs.getDate("timestamp_ajout").before(Param.dateJourM1)){
-							FichierQR.demanderClassificationEffacer((String)curr.getField(TorrentField.name),hash);
-						}
-						switch (rs.getString("classification")) {
-							case "serie": 
-								JSONArray listFile = (JSONArray) curr.getField(TorrentField.files);
-								int i = 0;
-								for (i = 0; i < listFile.length(); i++)
-								{
-									JSONObject n = (JSONObject) listFile.get(i);
-									String[] ret=conversionnom2episodes(n.getString("name"));
-									if (ret==null)
-									{
-										transmission.cancelFilenameOfTorrent(hash,i);
-									}else{
-										mettre_episode_a_encours(ret);
-									}
-								}
-							case "film": 
-								if ( (double) curr.getField(TorrentField.percentDone)==1.0)
-								{
-									if (transmission.fichier_absent(hash))
-									{
-										transmission.supprimer_hash(hash);
-										rs.updateDate("timestamp_termine",(Date) Param.dateDuJour);
-									} else {
-										transmission.deplacer_fichier(hash,Param.CheminTemporaire);
-									}
-								}
-								break;
-							case "effacer": 
-								transmission.supprimer_hash(hash);
-								rs.updateDate("timestamp_termine",(Date) Param.dateDuJour);
-								break;
-							case "ignorer": 
-								break;
-							case "autres": 
-								FichierQR.demanderClassification((String)curr.getField(TorrentField.name),hash);
-								break;
-						}
+				if (rs.getDate("timestamp_termine") != null)
+				{
+					transmission.supprimer_hash(hash);
+				}
+				else
+				{
+					if (rs.getDate("timestamp_ajout").before(Param.dateJourM1))
+					{
+						FichierQR.demanderClassificationEffacer((String)curr.getField(TorrentField.name), hash);
 					}
+					switch (rs.getString("classification"))
+					{
+						case "serie": 
+							JSONArray listFile = (JSONArray) curr.getField(TorrentField.files);
+							int i = 0;
+							for (i = 0; i < listFile.length(); i++)
+							{
+								JSONObject n = (JSONObject) listFile.get(i);
+								Map<String, String> ret=conversionnom2episodes(n.getString("name"));
+								if (ret == null)
+								{
+									transmission.cancelFilenameOfTorrent(hash, i);
+								}
+								else
+								{
+									mettre_episode_a_encours(ret);
+								}
+							}
+						case "film": 
+							if ((double) curr.getField(TorrentField.percentDone) == 1.0)
+							{
+								if (transmission.fichier_absent(hash))
+								{
+									transmission.supprimer_hash(hash);
+									rs.updateDate("timestamp_termine", (Date) Param.dateDuJour);
+								}
+								else
+								{
+									transmission.deplacer_fichier(hash, Param.CheminTemporaire);
+								}
+							}
+							break;
+						case "effacer": 
+							transmission.supprimer_hash(hash);
+							rs.updateDate("timestamp_termine", (Date) Param.dateDuJour);
+							break;
+						case "ignorer": 
+							break;
+						case "autres": 
+							FichierQR.demanderClassification((String)curr.getField(TorrentField.name), hash);
+							break;
+					}
+				}
 			}
 			rs.close();
 		}
 	}
 
 
-	private static void mettre_episode_a_encours(String[] ret) {
+	private static void mettre_episode_a_encours(Map<String, String> ret)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	private static String[] conversionnom2episodes(String string) {
+	private static Map<String, String> conversionnom2episodes(String string)
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -316,15 +395,15 @@ public class Main
 										 + "      hash = '" + hash + "'"
 										 + "  ");
 			rs.last();
-			if ( rs.getRow() == 0)
+			if (rs.getRow() == 0)
 			{				
 				String sql = "INSERT INTO hash "
-						 + " (hash, classification,timestamp_ajout) VALUES  " 
-						 + " ( "
-						 + " '" + hash + "' , "
-						 + " 'autres' , "
-						 + " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'  "
-						 + " ) ";
+					+ " (hash, classification,timestamp_ajout) VALUES  " 
+					+ " ( "
+					+ " '" + hash + "' , "
+					+ " 'autres' , "
+					+ " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'  "
+					+ " ) ";
 				Param.stmt.executeUpdate(sql);
 
 			}
