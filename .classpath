@@ -5,6 +5,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-5.1.34-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/transmission-java-lib.jar"/>
-	<classpathentry exported="true" kind="lib" path="/SerieDownload/libs/org.json-20131017.jar"/>
+	<classpathentry kind="lib" path="W:/pages/GestionnaireDownload/libs/org.json-20131017.jar"/>
+	<classpathentry kind="lib" path="libs/jericho-html-3.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -3,11 +3,14 @@ import java.nio.channels.*;
 import java.sql.*;
 import java.text.*;
 import java.util.*;
+
 import org.apache.log4j.*;
 import org.apache.log4j.varia.*;
 
 import java.util.Date;
+
 import ca.benow.transmission.*;
+
 import java.net.*;
 
 public class Param 
@@ -325,6 +328,22 @@ public class Param
 		return sw.toString();
 	}
 
+	public static String getFilePartName(String fileName)
+	{
+		int pos;
+		pos = fileName.lastIndexOf("/");
+		if (pos > 0)
+		{
+			fileName = fileName.substring(pos + 1);
+		}
+		pos = fileName.lastIndexOf("\\");
+		if (pos > 0)
+		{
+			fileName = fileName.substring(pos + 1);
+		}
+		return fileName;
+	}
+	
 	public static boolean copyFile(File source, File dest, Boolean append) throws FileNotFoundException, IOException
 	{
 		FileChannel in = null; // canal d'entr?e
@@ -396,7 +415,7 @@ public class Param
 				if (client == null || isError)
 				{
 					logger.debug("transmission- connexion non effecuer");
-					Ssh.actionexec("/ffp/start/transmission.sh start");
+					Ssh.executeAction("/ffp/start/transmission.sh start");
 
 				}
 				else
@@ -406,4 +425,20 @@ public class Param
 
 		}
 	}
+
+	public static String CheminTemporaire() {
+		return CheminTemporaire;
+	}
+
+	public static String CheminTemporaireFilm() {
+		return CheminTemporaire()+"film"+File.pathSeparator;
+	}
+
+	public static String CheminTemporaireSerie(String serie) {
+		return CheminTemporaire()+"serie"+File.pathSeparator+serie+File.pathSeparator;
+	}
+	public static boolean isNumeric(String s) {  
+	    return s.matches("[-+]?\\d*\\.?\\d+");  
+	}  
+	
 }
