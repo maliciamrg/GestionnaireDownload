@@ -23,6 +23,7 @@ public class Param
 	public static Logger logger;
 
 	public static String workRepertoire;
+	public static String RepertoireFilm;
 
 	private static String log4j_cheminComplet_error;
 	private static String log4j_cheminComplet_debug;
@@ -92,6 +93,7 @@ public class Param
 
 		nbtelechargementseriesimultaner = Integer.parseInt(props.getProperty("nbtelechargementseriesimultaner"));
 		CheminTemporaire = props.getProperty("CheminTemporaire");
+		RepertoireFilm = props.getProperty("RepertoireFilm");
 		Urlkickassusearch = props.getProperty("Urlkickassusearch");
 
 		initialiser_dates();
@@ -426,16 +428,20 @@ public class Param
 		}
 	}
 
-	public static String CheminTemporaire() {
+	private static String CheminTemporaire() {
 		return CheminTemporaire;
 	}
 
+	public static String CheminTemporaireTmp() {
+		return CheminTemporaire()+"tmp"+File.separator;
+	}
+	
 	public static String CheminTemporaireFilm() {
-		return CheminTemporaire()+"film"+File.pathSeparator;
+		return CheminTemporaire()+"tmp"+File.separator+"film"+File.separator;
 	}
 
-	public static String CheminTemporaireSerie(String serie) {
-		return CheminTemporaire()+"serie"+File.pathSeparator+serie+File.pathSeparator;
+	public static String CheminTemporaireSerie() {
+		return CheminTemporaire()+"tmp"+File.separator+"serie"+File.separator;
 	}
 	public static boolean isNumeric(String s) {  
 	    return s.matches("[-+]?\\d*\\.?\\d+");  

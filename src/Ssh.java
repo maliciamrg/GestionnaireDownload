@@ -7,7 +7,7 @@ public class Ssh {
 
 	public static ArrayList<String> executeAction(String command) {
 		StringBuffer output = new StringBuffer();
-
+		Param.logger.debug("executeAction:"+command);
 		Process p;
 		try {
 			p = Runtime.getRuntime().exec(command);
@@ -17,10 +17,12 @@ public class Ssh {
 			String line = "";
 			while ((line = reader.readLine()) != null) {
 				output.append(line + "\n");
+
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			return new ArrayList<String>(); 
 		}
 
 		return (ArrayList<String>) Arrays.asList(output.toString().split("\n"));

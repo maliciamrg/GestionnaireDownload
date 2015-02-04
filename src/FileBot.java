@@ -34,7 +34,7 @@ public class FileBot
 				+ " -r -non-strict ");
 	}
 
-
+	
 	public static void maj_liste_episodes(String serie) throws NumberFormatException, SQLException, ParseException
 	{
 		ArrayList<String> ret = new ArrayList<String>(0);

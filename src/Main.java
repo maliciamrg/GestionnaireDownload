@@ -2,8 +2,6 @@ import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,11 +14,6 @@ import java.text.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-
-import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.HTMLElementName;
-import net.htmlparser.jericho.Source;
 
 import org.json.*;
 
@@ -279,13 +272,15 @@ public class Main
 	private static void purgerrepertioiredetravail(String[] args)
 	{
 		//deplacer fichier a la racine
-		Ssh.executeAction("cd \"" + Param.CheminTemporaire() + "\";find -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaire() + "\"");
+		Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaireTmp() + "\"");
 		//purge rep=ertzooire v,wide
-		Ssh.executeAction("cd \"" + Param.CheminTemporaire() + "\";find . -type d -empty -delete");
+		Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -empty -delete");
 	}
 
 	private static void rangerdownload(String[] args) throws SQLException
 	{
+		// ranger les serie dans les sous repertoire de tmp
+		FileBot.rangerserie(Param.CheminTemporaireSerie() , Param.CheminTemporaireSerie() );
 
 		ResultSet rs = null;
 		rs = Param.stmt.executeQuery("SELECT * "
@@ -293,11 +288,11 @@ public class Main
 									 + "  ");
 		while (rs.next())
 		{
-			FileBot.rangerserie(Param.CheminTemporaire() + File.pathSeparator + rs.getString("serie"), rs.getString("repertoire"));
+			Ssh.executeAction("mv '"+Param.CheminTemporaireSerie() + rs.getString("nom") + File.separator+"' \"" + rs.getString("repertoire") + "\"");
 		}
 		rs.close();
 
-		FileBot.rangerfilm(Param.CheminTemporaire() + File.pathSeparator + "film", rs.getString("repertoire"));
+		FileBot.rangerfilm(Param.CheminTemporaireFilm() , Param.RepertoireFilm);
 
 	}
 
@@ -309,32 +304,34 @@ public class Main
 	 */
 	private static void analyserrepertoire(String[] args) throws SQLException, IOException
 	{
-		final List<Map> listeret = null;
+		final List<Map> listeret = new ArrayList<Map>();
 		ResultSet rs = null;
 		rs = Param.stmt.executeQuery("SELECT * "
 									 + " FROM series "
 									 + "  ");
 		while (rs.next())
 		{
-		    Path startPath = Paths.get(rs.getString("repertoire"));
-		    Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
-		        @Override
-		        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-					Map<String, String> ret =  new HashMap<String, String>();
-					try {
-						ret = conversionnom2episodes(file.toString());
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-					if (ret.get("serie") == null)
-					{
-						ret.put("chemin", file.toString());	
-						listeret.add(ret);
-					}	
-		            System.out.println("File: " + file.toString());           
-		            return FileVisitResult.CONTINUE;
-		        }
-		    });
+		    if ((new File(rs.getString("repertoire"))).exists()){
+			    Path startPath = Paths.get(rs.getString("repertoire"));
+			    Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
+			        @Override
+			        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+						Map<String, String> ret =  new HashMap<String, String>();
+						try {
+							ret = conversionnom2episodes(file.toString());
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+						if (ret.get("serie") == null)
+						{
+							ret.put("chemin", file.toString());	
+							listeret.add(ret);
+						}	
+			            System.out.println("File: " + file.toString());           
+			            return FileVisitResult.CONTINUE;
+			        }
+			    });
+		    }
 		}
 		rs.close();
 
@@ -420,7 +417,7 @@ public class Main
 									mettreepisodeaencours(ret.get("serie"),ret.get("saison"),ret.get("episode"));
 									if (n.getString("percentDone") == "1.0")
 									{
-										transmission.deplacer_fichier(hash, Param.CheminTemporaireSerie(ret.get("serie")));										
+										transmission.deplacer_fichier(hash, Param.CheminTemporaireSerie());										
 									}
 								}
 							}
@@ -540,21 +537,26 @@ public class Main
 		ResultSet rs ;
 		rs = Param.stmt.executeQuery("SELECT series.nom , max(episodes.airdate) as MaxDate"
 									 + " FROM series "
-									 + " INNER join episodes "
+									 + " LEFT OUTER join episodes "
 									 + "    on series.nom = episodes.serie "
 									 + " WHERE "
 									 + "      series.date_maj_web > '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateJourM30) + "'"
+									 + "   OR series.date_maj_web IS NULL"
 									 + " GROUP BY "
 									 + "  series.nom");
 		while (rs.next())
-		{
-			if ((rs.getDate("MaxDate")).after(Param.dateJourM300))
-			{ 
+		{	
+			if (rs.getObject("MaxDate")==null){
 				FileBot.maj_liste_episodes(rs.getString("nom"));
-			}
-			else
-			{
-				FichierQR.ForcerMajSerieWeb(rs.getString("nom"));
+			}else{
+				if ((rs.getDate("MaxDate")).after(Param.dateJourM300))
+				{ 
+					FileBot.maj_liste_episodes(rs.getString("nom"));
+				}
+				else
+				{
+					FichierQR.ForcerMajSerieWeb(rs.getString("nom"));
+				}
 			}
 		}
 		rs.close();
