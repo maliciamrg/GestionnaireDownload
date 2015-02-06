@@ -1,5 +1,7 @@
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,12 +9,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.jcraft.jsch.JSchException;
+
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
 public class FileBot
 {
 
-	public static void rangerfilm(String pathdesfilmaranger, String pathdelabibliothequesdesfilm)
+	public static void rangerfilm(String pathdesfilmaranger, String pathdelabibliothequesdesfilm) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
 		Ssh.executeAction("nice -n 19 \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -clear-cache ");
@@ -23,7 +27,7 @@ public class FileBot
 				+ " -r -non-strict ");
 	}
 
-	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie)
+	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
 		Ssh.executeAction("nice -n 19 \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -clear-cache ");
@@ -35,10 +39,10 @@ public class FileBot
 	}
 
 	
-	public static void maj_liste_episodes(String serie) throws NumberFormatException, SQLException, ParseException
+	public static void maj_liste_episodes(String serie) throws NumberFormatException, SQLException, ParseException, JSchException, IOException, InterruptedException
 	{
 		ArrayList<String> ret = new ArrayList<String>(0);
-
+	
 		ret = Ssh.executeAction("nice -n 19  \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -list --db TheTVDB --q \"" + serie
 							 + "\" --format '{n}#{s}#{e}#{absolute}#{airdate}#{t}#' ");
 
@@ -84,31 +88,35 @@ public class FileBot
 				}
 				
 			
-				ResultSet rs = null;
-				rs = Param.stmt.executeQuery("SELECT * "
+				ResultSet rsFilebot = null;
+				Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+				rsFilebot = stmt.executeQuery("SELECT * "
 											 + " FROM episodes "
 											 + "WHERE "
 											 + " serie = '" + serie + "'"
 											 + " and num_saison = '" + Integer.valueOf(exLineEp[1]) + "'"
 											 + " and num_episodes = '" + Integer.valueOf(exLineEp[2]) + "'"				 
 											 + " ");
-				rs.last();
-				if (rs.getRow() == 0)
+				rsFilebot.last();
+				String nomnettoyer = exLineEp[5].replaceAll("[^a-zA-Z0-9.-]", "_");
+				if (rsFilebot.getRow() == 0)
 				{	
-					Param.stmt.executeUpdate("INSERT INTO episodes "
+					stmt.executeUpdate("INSERT INTO episodes "
 							 + " ( nom , airdate , serie , num_saison , num_episodes ) VALUES " 
 							 + " ("
-							 + " '" + exLineEp[5] + "' ,"
+							 + " '" + nomnettoyer + "' ,"
 							 + " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(airDate) + "' ,"
 							 + " '" + serie + "' ,"
 							 + " '" + Integer.valueOf(exLineEp[1]) + "' ,"
 							 + " '" + Integer.valueOf(exLineEp[2]) + "' "				 
-							 + " ");
+							 + " )");
 				} else {
-					rs.updateString("nom",exLineEp[5] );
-					rs.updateDate("airdate",(java.sql.Date) airDate);
+					
+					rsFilebot.updateString("nom",nomnettoyer );
+					rsFilebot.updateString("airdate",  (new SimpleDateFormat("yyyy-MM-dd")).format(airDate));
+					rsFilebot.updateRow();
 				}
-			
+				rsFilebot.close();
 
 			}
 		}

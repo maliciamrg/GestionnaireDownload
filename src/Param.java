@@ -7,6 +7,10 @@ import java.util.*;
 import org.apache.log4j.*;
 import org.apache.log4j.varia.*;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+
 import java.util.Date;
 
 import ca.benow.transmission.*;
@@ -15,7 +19,8 @@ import java.net.*;
 
 public class Param 
 {
-
+	public static String Fileseparator = "/";
+	
 	private static String CheminTemporaire;
 
 	public static String Urlkickassusearch;
@@ -58,8 +63,12 @@ public class Param
 	private static String dbpasswd;
 	private static String dbbase;
 	public static Connection con;
-	public static Statement stmt;
 	
+	private static String sshhost;
+	private static String sshusername;
+	private static String sshpassword;
+	private static JSch jsch;
+	public static Session session;
 
 
 	public static boolean debug;
@@ -69,13 +78,13 @@ public class Param
 	{
 	}
 
-	public static void ChargerParametrage() throws FileNotFoundException, IOException, SQLException, ParseException
+	public static void ChargerParametrage() throws FileNotFoundException, IOException, SQLException, ParseException, JSchException, InterruptedException
 	{
 		workRepertoire = currentPath("/mnt/storage/AppProjects/GestionnaireDownload/");
 
 		Properties props = new Properties(); 
 		FileInputStream in = null;
-		in = new FileInputStream(workRepertoire + File.separator + "projet.properties"); 
+		in = new FileInputStream(workRepertoire + Param.Fileseparator + "projet.properties"); 
 		props.load(in);
 
 		System.out.println("environement=." + props.getProperty("environement") + ".");
@@ -90,6 +99,10 @@ public class Param
 		gestdownhttp = props.getProperty("gestdown.http"); 
 		gestdownusername = props.getProperty("gestdown.username"); 
 		gestdownpassword = props.getProperty("gestdown.password");
+		
+		sshhost = props.getProperty("ssh.host"); 
+		sshusername = props.getProperty("ssh.username"); 
+		sshpassword = props.getProperty("ssh.password");
 
 		nbtelechargementseriesimultaner = Integer.parseInt(props.getProperty("nbtelechargementseriesimultaner"));
 		CheminTemporaire = props.getProperty("CheminTemporaire");
@@ -106,8 +119,16 @@ public class Param
 		else
 		{
 			con = DriverManager.getConnection(dburl + dbbase, dbuser, dbpasswd);
-			stmt = con.createStatement();
 		}
+		
+		jsch = new JSch();
+		session = jsch.getSession(sshusername, sshhost, 22);
+		session.setPassword(sshpassword);
+		java.util.Properties config = new java.util.Properties();
+		config.put("StrictHostKeyChecking", "no");
+		session.setConfig(config);
+		session.connect();
+		
 		/**
 		 * init_alisation fichier trace
 		 */
@@ -147,9 +168,9 @@ public class Param
 		
 	public static String currentPath(String defaultPath)
 	{
-		String workRepertoire = System.getProperty(("user.dir")) + File.separator;
-		workRepertoire = workRepertoire.replace(File.separator + File.separator, File.separator);
-		if (workRepertoire.compareTo(File.separator) == 0)
+		String workRepertoire = System.getProperty(("user.dir")) + Param.Fileseparator;
+		workRepertoire = workRepertoire.replace(Param.Fileseparator + Param.Fileseparator, Param.Fileseparator);
+		if (workRepertoire.compareTo(Param.Fileseparator) == 0)
 		{
 			workRepertoire = workRepertoire + defaultPath;
 		}
@@ -232,7 +253,7 @@ public class Param
 	
 	public static void cloture() throws FileNotFoundException, IOException, InterruptedException, SQLException
 	{
-			stmt.close();
+			session.disconnect();
 			con.close();
 			clotureTrace();
 	}
@@ -281,10 +302,10 @@ public class Param
 	private static void archiveLog(String archive) throws FileNotFoundException, IOException, InterruptedException
 	{
 		File f = new File(archive);
-		if (copyFile(f, new File(workRepertoire + "Log" + File.separator + (new SimpleDateFormat("yyyyMMdd")).format(dateDuJour).toString() + "_" + f.getName()), true))
+		if (copyLocalFile(f, new File(workRepertoire + "Log" + Param.Fileseparator + (new SimpleDateFormat("yyyyMMdd")).format(dateDuJour).toString() + "_" + f.getName()), true))
 		{
 			Thread.sleep(1000);
-			copyFile(f, new File(workRepertoire + File.separator + "last_log_" + f.getName()), false);
+			copyLocalFile(f, new File(workRepertoire + Param.Fileseparator + "last_log_" + f.getName()), false);
 			Thread.sleep(1000);
 			f.delete();
 		}
@@ -346,7 +367,7 @@ public class Param
 		return fileName;
 	}
 	
-	public static boolean copyFile(File source, File dest, Boolean append) throws FileNotFoundException, IOException
+	public static boolean copyLocalFile(File source, File dest, Boolean append) throws FileNotFoundException, IOException
 	{
 		FileChannel in = null; // canal d'entr?e
 		FileChannel out = null; // canal de sortie
@@ -368,7 +389,7 @@ public class Param
 		return true;
 	}
 
-	public static void ConnectClientTransmission() throws MalformedURLException, IOException 
+	public static void ConnectClientTransmission() throws MalformedURLException, IOException, JSchException, InterruptedException 
 	{
 			/**
 			 * connect avec transmission
@@ -433,18 +454,24 @@ public class Param
 	}
 
 	public static String CheminTemporaireTmp() {
-		return CheminTemporaire()+"tmp"+File.separator;
+		return CheminTemporaire()+"tmp"+Param.Fileseparator;
 	}
 	
 	public static String CheminTemporaireFilm() {
-		return CheminTemporaire()+"tmp"+File.separator+"film"+File.separator;
+		return CheminTemporaire()+"tmp"+Param.Fileseparator+"film"+Param.Fileseparator;
 	}
 
 	public static String CheminTemporaireSerie() {
-		return CheminTemporaire()+"tmp"+File.separator+"serie"+File.separator;
+		return CheminTemporaire()+"tmp"+Param.Fileseparator+"serie"+Param.Fileseparator;
 	}
 	public static boolean isNumeric(String s) {  
 	    return s.matches("[-+]?\\d*\\.?\\d+");  
 	}  
-	
+	public static String GetOs() { 
+		String s = "name: " + System.getProperty ("os.name");
+		s += ", version: " + System.getProperty ("os.version");
+		s += ", arch: " + System.getProperty ("os.arch");
+		Param.logger.debug("OS=" + s);
+		return s; 
+	}
 }

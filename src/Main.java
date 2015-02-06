@@ -17,6 +17,9 @@ import java.util.regex.Pattern;
 
 import org.json.*;
 
+import com.jcraft.jsch.JSchException;
+
+
 public class Main
 {
 	/**
@@ -108,19 +111,30 @@ public class Main
 	 *				recherche du magnet de l'episode
 	 *			ajoute le magnet a transmission
 	 *			nbmagnetachercher - 1
+	 * @throws UnsupportedEncodingException 
+	 * @throws FileNotFoundException 
+	 * @throws JSchException 
 	 *
 	 */
-	public static void main(String[] args) throws IOException, ParseException, SQLException, InterruptedException, JSONException
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException
 	{
-		initialisation(args);
-		initialisation_bdd(args);
-		alimentation_bdd(args);		  
-		transmisson(args);
-		rangerdownload(args);
-		purgerrepertioiredetravail(args);
-		analyserrepertoire(args);
-		lancerlesprochainshash(args);
-		cloture(args);
+		(new File("error.txt")).delete();
+		try {
+			initialisation(args);
+			initialisation_bdd(args);
+			alimentation_bdd(args);		  
+			transmisson(args);
+			rangerdownload(args);
+			purgerrepertioiredetravail(args);
+			analyserrepertoire(args);
+			lancerlesprochainshash(args);
+			cloture(args);
+		} catch (IOException | ParseException | SQLException | JSchException | InterruptedException e) {
+			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+			writer.println(e.getStackTrace().toString());
+			writer.close();
+			e.printStackTrace();
+		}
 	}
 
 	/**lancer les prochains hash
@@ -145,11 +159,12 @@ public class Main
 		int nbserieencours = nbhashserienonterminee();
 		int nbmagnetachercher = Param.nbtelechargementseriesimultaner - nbserieencours;
 		ResultSet rs = null;
-		rs = Param.stmt.executeQuery("SELECT *"
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		rs = stmt.executeQuery("SELECT *"
 				 + " FROM episodes "
 				 + " WHERE "
 				 + "      NOT encours "
-				 + "  AND chemin_complet = \"\" "
+				 + "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
 				 + "  AND airdate < '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "'"
 				 + " ORDER BY "
 				 + "  airdate Desc");
@@ -173,25 +188,28 @@ public class Main
 				int debSubStr = strMagnet.indexOf("btih:") + 5;
 				int finSubStr = strMagnet.indexOf("&");
 				strHash = strMagnet.substring(debSubStr, finSubStr);
-				if (ret){break;}
-			}
-			if (ret) {
-				if(!strHash.equals("")){
-					ajouterhashserie(strHash,strMagnet);
+				if (ret){
+					if(!strHash.equals("")){
+						ajouterhashserie(strHash,strMagnet);
+					}
+					nbmagnetachercher--;
+					break;
 				}
-				nbmagnetachercher--;
 			}
+			rs.updateRow();
 		}
 		rs.close();
 	}
 
+	
 
 	private static String nbepisodesaison(String serie, String num_saison) throws SQLException {
 		ResultSet rs = null;
-		rs = Param.stmt.executeQuery("SELECT count(*) as nbEpisodes"
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		rs = stmt.executeQuery("SELECT count(*) as nbEpisodes"
 				 + " FROM episodes "
 				 + " WHERE "
-				 + "  AND serie = \""+serie+"\" "
+				 + "      serie = \""+serie+"\" "
 				 + "  AND num_saison  = \""+num_saison+"\" "
 				 + "  ");
 		while (rs.next() )
@@ -203,18 +221,23 @@ public class Main
 	}
 
 	private static void ajouterhashserie(String hash,String Magnet) throws SQLException {
-		Param.stmt.executeUpdate("insert into episodes "
-				 + " ( hash , classification , magnet ,timestamp_ajout DATE ) "
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("insert into hash "
+				 + " ( hash , classification , magnet ,timestamp_ajout) "
 				 + "VALUE "
-				 + " '" + hash + "' ,"			 
+				 + " ('" + hash + "' ,"			 
 				 + " 'serie' ,"		
 				 + " '" + Magnet + "' ,"		
 				 + " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
-				 + " ");
+				 + " ) "
+				 + " ON DUPLICATE KEY UPDATE timestamp_ajout="
+				 + " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
+				 + "");
 	}
 	
 	private static void mettreepisodeaencours(String serie, String numsaison, String numepisode) throws SQLException {
-		Param.stmt.executeUpdate("UPDATE episodes "
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("UPDATE episodes "
 				 + " set encours = true "
 				 + "WHERE "
 				 + " serie = '" + serie + "'"
@@ -224,7 +247,8 @@ public class Main
 	}
 	
 	private static void mettretoutelasaisonaencours(String serie, String numsaison) throws SQLException {
-		Param.stmt.executeUpdate("UPDATE episodes "
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("UPDATE episodes "
 				 + " set encours = true "
 				 + "WHERE "
 				 + " serie = '" + serie + "'"
@@ -232,14 +256,23 @@ public class Main
 				 + " ");
 	}
 
+	private static void mettredatemajserieserie(String serie) throws SQLException {
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("UPDATE series "
+				 + " set date_maj_web = '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
+				 + "WHERE "
+				 + " nom = '" + serie + "'"		
+				 + " ");
+	}
 	
 	private static boolean notlastsaisonactive(String serie, String num_saison) throws SQLException {
 		ResultSet rs = null;
-		rs = Param.stmt.executeQuery("SELECT max(num_saison) as MaxSaison "
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		rs = stmt.executeQuery("SELECT max(num_saison) as MaxSaison "
 									 + " FROM episodes "
 									 + " WHERE serie = \""+serie+"\" " 
-									 + "   AND aidate < '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "'"
-									 + "  ");
+									 + "   AND airdate < '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "'"
+			         				 + "  ");
 		while (rs.next())
 		{
 			int MaxSaison = rs.getInt("MaxSaison");
@@ -256,7 +289,8 @@ public class Main
 	private static int nbhashserienonterminee() throws SQLException {
 		int ret = 0;
 		ResultSet rs = null;
-		rs = Param.stmt.executeQuery("SELECT count(*) as NBHash "
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		rs = stmt.executeQuery("SELECT count(*) as NBHash "
 									 + " FROM hash "
 									 + " WHERE classification = \"serie\"" 
 									 + "   AND timestamp_termine is null "
@@ -269,30 +303,38 @@ public class Main
 		return ret;
 	}
 
-	private static void purgerrepertioiredetravail(String[] args)
+	private static void purgerrepertioiredetravail(String[] args) throws JSchException, IOException, InterruptedException
 	{
-		//deplacer fichier a la racine
-		Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaireTmp() + "\"");
-		//purge rep=ertzooire v,wide
-		Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -empty -delete");
+		if (Ssh.Fileexists( Param.CheminTemporaireTmp())){
+			//deplacer fichier a la racine
+			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaireTmp() + "\"");
+			//purge rep=ertzooire v,wide
+			Ssh.actionexecChmodR777(Param.CheminTemporaireTmp() );
+			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -empty -delete");
+		}
 	}
 
-	private static void rangerdownload(String[] args) throws SQLException
+	private static void rangerdownload(String[] args) throws SQLException, InterruptedException, JSchException, IOException
 	{
 		// ranger les serie dans les sous repertoire de tmp
-		FileBot.rangerserie(Param.CheminTemporaireSerie() , Param.CheminTemporaireSerie() );
-
+		if (Ssh.Fileexists(Param.CheminTemporaireSerie())){
+			FileBot.rangerserie(Param.CheminTemporaireSerie() , Param.CheminTemporaireSerie() );
+		}
+		
 		ResultSet rs = null;
-		rs = Param.stmt.executeQuery("SELECT * "
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		rs = stmt.executeQuery("SELECT * "
 									 + " FROM series "
 									 + "  ");
 		while (rs.next())
 		{
-			Ssh.executeAction("mv '"+Param.CheminTemporaireSerie() + rs.getString("nom") + File.separator+"' \"" + rs.getString("repertoire") + "\"");
+			Ssh.copyFile(Param.CheminTemporaireSerie() + rs.getString("nom") + Param.Fileseparator,  rs.getString("repertoire") );
 		}
 		rs.close();
 
-		FileBot.rangerfilm(Param.CheminTemporaireFilm() , Param.RepertoireFilm);
+		if (Ssh.Fileexists(Param.CheminTemporaireFilm())){
+			FileBot.rangerfilm(Param.CheminTemporaireFilm() , Param.RepertoireFilm);
+		}
 
 	}
 
@@ -300,19 +342,37 @@ public class Main
 	 *	serie:
 	 *		lister les episodes present (conversionnom2episodes) --> bdd episodes.chemincomplet & timestamp completer
 	 * @throws IOException 
+	 * @throws InterruptedException 
+	 * @throws JSchException 
 	 *
 	 */
-	private static void analyserrepertoire(String[] args) throws SQLException, IOException
+	private static void analyserrepertoire(String[] args) throws SQLException, IOException, JSchException, InterruptedException
 	{
 		final List<Map> listeret = new ArrayList<Map>();
 		ResultSet rs = null;
-		rs = Param.stmt.executeQuery("SELECT * "
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		rs = stmt.executeQuery("SELECT * "
 									 + " FROM series "
 									 + "  ");
 		while (rs.next())
 		{
-		    if ((new File(rs.getString("repertoire"))).exists()){
-			    Path startPath = Paths.get(rs.getString("repertoire"));
+		    if ((Ssh.Fileexists(rs.getString("repertoire")))){
+		    	ArrayList<String> files = Ssh.getRemoteFileList(rs.getString("repertoire"));
+		    	for (String file:files){
+			    	Map<String, String> ret =  new HashMap<String, String>();
+			    	if (!fichierdanslabaseepisodes(file.toString())){
+				    	ret = conversionnom2episodes(file.toString());
+						if (ret.get("serie") != null && !ret.get("serie").equals(""))
+						{
+							ret.put("chemin", file.toString());	
+							listeret.add(ret);
+				            System.out.println("Ep:"+ret.get("serie")+" "+ret.get("saison")+"-"+ret.get("episode")+" File:" + file.toString()); 
+						}	
+			    	}
+
+		    	}
+	            
+/*			    Path startPath = Paths.get(rs.getString("repertoire"));
 			    Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
 			        @Override
 			        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -330,24 +390,41 @@ public class Main
 			            System.out.println("File: " + file.toString());           
 			            return FileVisitResult.CONTINUE;
 			        }
-			    });
-		    }
+			    });*/
+			 }
 		}
 		rs.close();
 
 		for (Map curr:listeret)
 		{
-			Param.stmt.executeUpdate("UPDATE episodes "
+			stmt.executeUpdate("UPDATE episodes "
 									 + " set chemin_complet = '" + curr.get("chemin") + "'"
 									 + "   , timestamp_completer = '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
 									 + "WHERE "
 									 + " serie = '" + curr.get("serie") + "'"
-									 + " and num_saison = '" + curr.get("num_saison") + "'"
-									 + " and num_episodes = '" + curr.get("num_episodes") + "'"				 
+									 + " and num_saison = '" + curr.get("saison") + "'"
+									 + " and num_episodes = '" + curr.get("episode") + "'"				 
 									 + " ");
 
 		}
 
+	}
+
+	private static boolean fichierdanslabaseepisodes(String pathfile) throws SQLException {
+		ResultSet rs = null;
+		Statement stmt = Param.con.createStatement();
+		rs = stmt.executeQuery("SELECT * "
+									 + " FROM episodes "
+									 + " WHERE "
+									 + "      chemin_complet = '" + pathfile + "'"
+									 + "  ");
+		rs.last();
+		if (rs.getRow() == 0)
+		{				
+			return true;
+		}
+		rs.close();
+		return false ;
 	}
 
 	/**
@@ -373,16 +450,19 @@ public class Main
 	 *			ne rien faire & timestamp terminé
 	 *		autres:
 	 *			demander classification -> fichier qr html
+	 * @throws JSchException 
+	 * @throws InterruptedException 
 	 *
 	 */
-	private static void transmisson(String[] args) throws JSONException, IOException, SQLException
+	private static void transmisson(String[] args) throws JSONException, IOException, SQLException, InterruptedException, JSchException
 	{
 		ResultSet rs = null;
 	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString ,TorrentField.files,TorrentField.name,TorrentField.percentDone });
 		for (TorrentStatus curr : torrents)
 		{
 			String hash = (String) curr.getField(TorrentField.hashString);
-			rs = Param.stmt.executeQuery("SELECT * "
+			Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+			rs = stmt.executeQuery("SELECT * "
 										 + " FROM hash "
 										 + " WHERE "
 										 + "      hash = '" + hash + "'"
@@ -399,9 +479,11 @@ public class Main
 					{
 						FichierQR.demanderClassificationEffacer((String)curr.getField(TorrentField.name), hash);
 					}
+					int nbfichierbruler;
 					switch (rs.getString("classification"))
 					{
 						case "serie": 
+							nbfichierbruler = 0;
 							JSONArray listFile = (JSONArray) curr.getField(TorrentField.files);
 							int i = 0;
 							for (i = 0; i < listFile.length(); i++)
@@ -410,23 +492,26 @@ public class Main
 								Map<String, String> ret=conversionnom2episodes(n.getString("name"));
 								if (ret == null)
 								{
+									nbfichierbruler ++;
 									transmission.cancelFilenameOfTorrent(hash, i);
 								}
 								else
 								{
 									mettreepisodeaencours(ret.get("serie"),ret.get("saison"),ret.get("episode"));
-									if (n.getString("percentDone") == "1.0")
+									if (n.get("bytesCompleted").equals(n.get("length")))
 									{
-										transmission.deplacer_fichier(hash, Param.CheminTemporaireSerie());										
+										transmission.deplacer_fichier(hash, Param.CheminTemporaireSerie(),i);										
+										nbfichierbruler ++;
 									}
 								}
 							}
-							if ((double) curr.getField(TorrentField.percentDone) == 1.0)
+							if ( curr.getField(TorrentField.percentDone).equals(1))
 							{
-								if (transmission.all_fichier_absent(hash))
+								if (listFile.length()==nbfichierbruler)
 								{
 									transmission.supprimer_hash(hash);
-									rs.updateDate("timestamp_termine", (Date) Param.dateDuJour);
+									rs.updateString("timestamp_termine", (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour));
+									rs.updateRow();
 								}
 							}
 							break;
@@ -436,7 +521,8 @@ public class Main
 								if (transmission.all_fichier_absent(hash))
 								{
 									transmission.supprimer_hash(hash);
-									rs.updateDate("timestamp_termine", (Date) Param.dateDuJour);
+									rs.updateString("timestamp_termine", (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour));
+									rs.updateRow();
 								}
 								else
 								{
@@ -446,7 +532,8 @@ public class Main
 							break;
 						case "effacer": 
 							transmission.supprimer_hash(hash);
-							rs.updateDate("timestamp_termine", (Date) Param.dateDuJour);
+							rs.updateString("timestamp_termine", (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour));
+							rs.updateRow();
 							break;
 						case "ignorer": 
 							break;
@@ -460,13 +547,14 @@ public class Main
 		}
 	}
 
-	public static void initialisation(String[] args) throws IOException, ParseException, SQLException 
+	public static void initialisation(String[] args) throws IOException, ParseException, SQLException, JSchException, InterruptedException 
 	{
 		Param.ChargerParametrage();
 
 		System.out.print("<pre>");
 		System.out.println("+---+----+----+----+");
 		System.out.println("+       Debut      +" + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(Calendar.getInstance().getTime()));
+		System.out.println(Param.GetOs());
 	}
 
     /**
@@ -476,15 +564,17 @@ public class Main
      */
 	private static void initialisation_bdd(String[] args) throws SQLException
 	{
-		Param.stmt.executeUpdate("CREATE TABLE IF NOT EXISTS series "
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS series "
 								 + "(nom VARCHAR(255) not NULL , "
 								 + " repertoire VARCHAR(255) , "
 								 + " date_maj_web DATE , "
 								 + " PRIMARY KEY ( nom ) "
 								 + ") "
 								 + " ");
-
-		Param.stmt.executeUpdate("CREATE TABLE IF NOT EXISTS episodes "
+		
+		//Param.stmt.executeUpdate("DROP TABLE episodes ");
+		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS episodes "
 								 + "(serie VARCHAR(255) not NULL , "
 								 + " num_saison INTEGER  , "
 								 + " num_episodes INTEGER  , "
@@ -494,18 +584,19 @@ public class Main
 								 + " timestamp_completer DATE , "
 								 + " chemin_complet  VARCHAR(255) , "
 								 + " PRIMARY KEY ( serie , num_saison , num_episodes  ) , "
-								 + "         KEY ( airdate ) "
+								 + "         INDEX   ( airdate ) "
 								 + ") "
 								 + " ");
-
-		Param.stmt.executeUpdate("CREATE TABLE IF NOT EXISTS hash "
+		
+		//Param.stmt.executeUpdate("DROP TABLE hash ");
+		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS hash "
 								 + "(hash VARCHAR(255) not NULL , "
 								 + " classification  VARCHAR(255) , "
 								 + " magnet  VARCHAR(255) , "
 								 + " timestamp_ajout DATE , "
 								 + " timestamp_termine DATE , "
 								 + " PRIMARY KEY ( hash ) ,"
-								 + "         KEY ( timestamp_termine ) "
+								 + "         INDEX   ( timestamp_termine ) "
 								 + ") "
 								 + " ");
 
@@ -525,22 +616,25 @@ public class Main
      * @throws SQLException
      * @throws ParseException 
      * @throws NumberFormatException 
+     * @throws InterruptedException 
+     * @throws JSchException 
      */
-	private static void alimentation_bdd(String[] args) throws SQLException, JSONException, IOException, NumberFormatException, ParseException
+	private static void alimentation_bdd(String[] args) throws SQLException, JSONException, IOException, NumberFormatException, ParseException, JSchException, InterruptedException
 	{
 
 		FichierQR.AjouterNouvelleSerie();
 
-		Param.stmt.executeUpdate("update episodes set encours = false ");
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("update episodes set encours = false ");
 
 
 		ResultSet rs ;
-		rs = Param.stmt.executeQuery("SELECT series.nom , max(episodes.airdate) as MaxDate"
+		rs = stmt.executeQuery("SELECT series.nom , max(episodes.airdate) as MaxDate"
 									 + " FROM series "
 									 + " LEFT OUTER join episodes "
 									 + "    on series.nom = episodes.serie "
 									 + " WHERE "
-									 + "      series.date_maj_web > '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateJourM30) + "'"
+									 + "      series.date_maj_web < '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateJourM30) + "'"
 									 + "   OR series.date_maj_web IS NULL"
 									 + " GROUP BY "
 									 + "  series.nom");
@@ -548,10 +642,12 @@ public class Main
 		{	
 			if (rs.getObject("MaxDate")==null){
 				FileBot.maj_liste_episodes(rs.getString("nom"));
+				mettredatemajserieserie(rs.getString("nom"));
 			}else{
 				if ((rs.getDate("MaxDate")).after(Param.dateJourM300))
 				{ 
 					FileBot.maj_liste_episodes(rs.getString("nom"));
+					mettredatemajserieserie(rs.getString("nom"));
 				}
 				else
 				{
@@ -564,8 +660,9 @@ public class Main
 	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString });
 		for (TorrentStatus curr : torrents)
 		{
+			
 			String hash = (String) curr.getField(TorrentField.hashString);
-			rs = Param.stmt.executeQuery("SELECT * "
+			rs = stmt.executeQuery("SELECT * "
 										 + " FROM hash "
 										 + " WHERE "
 										 + "      hash = '" + hash + "'"
@@ -580,7 +677,7 @@ public class Main
 					+ " 'autres' , "
 					+ " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'  "
 					+ " ) ";
-				Param.stmt.executeUpdate(sql);
+				stmt.executeUpdate(sql);
 
 			}
 			rs.close();
@@ -713,13 +810,14 @@ public class Main
 
 			Boolean ctrlnom;
 			ResultSet rs = null;
-			rs = Param.stmt.executeQuery("SELECT * "
+			Statement stmt = Param.con.createStatement();
+			rs = stmt.executeQuery("SELECT * "
 										 + " FROM series "
 										 + "  ");
 			while (rs.next())
 			{
 				ctrlnom = true;
-				String textSerieNettoyer = rs.getString("serie").replaceAll("[(]([0-9a-zA-Z]*)[)]", "");
+				String textSerieNettoyer = rs.getString("nom").replaceAll("[(]([0-9a-zA-Z]*)[)]", "");
 				String[] textSerie = textSerieNettoyer.split("[-,'._() ]+");
 				String partnameDouble = partname.replaceAll("(.)(?=\\1)", "");
 				for (String mot : textSerie)
@@ -736,8 +834,8 @@ public class Main
 				if (ctrlnom)
 				{
 					nbtrouve++;
-					ret.put("serie", rs.getString("serie"));
-					Param.logger.debug("episode- decomposerNom" + rs.getString("serie"));
+					ret.put("serie", rs.getString("nom"));
+					Param.logger.debug("episode- decomposerNom" + rs.getString("nom"));
 				}
 
 			}

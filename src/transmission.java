@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.jcraft.jsch.JSchException;
+
 import ca.benow.transmission.AddTorrentParameters;
 import ca.benow.transmission.SetTorrentParameters;
 import ca.benow.transmission.model.AddedTorrentInfo;
@@ -24,7 +26,7 @@ public class transmission {
 		Param.client.removeTorrents(new Object[] { torrentId }, true);
 	}
 
-	public static boolean all_fichier_absent(String hash) throws JSONException, IOException {
+	public static boolean all_fichier_absent(String hash) throws JSONException, IOException, JSchException, InterruptedException {
 		int torrentId = torrentIdOfHash(hash);
 		List<TorrentStatus> torrents =  Param.client.getTorrents( new int[] {torrentId}, TorrentField.downloadDir ,TorrentField.files);
 		for (TorrentStatus curr : torrents)
@@ -36,7 +38,7 @@ public class transmission {
 			for (i = 0; i < listFile.length(); i++)
 			{
 				JSONObject n = (JSONObject) listFile.get(i);
-				if (new File(downloadDir + File.separator + n.getString("name")).exists())
+				if (Ssh.Fileexists(downloadDir + Param.Fileseparator + n.getString("name")))
 				{
 					return false;
 				}
@@ -46,7 +48,7 @@ public class transmission {
 		return false;
 	}
 
-	public static void deplacer_fichier(String hash, String cheminTemporaire) throws JSONException, IOException {
+	public static void deplacer_fichier(String hash, String cheminTemporaire) throws JSONException, IOException, InterruptedException, JSchException {
 		int torrentId = torrentIdOfHash(hash);
 		List<TorrentStatus> torrents =  Param.client.getTorrents( new int[] {torrentId}, TorrentField.downloadDir ,TorrentField.files);
 		for (TorrentStatus curr : torrents)
@@ -58,12 +60,9 @@ public class transmission {
 			for (i = 0; i < listFile.length(); i++)
 			{
 				JSONObject n = (JSONObject) listFile.get(i);
-				String src = downloadDir + File.separator + n.getString("name");
-				String dest = cheminTemporaire + File.separator + n.getString("name");
-				if (new File(src).exists() && !new File(dest).exists())
-				{
-					Param.copyFile(new File(src), new File(dest), false);
-				}
+				String src = downloadDir +Param.Fileseparator+ n.getString("name");
+				String dest = cheminTemporaire + n.getString("name");
+				Ssh.copyFile(src,dest);
 			}
 		}
 	}
@@ -116,6 +115,24 @@ public class transmission {
 			}
 		}
 		return 0;
+	}
+
+
+	public static void deplacer_fichier(String hash, String cheminTemporaire, int numfichiertransmission) throws JSONException, IOException, InterruptedException, JSchException {
+		int torrentId = torrentIdOfHash(hash);
+		List<TorrentStatus> torrents =  Param.client.getTorrents( new int[] {torrentId}, TorrentField.downloadDir ,TorrentField.files);
+		for (TorrentStatus curr : torrents)
+		{
+			String downloadDir = (String.valueOf(curr.getField(TorrentField.downloadDir)));
+			JSONArray listFile = (JSONArray) curr.getField(TorrentField.files);
+			// Display.affichageProgressionInit("nb series traiter");
+
+			JSONObject n = (JSONObject) listFile.get(numfichiertransmission);
+			String src = downloadDir +Param.Fileseparator+ n.getString("name");
+			String dest = cheminTemporaire + n.getString("name");
+			Ssh.copyFile(src,dest);
+
+		}
 	}
 
 }
