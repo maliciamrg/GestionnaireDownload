@@ -219,7 +219,120 @@ public class Main
 		rs.close();
 		return "0";
 	}
+	
+	private static String getseriestathtml(String serie) throws SQLException {
+		ResultSet rs = null;
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		rs = stmt.executeQuery("SELECT *"
+				 + " FROM episodes "
+				 + " WHERE "
+				 + "      serie = \"" + serie + "\""
+				 + " ORDER BY "
+				 + "  airdate Desc"
+				 + "" );
+		nbtotal=0;
+		nbpresent=0;
+		nbencours=0;
+		nbabsent=0;
+		nbavenir=0;
+		ArrayList<ArrayList<String>> visu = new ArrayList<ArrayList<String>>();
+		strnbjourprochainepisodes="";
+		while (rs.next())
+		{
+			nbtotal ++;
+			String icone=""; = "#";
+			if (rs.getString("chemin_complet")!=""){
+				nbpresent++;
+				icone = "X";
+			} else {
+				if (rs.getBoolean("encours")){
+					nbencours++;
+					icone = ">";
+				} else {
+					if ((rs.getDate("airdate")).before(Param.dateDuJourUsa)){	
+						nbabsent++;
+						icone = "<span title=\"" + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(rs.getDate("airdate")) + "\">-</span>";
+					}else{
+						nbavenir++;
+						icone = "<span title=\"" + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(rs.getDate("airdate")) + "\">_</span>";
 
+						nbjourprochainepisodes = rs.getDate("airdate").getTime().getTime() - Param.dateDuJour.getTime().getTime();
+						strnbjourprochainepisodes = (nbdaynextep < 0 ? " -" : "")
+						+ ((new SimpleDateFormat("yyyy-MM-dd")).format(rs.getDate("airdate").getTime()).equals("2099-01-31") ? "-----" : TimeUnit.MILLISECONDS
+						.toDays((long) Math.abs(nbdaynextep))) + " days"					}
+				}
+			}
+			
+			while (visu.size() < rs.getString("num_saison"))
+			{
+				visu.add(new ArrayList<String>());
+			}
+			ArrayList<String> getVisuSaison = visu.get(rs.getString("num_saison") - 1);
+			while (getVisuSaison.size() < rs.getString("num_episode"))
+			{
+				getVisuSaison.add("");
+			}
+			getVisuSaison.set(rs.getString("num_episode") - 1, icone);
+			visu.set(rs.getString("num_saison") - 1, getVisuSaison);
+			
+		}
+		rs.close();		 
+		titre = serie + " " + strnbjourprochainepisodes
+		
+		/*JFreeChart*/
+		DefaultPieDataset objDataset = new DefaultPieDataset();
+		objDataset.setValue("nbpresent",nbpresent);
+		objDataset.setValue("nbencours",nbencours);
+		objDataset.setValue("nbabsent",nbabsent);
+		objDataset.setValue("nbavenir",nbavenir);
+		JFreeChart objChart = ChartFactory.createPieChart3D (
+		    titre,   //Chart title
+		    objDataset,          //Chart Data 
+		    true,               // include legend?
+		    true,               // include tooltips?
+		    false               // include URLs?
+		    );
+		PiePlot3D plot = (PiePlot3D) chart.getPlot();
+	        plot.setStartAngle(290);
+	        plot.setDirection(Rotation.CLOCKWISE);
+	        plot.setForegroundAlpha(0.5f);
+	        int width = 160; /* Width of the image */
+		int height = 120; /* Height of the image */ 
+		//File pieChart = new File( "PieChart_"+serie+".jpeg" ); 
+		ChartUtilities.writeChartAspng( imageString , chart , width , height );
+		
+		returnhtml = "<img src='data:image/png;base64," + DatatypeConverter.printBase64Binary(imageString) + "'>";
+		returnhtml = returnhtml + "/n";
+		returnhtml = returnhtml + Miseenforme(visu);
+		return returnhtml;
+	}
+	
+	private String Miseenforme(ArrayList<ArrayList<String>> visu)
+	{
+		String out = "<TABLE BORDER>";
+		int nSaison = 0;
+		for (ArrayList<String> listSaison : visu)
+		{
+			out += "<tr><td>";
+			nSaison++;
+			out += String.format("%1$02d", nSaison) + ":";
+			String[] listEpisode = listSaison.toArray(new String[0]);
+			int nEpisode = 0;
+			for (String etatEpisode : listEpisode)
+			{
+				nEpisode++;
+				if (nEpisode % 100 == 0)
+				{
+					out += "</td></tr><tr><td>..:";
+				}
+				out += etatEpisode;
+			}
+			out += "</td></tr>";
+		}
+		out += "</table>";// </table></body>";
+		return out;
+	}			
+			
 	private static void ajouterhashserie(String hash,String Magnet) throws SQLException {
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
 		stmt.executeUpdate("insert into hash "
@@ -414,8 +527,10 @@ public class Main
 				NomFichier,
 				new String[] {ret.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") },
 				new String[] { "Serie" },
-				"<a href=\"http://home.daisy-street.fr/BibPerso/stream.php?flux="
+				/*"http://home.daisy-street.fr/BibPerso/stream.php?flux="*/
+				"<a href=\""+Param.UrlduStreamerInterne
 				+ URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier + "</a>" + "\n"
+				+ getseriestathtml(serie)
 				+ "" ) ;
 		}
 	}
