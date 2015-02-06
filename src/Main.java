@@ -1,7 +1,7 @@
 import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
-import java.io.*;
+import java.io.*;p
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -359,17 +359,18 @@ public class Main
 		    if ((Ssh.Fileexists(rs.getString("repertoire")))){
 		    	ArrayList<String> files = Ssh.getRemoteFileList(rs.getString("repertoire"));
 		    	for (String file:files){
-			    	Map<String, String> ret =  new HashMap<String, String>();
-			    	if (!fichierdanslabaseepisodes(file.toString())){
-				    	ret = conversionnom2episodes(file.toString());
+		    		if (isvideo(file.toString()){
+				    	Map<String, String> ret =  new HashMap<String, String>();
+				    	if (!fichierdanslabaseepisodes(file.toString())){
+					    	ret = conversionnom2episodes(file.toString());
 						if (ret.get("serie") != null && !ret.get("serie").equals(""))
 						{
 							ret.put("chemin", file.toString());	
 							listeret.add(ret);
-				            System.out.println("Ep:"+ret.get("serie")+" "+ret.get("saison")+"-"+ret.get("episode")+" File:" + file.toString()); 
+							System.out.println("Ep:"+ret.get("serie")+" "+ret.get("saison")+"-"+ret.get("episode")+" File:" + file.toString()); 
 						}	
-			    	}
-
+				    	}
+		    		}
 		    	}
 	            
 /*			    Path startPath = Paths.get(rs.getString("repertoire"));
@@ -398,17 +399,41 @@ public class Main
 		for (Map curr:listeret)
 		{
 			stmt.executeUpdate("UPDATE episodes "
-									 + " set chemin_complet = '" + curr.get("chemin") + "'"
-									 + "   , timestamp_completer = '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
-									 + "WHERE "
-									 + " serie = '" + curr.get("serie") + "'"
-									 + " and num_saison = '" + curr.get("saison") + "'"
-									 + " and num_episodes = '" + curr.get("episode") + "'"				 
-									 + " ");
-
+				 + " set chemin_complet = '" + curr.get("chemin") + "'"
+				 + "   , timestamp_completer = '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
+				 + "WHERE "
+				 + " serie = '" + curr.get("serie") + "'"
+				 + " and num_saison = '" + curr.get("saison") + "'"
+				 + " and num_episodes = '" + curr.get("episode") + "'"				 
+				 + " ");
+			
+			String NomFichier=pathfile.substring((Math.max(curr.get("chemin").lastIndexOf('/'), curr.get("chemin").lastIndexOf('\\')))+1);
+			WordPressHome.publishOnBlog(
+				6,
+				(new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour) + "_" + NomFichier,
+				NomFichier,
+				new String[] {ret.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") },
+				new String[] { "Serie" },
+				"<a href=\"http://home.daisy-street.fr/BibPerso/stream.php?flux="
+				+ URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier + "</a>" + "\n"
+				+ "" ) ;
 		}
-
 	}
+
+	private static boolean isvideo(String pathfile) {
+		String extension = "";
+		String[] Video = new String[] {"avi","mp4","mpg","mkv","wnv","divx"};
+		
+		int i = pathfile.lastIndexOf('.');
+		int p = Math.max(pathfile.lastIndexOf('/'), pathfile.lastIndexOf('\\'));
+		
+		if (i > p) {
+		    extension = pathfile.substring(i+1);
+		}
+		
+		return Arrays.asList(Video).contains(extension.toLowerCase();
+	}
+
 
 	private static boolean fichierdanslabaseepisodes(String pathfile) throws SQLException {
 		ResultSet rs = null;
@@ -416,7 +441,7 @@ public class Main
 		rs = stmt.executeQuery("SELECT * "
 									 + " FROM episodes "
 									 + " WHERE "
-									 + "      chemin_complet = '" + pathfile + "'"
+									 + "      chemin_complet = \"" + pathfile + "\""
 									 + "  ");
 		rs.last();
 		if (rs.getRow() == 0)
