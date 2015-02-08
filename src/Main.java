@@ -1,7 +1,9 @@
 import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
-import java.io.*;p
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URLEncoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,10 +14,25 @@ import java.sql.*;
 import java.sql.Date;
 import java.text.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.*;
+import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
+
+import org.apache.xmlrpc.XmlRpcException;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.PieSectionLabelGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.util.Rotation;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.jcraft.jsch.JSchException;
 
@@ -113,15 +130,20 @@ public class Main
 	 *			nbmagnetachercher - 1
 	 * @throws UnsupportedEncodingException 
 	 * @throws FileNotFoundException 
+	 * @throws XmlRpcException 
 	 * @throws JSchException 
 	 *
 	 */
-	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, XmlRpcException
 	{
 		(new File("error.txt")).delete();
 		try {
 			initialisation(args);
 			initialisation_bdd(args);
+			getseriestathtml("Arrow");
+			getseriestathtml("Game of Thrones");
+			getseriestathtml("The Blacklist");
+			getseriestathtml("The Flash (2014)");
 			alimentation_bdd(args);		  
 			transmisson(args);
 			rangerdownload(args);
@@ -131,7 +153,7 @@ public class Main
 			cloture(args);
 		} catch (IOException | ParseException | SQLException | JSchException | InterruptedException e) {
 			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(e.getStackTrace().toString());
+			writer.println(Param.eToString(e));
 			writer.close();
 			e.printStackTrace();
 		}
@@ -230,18 +252,18 @@ public class Main
 				 + " ORDER BY "
 				 + "  airdate Desc"
 				 + "" );
-		nbtotal=0;
-		nbpresent=0;
-		nbencours=0;
-		nbabsent=0;
-		nbavenir=0;
+		int nbtotal = 0;
+		int nbpresent = 0;
+		int nbencours = 0;
+		int nbabsent = 0;
+		int nbavenir = 0;
 		ArrayList<ArrayList<String>> visu = new ArrayList<ArrayList<String>>();
-		strnbjourprochainepisodes="";
+		String strnbjourprochainepisodes = "";
 		while (rs.next())
 		{
 			nbtotal ++;
-			String icone=""; = "#";
-			if (rs.getString("chemin_complet")!=""){
+			String icone = "#";
+			if ( rs.getString("chemin_complet") != null){
 				nbpresent++;
 				icone = "X";
 			} else {
@@ -251,33 +273,34 @@ public class Main
 				} else {
 					if ((rs.getDate("airdate")).before(Param.dateDuJourUsa)){	
 						nbabsent++;
-						icone = "<span title=\"" + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(rs.getDate("airdate")) + "\">-</span>";
+						icone = "<span title=\"" + (new SimpleDateFormat("yyyy-MM-dd")).format(rs.getDate("airdate"))+" "+serie+"(S"+rs.getString("num_saison")+"E"+rs.getString("num_episodes")+")" + "\">-</span>";
 					}else{
 						nbavenir++;
-						icone = "<span title=\"" + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(rs.getDate("airdate")) + "\">_</span>";
+						icone = "<span title=\"" + (new SimpleDateFormat("yyyy-MM-dd")).format(rs.getDate("airdate"))+" "+serie+"(S"+rs.getString("num_saison")+"E"+rs.getString("num_episodes")+")" + "\">_</span>";
 
-						nbjourprochainepisodes = rs.getDate("airdate").getTime().getTime() - Param.dateDuJour.getTime().getTime();
-						strnbjourprochainepisodes = (nbdaynextep < 0 ? " -" : "")
-						+ ((new SimpleDateFormat("yyyy-MM-dd")).format(rs.getDate("airdate").getTime()).equals("2099-01-31") ? "-----" : TimeUnit.MILLISECONDS
-						.toDays((long) Math.abs(nbdaynextep))) + " days"					}
+						long nbjourprochainepisodes = rs.getDate("airdate").getTime() - Param.dateDuJour.getTime();
+						strnbjourprochainepisodes = (nbjourprochainepisodes < 0 ? " -" : "")
+						+ ((new SimpleDateFormat("yyyy-MM-dd")).format(rs.getDate("airdate")).equals("2099-01-31") ? "-----" : TimeUnit.MILLISECONDS
+						.toDays((long) Math.abs(nbjourprochainepisodes))) + " days";	
+					}
 				}
 			}
 			
-			while (visu.size() < rs.getString("num_saison"))
+			while (visu.size() < Integer.parseInt(rs.getString("num_saison")))
 			{
 				visu.add(new ArrayList<String>());
 			}
-			ArrayList<String> getVisuSaison = visu.get(rs.getString("num_saison") - 1);
-			while (getVisuSaison.size() < rs.getString("num_episode"))
+			ArrayList<String> getVisuSaison = visu.get(Integer.parseInt(rs.getString("num_saison")) - 1);
+			while (getVisuSaison.size() < Integer.parseInt(rs.getString("num_episodes")))
 			{
 				getVisuSaison.add("");
 			}
-			getVisuSaison.set(rs.getString("num_episode") - 1, icone);
-			visu.set(rs.getString("num_saison") - 1, getVisuSaison);
+			getVisuSaison.set(Integer.parseInt(rs.getString("num_episodes")) - 1, icone);
+			visu.set(Integer.parseInt(rs.getString("num_saison")) - 1, getVisuSaison);
 			
 		}
 		rs.close();		 
-		titre = serie + " " + strnbjourprochainepisodes
+		String titre = serie + " " + strnbjourprochainepisodes;
 		
 		/*JFreeChart*/
 		DefaultPieDataset objDataset = new DefaultPieDataset();
@@ -292,22 +315,40 @@ public class Main
 		    true,               // include tooltips?
 		    false               // include URLs?
 		    );
-		PiePlot3D plot = (PiePlot3D) chart.getPlot();
-	        plot.setStartAngle(290);
-	        plot.setDirection(Rotation.CLOCKWISE);
-	        plot.setForegroundAlpha(0.5f);
-	        int width = 160; /* Width of the image */
-		int height = 120; /* Height of the image */ 
+        PieSectionLabelGenerator generator = new StandardPieSectionLabelGenerator(
+                "{0} {1}", new DecimalFormat("0"), new DecimalFormat("0.00"));
+        PiePlot3D plot = (PiePlot3D) objChart.getPlot();
+        plot.setStartAngle(180);
+        plot.setDirection(Rotation.CLOCKWISE);
+        plot.setForegroundAlpha(0.5f);
+        plot.setLabelGenerator(generator);
+        int width = 320; /* Width of the image */
+        int height = 240; /* Height of the image */ 
 		//File pieChart = new File( "PieChart_"+serie+".jpeg" ); 
-		ChartUtilities.writeChartAspng( imageString , chart , width , height );
+
+		//ChartUtilities.writeChartAsPNG( imageString , objChart , width , height );
 		
-		returnhtml = "<img src='data:image/png;base64," + DatatypeConverter.printBase64Binary(imageString) + "'>";
-		returnhtml = returnhtml + "/n";
-		returnhtml = returnhtml + Miseenforme(visu);
+		BufferedImage objBufferedImage=objChart.createBufferedImage(width,height);
+		ByteArrayOutputStream bas = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(objBufferedImage, "png", bas);
+		} catch (IOException e) {
+			 e.printStackTrace();
+		}
+		byte[] byteArray=bas.toByteArray();
+	    
+		String imagestatseriehtml = "<img src='data:image/png;base64," + DatatypeConverter.printBase64Binary(byteArray) + "'>";
+		mettreimagestatmajserieserie(serie,imagestatseriehtml);
+		String tableaustatseriehtml =Miseenforme(visu);
+		mettretableaustatmajserieserie(serie,tableaustatseriehtml);
+		String returnhtml = imagestatseriehtml;
+		returnhtml = returnhtml + "</br>";
+		returnhtml = returnhtml + tableaustatseriehtml;
+		
 		return returnhtml;
 	}
 	
-	private String Miseenforme(ArrayList<ArrayList<String>> visu)
+	private static String Miseenforme(ArrayList<ArrayList<String>> visu)
 	{
 		String out = "<TABLE BORDER>";
 		int nSaison = 0;
@@ -335,6 +376,10 @@ public class Main
 			
 	private static void ajouterhashserie(String hash,String Magnet) throws SQLException {
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+//		stmt.executeUpdate("delete from hash "
+//				 + " where  "
+//				 + " hash = '" + hash + "' "			 
+//				 + "");
 		stmt.executeUpdate("insert into hash "
 				 + " ( hash , classification , magnet ,timestamp_ajout) "
 				 + "VALUE "
@@ -343,8 +388,9 @@ public class Main
 				 + " '" + Magnet + "' ,"		
 				 + " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
 				 + " ) "
-				 + " ON DUPLICATE KEY UPDATE timestamp_ajout="
-				 + " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
+				 + " ON DUPLICATE KEY UPDATE "
+				 + " timestamp_ajout='" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "' ,"
+				 + " classification='serie'"
 				 + "");
 	}
 	
@@ -378,6 +424,28 @@ public class Main
 				 + " ");
 	}
 	
+	private static void mettretableaustatmajserieserie(String serie ,String Stat_Tableau) throws SQLException {
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		ResultSet rs = stmt.executeQuery("SELECT *"
+				 + " FROM series "
+				 + " WHERE "
+				 + " nom = '" + serie + "'"	
+				 + "  ");
+		while (rs.next() )
+		{
+				rs.updateNString("Stat_Tableau", Stat_Tableau);
+				rs.updateRow();
+		}
+		rs.close();
+	}
+	private static void mettreimagestatmajserieserie(String serie ,String imagestat) throws SQLException {
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("UPDATE series "
+				 + " set Stat_Image_Base64 = \"" + imagestat + "\""
+				 + "WHERE "
+				 + " nom = '" + serie + "'"		
+				 + " ");
+	}	
 	private static boolean notlastsaisonactive(String serie, String num_saison) throws SQLException {
 		ResultSet rs = null;
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
@@ -420,10 +488,10 @@ public class Main
 	{
 		if (Ssh.Fileexists( Param.CheminTemporaireTmp())){
 			//deplacer fichier a la racine
-			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaireTmp() + "\"");
+			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type f -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaireTmp() + "\" \\;");
 			//purge rep=ertzooire v,wide
 			Ssh.actionexecChmodR777(Param.CheminTemporaireTmp() );
-			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -empty -delete");
+			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -depth -exec rmdir 2>/dev/null '{}' \\;");
 		}
 	}
 
@@ -442,6 +510,7 @@ public class Main
 		while (rs.next())
 		{
 			Ssh.copyFile(Param.CheminTemporaireSerie() + rs.getString("nom") + Param.Fileseparator,  rs.getString("repertoire") );
+			Ssh.actionexecChmodR777(rs.getString("repertoire"));
 		}
 		rs.close();
 
@@ -457,9 +526,10 @@ public class Main
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 * @throws JSchException 
+	 * @throws XmlRpcException 
 	 *
 	 */
-	private static void analyserrepertoire(String[] args) throws SQLException, IOException, JSchException, InterruptedException
+	private static void analyserrepertoire(String[] args) throws SQLException, IOException, JSchException, InterruptedException, XmlRpcException
 	{
 		final List<Map> listeret = new ArrayList<Map>();
 		ResultSet rs = null;
@@ -472,16 +542,16 @@ public class Main
 		    if ((Ssh.Fileexists(rs.getString("repertoire")))){
 		    	ArrayList<String> files = Ssh.getRemoteFileList(rs.getString("repertoire"));
 		    	for (String file:files){
-		    		if (isvideo(file.toString()){
-				    	Map<String, String> ret =  new HashMap<String, String>();
+		    		if (isvideo(file.toString())){
 				    	if (!fichierdanslabaseepisodes(file.toString())){
+					    	Map<String, String> ret =  new HashMap<String, String>();
 					    	ret = conversionnom2episodes(file.toString());
-						if (ret.get("serie") != null && !ret.get("serie").equals(""))
-						{
-							ret.put("chemin", file.toString());	
-							listeret.add(ret);
-							System.out.println("Ep:"+ret.get("serie")+" "+ret.get("saison")+"-"+ret.get("episode")+" File:" + file.toString()); 
-						}	
+							if (ret.get("serie") != null && !ret.get("serie").equals(""))
+							{
+								ret.put("chemin", file.toString());	
+								listeret.add(ret);
+								System.out.println("Ep:"+ret.get("serie")+" "+ret.get("saison")+"-"+ret.get("episode")+" File:" + file.toString()); 
+							}	
 				    	}
 		    		}
 		    	}
@@ -512,7 +582,7 @@ public class Main
 		for (Map curr:listeret)
 		{
 			stmt.executeUpdate("UPDATE episodes "
-				 + " set chemin_complet = '" + curr.get("chemin") + "'"
+				 + " set chemin_complet = \"" + curr.get("chemin") + "\""
 				 + "   , timestamp_completer = '" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "'"
 				 + "WHERE "
 				 + " serie = '" + curr.get("serie") + "'"
@@ -520,17 +590,17 @@ public class Main
 				 + " and num_episodes = '" + curr.get("episode") + "'"				 
 				 + " ");
 			
-			String NomFichier=pathfile.substring((Math.max(curr.get("chemin").lastIndexOf('/'), curr.get("chemin").lastIndexOf('\\')))+1);
+			String NomFichier=((String) curr.get("chemin")).substring((Math.max(((String) curr.get("chemin")).lastIndexOf('/'), ((String) curr.get("chemin")).lastIndexOf('\\')))+1);
 			WordPressHome.publishOnBlog(
 				6,
 				(new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour) + "_" + NomFichier,
 				NomFichier,
-				new String[] {ret.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") },
+				new String[] {(String) curr.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") },
 				new String[] { "Serie" },
 				/*"http://home.daisy-street.fr/BibPerso/stream.php?flux="*/
 				"<a href=\""+Param.UrlduStreamerInterne
-				+ URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier + "</a>" + "\n"
-				+ getseriestathtml(serie)
+				+ URLEncoder.encode((String) curr.get("chemin"), "UTF-8") + "\">" + NomFichier + "</a>" + "\n"
+				+ getseriestathtml((String) curr.get("serie"))
 				+ "" ) ;
 		}
 	}
@@ -546,7 +616,7 @@ public class Main
 		    extension = pathfile.substring(i+1);
 		}
 		
-		return Arrays.asList(Video).contains(extension.toLowerCase();
+		return Arrays.asList(Video).contains(extension.toLowerCase());
 	}
 
 
@@ -561,10 +631,10 @@ public class Main
 		rs.last();
 		if (rs.getRow() == 0)
 		{				
-			return true;
+			return false;
 		}
 		rs.close();
-		return false ;
+		return true ;
 	}
 
 	/**
@@ -709,6 +779,8 @@ public class Main
 								 + "(nom VARCHAR(255) not NULL , "
 								 + " repertoire VARCHAR(255) , "
 								 + " date_maj_web DATE , "
+								 + " Stat_Image_Base64 TEXT , "
+								 + " Stat_Tableau TEXT , "
 								 + " PRIMARY KEY ( nom ) "
 								 + ") "
 								 + " ");
@@ -759,14 +831,12 @@ public class Main
      * @throws InterruptedException 
      * @throws JSchException 
      */
-	private static void alimentation_bdd(String[] args) throws SQLException, JSONException, IOException, NumberFormatException, ParseException, JSchException, InterruptedException
+	private static void alimentation_bdd(String[] args) throws SQLException, IOException, NumberFormatException, ParseException, JSchException, InterruptedException
 	{
 
 		FichierQR.AjouterNouvelleSerie();
 
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
-		stmt.executeUpdate("update episodes set encours = false ");
-
 
 		ResultSet rs ;
 		rs = stmt.executeQuery("SELECT series.nom , max(episodes.airdate) as MaxDate"
@@ -784,7 +854,7 @@ public class Main
 				FileBot.maj_liste_episodes(rs.getString("nom"));
 				mettredatemajserieserie(rs.getString("nom"));
 			}else{
-				if ((rs.getDate("MaxDate")).after(Param.dateJourM300))
+				if ((rs.getDate("MaxDate")).before(Param.dateJourM300))
 				{ 
 					FileBot.maj_liste_episodes(rs.getString("nom"));
 					mettredatemajserieserie(rs.getString("nom"));
@@ -796,6 +866,8 @@ public class Main
 			}
 		}
 		rs.close();
+
+		stmt.executeUpdate("update episodes set encours = false ");
 
 	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString });
 		for (TorrentStatus curr : torrents)

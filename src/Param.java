@@ -73,6 +73,12 @@ public class Param
 
 	public static boolean debug;
 
+	public static String UrlduStreamerInterne;
+
+	public static Object WordPressusername;
+	public static Object WordPresspwd;
+	public static String WordPressxmlRpcUrl;
+
 
 	public Param() 
 	{
@@ -99,7 +105,12 @@ public class Param
 		gestdownhttp = props.getProperty("gestdown.http"); 
 		gestdownusername = props.getProperty("gestdown.username"); 
 		gestdownpassword = props.getProperty("gestdown.password");
-		
+
+
+		WordPressxmlRpcUrl = props.getProperty("WordPress.xmlRpcUrl"); 
+		WordPressusername = props.getProperty("WordPress.username"); 
+		WordPresspwd = props.getProperty("WordPress.password");		
+
 		sshhost = props.getProperty("ssh.host"); 
 		sshusername = props.getProperty("ssh.username"); 
 		sshpassword = props.getProperty("ssh.password");
@@ -109,6 +120,7 @@ public class Param
 		RepertoireFilm = props.getProperty("RepertoireFilm");
 		Urlkickassusearch = props.getProperty("Urlkickassusearch");
 
+		UrlduStreamerInterne  = props.getProperty("UrlduStreamerInterne");
 		initialiser_dates();
 
 		if (debug)
@@ -345,7 +357,6 @@ public class Param
 
 	public static String eToString(Exception e)
 	{
-		System.out.println("eToString(Exception e)");
 		StringWriter sw = new StringWriter();
 		e.printStackTrace(new PrintWriter(sw));
 		return sw.toString();
@@ -474,4 +485,5 @@ public class Param
 		Param.logger.debug("OS=" + s);
 		return s; 
 	}
+	
 }

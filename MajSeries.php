@@ -23,7 +23,7 @@
 	if(isset($_POST['Update'])){
 		$clenom = $_POST['updatenom'];
 		$updaterepertoire = $_POST['updaterepertoire'];
-		$query="UPDATE series SET repertoire='$updaterepertoire' WHERE nom= '".$clenom ."'";
+		$query="UPDATE series SET repertoire=\"$updaterepertoire\" WHERE nom= \"".$clenom ."\"";
 		mysql_query($query);
 		echo mysql_error();
 	}
@@ -31,7 +31,7 @@
 	if(isset($_POST['Insert'])){
 		$clenom = $_POST['updatenom'];
 		$updaterepertoire = $_POST['updaterepertoire'];	
-		$query="INSERT INTO series (nom,repertoire) VALUES ('$clenom' , '$updaterepertoire' ) ";
+		$query="INSERT INTO series (nom,repertoire) VALUES (\"$clenom \", \"$updaterepertoire\" ) ";
 		mysql_query($query, $conn) ;
 		echo mysql_error();
 	}

@@ -4,7 +4,8 @@ import java.util.*;
 import org.apache.log4j.Logger;
 import org.apache.xmlrpc.*;
 import org.apache.xmlrpc.client.*;
-import java.io.*;
+
+
 
 /**
  *  * @author romain clement
