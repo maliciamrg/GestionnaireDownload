@@ -48,8 +48,6 @@ public class Param
 	public static Date dateJourM1;
 	public static Date dateJourM30;
 	public static Date dateJourM300;
-	
-	private static Calendar calendareDuJour;
 
 	public static int nbtelechargementseriesimultaner;
 
@@ -75,6 +73,7 @@ public class Param
 
 	public static String UrlduStreamerInterne;
 
+	public static Boolean WordPressPost;
 	public static Object WordPressusername;
 	public static Object WordPresspwd;
 	public static String WordPressxmlRpcUrl;
@@ -106,7 +105,7 @@ public class Param
 		gestdownusername = props.getProperty("gestdown.username"); 
 		gestdownpassword = props.getProperty("gestdown.password");
 
-
+		WordPressPost = Boolean.parseBoolean(props.getProperty("WordPress.addpost")); 
 		WordPressxmlRpcUrl = props.getProperty("WordPress.xmlRpcUrl"); 
 		WordPressusername = props.getProperty("WordPress.username"); 
 		WordPresspwd = props.getProperty("WordPress.password");		
@@ -130,6 +129,7 @@ public class Param
 		}
 		else
 		{
+			System.out.println(dburl + dbbase);
 			con = DriverManager.getConnection(dburl + dbbase, dbuser, dbpasswd);
 		}
 		
@@ -155,24 +155,23 @@ public class Param
 
 	public static void initialiser_dates() throws ParseException
 	{
-		calendareDuJour = Calendar.getInstance();
-		dateDuJour = calendareDuJour.getTime();
+		dateDuJour =  Calendar.getInstance().getTime();
 		dateLowValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("01/01/0001");
 		dateHighValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("31/12/2099");
 
-		Calendar usaCal = calendareDuJour;
+		Calendar usaCal = Calendar.getInstance();
 		usaCal.add(Calendar.HOUR_OF_DAY, -49);
 		dateDuJourUsa = usaCal.getTime();
 
-		Calendar JourM1 = calendareDuJour;
+		Calendar JourM1 =  Calendar.getInstance();;
 		JourM1.add(Calendar.DAY_OF_YEAR, -1);
 		dateJourM1 = JourM1.getTime();	 
 
-		Calendar JourM30 = calendareDuJour;
+		Calendar JourM30 =  Calendar.getInstance();;
 		JourM30.add(Calendar.DAY_OF_YEAR, -30);
 		dateJourM30 = JourM30.getTime();	 
 
-		Calendar JourM300 = calendareDuJour;
+		Calendar JourM300 =  Calendar.getInstance();;
 		JourM300.add(Calendar.DAY_OF_YEAR, -300);
 		dateJourM300  = JourM300.getTime();
 	}
@@ -290,8 +289,8 @@ public class Param
 			faInfo.close();
 			Thread.sleep(500);
 			logger.removeAllAppenders();
-			Thread.sleep(1000);
 		}
+		Thread.sleep(5000);
 		archiveLog(log4j_cheminComplet_info);
 		archiveLog(log4j_cheminComplet_debug);
 		archiveLog(log4j_cheminComplet_debugtransmisson);
@@ -316,9 +315,9 @@ public class Param
 		File f = new File(archive);
 		if (copyLocalFile(f, new File(workRepertoire + "Log" + Param.Fileseparator + (new SimpleDateFormat("yyyyMMdd")).format(dateDuJour).toString() + "_" + f.getName()), true))
 		{
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 			copyLocalFile(f, new File(workRepertoire + Param.Fileseparator + "last_log_" + f.getName()), false);
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 			f.delete();
 		}
 	}

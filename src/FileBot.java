@@ -93,9 +93,9 @@ public class FileBot
 				rsFilebot = stmt.executeQuery("SELECT * "
 											 + " FROM episodes "
 											 + "WHERE "
-											 + " serie = '" + serie + "'"
-											 + " and num_saison = '" + Integer.valueOf(exLineEp[1]) + "'"
-											 + " and num_episodes = '" + Integer.valueOf(exLineEp[2]) + "'"				 
+											 + " serie = \"" + serie + "\""
+											 + " and num_saison = \"" + Integer.valueOf(exLineEp[1]) + "\""
+											 + " and num_episodes = \"" + Integer.valueOf(exLineEp[2]) + "\""				 
 											 + " ");
 				rsFilebot.last();
 				String nomnettoyer = exLineEp[5].replaceAll("[^a-zA-Z0-9.-]", "_");
@@ -104,11 +104,11 @@ public class FileBot
 					stmt.executeUpdate("INSERT INTO episodes "
 							 + " ( nom , airdate , serie , num_saison , num_episodes ) VALUES " 
 							 + " ("
-							 + " '" + nomnettoyer + "' ,"
-							 + " '" + (new SimpleDateFormat("yyyy-MM-dd")).format(airDate) + "' ,"
-							 + " '" + serie + "' ,"
-							 + " '" + Integer.valueOf(exLineEp[1]) + "' ,"
-							 + " '" + Integer.valueOf(exLineEp[2]) + "' "				 
+							 + " \"" + nomnettoyer + "\" ,"
+							 + " \"" + (new SimpleDateFormat("yyyy-MM-dd")).format(airDate) + "\" ,"
+							 + " \"" + serie + "\" ,"
+							 + " \"" + Integer.valueOf(exLineEp[1]) + "\" ,"
+							 + " \"" + Integer.valueOf(exLineEp[2]) + "\" "				 
 							 + " )");
 				} else {
 					

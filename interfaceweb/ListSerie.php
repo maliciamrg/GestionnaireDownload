@@ -1,6 +1,6 @@
 <?php
 
-	$hostname = "localhost";//host name
+	$hostname = "192.168.1.120";//host name
 	$dbname = "seriedownload";//database name
 	$username = "seriedownload";//username you use to login to php my admin
 	$password = "seriedownload";//password you use to login
@@ -15,7 +15,7 @@
 <?php
 	if(isset($_POST['Delete'])){
 		$clenom = $_POST['updatenom'];
-		$query="DELETE FROM series WHERE nom= '".$clenom ."'";
+		$query="DELETE FROM series WHERE nom= \"".$clenom ."\"";
 		mysql_query($query);
 		echo mysql_error();
 	}

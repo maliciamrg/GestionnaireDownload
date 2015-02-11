@@ -54,12 +54,17 @@ public class Torrent {
 					// System.out.println(row.toString());
 
 					String strNom = row.getFirstElementByClass("cellMainLink").getTextExtractor().toString();
-					String strMagnet = row.getFirstElementByClass("imagnet icon16").getAttributeValue("href").toString();
-					String strTaille = row.getFirstElementByClass("nobr center").getTextExtractor().toString();
-					Integer seed = Integer.valueOf(retOrNull(row.getFirstElementByClass("green center").getTextExtractor().toString()));
-					
-					if (calculScore(unhumanize(retOrNull(strTaille)),seed, nbEpisodeRechercher)>0) {
-						retTorrents.add(strMagnet);
+					if ((episode==-1 && strNom.toLowerCase().contains("season")) || episode > 0 ){
+						String strMagnet = row.getFirstElementByClass("imagnet icon16").getAttributeValue("href").toString();
+						String strTaille = row.getFirstElementByClass("nobr center").getTextExtractor().toString();
+						Integer seed = Integer.valueOf(retOrNull(row.getFirstElementByClass("green center").getTextExtractor().toString()));
+						Integer score = calculScore(unhumanize(retOrNull(strTaille)),seed, nbEpisodeRechercher);
+						if (score>0) {
+							Param.logger.debug("----- taille:" + strTaille + " tailleH:"+unhumanize(retOrNull(strTaille)) + " seed:" + seed + " nbep:" + nbEpisodeRechercher + " score:" + score+ " nom:" + strNom);
+							retTorrents.add(strMagnet);
+						}else{
+							Param.logger.debug("----- Ko ----- taille:" + strTaille + " tailleH:"+unhumanize(retOrNull(strTaille)) + " seed:" + seed + " nbep:" + nbEpisodeRechercher + " score:" + score+ " nom:" + strNom);
+						}
 					}
 					// System.out.println(torrent.toString());
 				}
@@ -67,7 +72,7 @@ public class Torrent {
 			}
 		}
 
-		Param.logger.debug("torrent- retTorrents" + retTorrents);
+		//Param.logger.debug("torrent- retTorrents" + retTorrents);
 
 		return retTorrents;
 	}
@@ -122,7 +127,7 @@ public class Torrent {
 	{
 		if (nbEpisodeRechercher > 1)
 		{
-			return perfectSize / 2;
+			return (int) (perfectSize / 1.33);
 		}
 		else
 		{
@@ -186,7 +191,7 @@ public class Torrent {
 			Param.logger.error(Param.eToString(e));
 			return ret;
 		}
-		Param.logger.debug("connection.getResponseCode()=" + connection.getResponseCode());
+		//Param.logger.debug("connection.getResponseCode()=" + connection.getResponseCode());
 		// The normal input stream doesn't work in error-cases.
 		InputStream is = isError ? connection.getErrorStream() : connection.getInputStream();
 

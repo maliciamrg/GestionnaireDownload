@@ -52,7 +52,7 @@ public class Ssh {
 */
 	
 	public static boolean Fileexists(String fichier) throws JSchException, IOException, InterruptedException {
-		ArrayList<String> ret = Ssh.executeAction("stat '"+fichier+"' > /dev/null 2>&1");
+		ArrayList<String> ret = Ssh.executeAction("stat \""+fichier+"\" > /dev/null 2>&1");
 		return !ret.contains("exit-status:1");
 	}
 

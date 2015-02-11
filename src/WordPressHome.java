@@ -32,7 +32,7 @@ public class WordPressHome
 	 */
 	public static void publishOnBlog(int numBlog, String title, String Resume, String[] motcle, String[] categorie, String billet) throws XmlRpcException, MalformedURLException
 	{
-
+		Param.logger.debug("WordPressHome.publishOnBlog:"+title);
 		if (tableBlog.size() - 1 < numBlog)
 		{
 			initTableBlog();
@@ -85,6 +85,7 @@ public class WordPressHome
 		HashMap<String, HashMap> terms = getTerms(hashsite, termsValeurs);
 		for (String _ter : motcle)
 		{
+			_ter = _ter.trim();
 			String key = _ter + "." + termsValeurs;
 			if (!terms.containsKey(key))
 			{
@@ -126,7 +127,7 @@ public class WordPressHome
 				tableBlog.add(new HashMap());
 			}
 			tableBlog.set(n, _h);
-			System.out.println("blog=" + n + "-" + _h);
+			Param.logger.debug("blog=" + n + "-" + _h);
 		}
 
 
