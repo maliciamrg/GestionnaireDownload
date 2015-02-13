@@ -54,6 +54,7 @@ public class Param
 	private static String gestdownhttp;
 	private static String gestdownusername;
 	private static String gestdownpassword;
+	public static String minutesdinactivitesautorize;
 	public static TransmissionClient client;
 	
 	private static String dburl;
@@ -104,7 +105,8 @@ public class Param
 		gestdownhttp = props.getProperty("gestdown.http"); 
 		gestdownusername = props.getProperty("gestdown.username"); 
 		gestdownpassword = props.getProperty("gestdown.password");
-
+		minutesdinactivitesautorize = props.getProperty("gestdown.minutesdinactivitesautorize");
+		
 		WordPressPost = Boolean.parseBoolean(props.getProperty("WordPress.addpost")); 
 		WordPressxmlRpcUrl = props.getProperty("WordPress.xmlRpcUrl"); 
 		WordPressusername = props.getProperty("WordPress.username"); 
@@ -130,7 +132,7 @@ public class Param
 		else
 		{
 			System.out.println(dburl + dbbase);
-			con = DriverManager.getConnection(dburl + dbbase, dbuser, dbpasswd);
+			con = DriverManager.getConnection(dburl + dbbase+"?useUnicode=true&characterEncoding=utf-8", dbuser, dbpasswd);
 		}
 		
 		jsch = new JSch();
@@ -145,7 +147,8 @@ public class Param
 		 * init_alisation fichier trace
 		 */
 		initialisationTrace();
-
+		Ssh.actionexecChmodR777(workRepertoire);
+		
 		// capture stdout et stderr to log4j
 		tieSystemOutAndErrToLog();
 
@@ -189,8 +192,9 @@ public class Param
 	}
 
 
-	private static void initialisationTrace() throws IOException
+	private static void initialisationTrace() throws IOException, JSchException, InterruptedException
 	{
+		
 		log4j_cheminComplet_error = workRepertoire + "log4j_error" + ".html";
 		log4j_cheminComplet_debug = workRepertoire + "log4j_debug" + ".html";
 		log4j_cheminComplet_debugtransmisson = workRepertoire + "log4j_debugtransmisson" + ".html";
