@@ -20,12 +20,12 @@ public class FileBot
 	{
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
 		Ssh.executeAction("nice -n 19 \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -clear-cache ");
-		Ssh.executeAction(
+/*		Ssh.executeAction(
 				"nice -n 19 \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -rename \"" + pathdesfilmaranger
-				+ "\" --db TheTVDB --lang en --conflict override --encoding=UTF-8 --format "
+				+ "\" --db TheMovieDB --lang en --conflict override --encoding=UTF-8 --format "
 				+ "\"" + pathdelabibliothequesdesfilm + "/{n.replaceAll(/[:]/,\"\")} ({y})/{n.replaceAll(/[:]/,\"\")} ({y}, {director}) {vf} {af}\""
 				+ " -r -non-strict ");
-	}
+*/	}
 
 	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
 	{

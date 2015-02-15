@@ -141,7 +141,6 @@ public class Main
 		try {
 			initialisation(args);
 			initialisation_bdd(args);
-			analyserrepertoire(args);
 			alimentation_bdd(args);		  
 			transmisson(args);
 			rangerdownload(args);
@@ -726,7 +725,7 @@ public class Main
 	{
 		System.out.println("transmisson");
 		ResultSet rs = null;
-	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString ,TorrentField.files,TorrentField.name,TorrentField.percentDone,TorrentField.activityDate });
+	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString ,TorrentField.files,TorrentField.name,TorrentField.percentDone,TorrentField.activityDate ,TorrentField.eta});
 		for (TorrentStatus curr : torrents)
 		{
 			String hash = (String) curr.getField(TorrentField.hashString);
@@ -744,19 +743,6 @@ public class Main
 				}
 				else
 				{
-					if (rs.getDate("timestamp_ajout").before(Param.dateJourM1))
-					{
-						long derniereactiviteilyaminutes = ((Param.dateDuJour.getTime()/1000) - (Integer)curr.getField(TorrentField.activityDate)) ;
-						if (derniereactiviteilyaminutes > (Integer.parseInt( Param.minutesdinactivitesautorize) *60)){
-							if(rs.getString("classification")=="serie"){
-								rs.updateString("classification","effacer");
-								rs.updateRow();
-							}else{
-								FichierQR.demanderClassificationEffacer((String)curr.getField(TorrentField.name), hash);
-							}
-						}
-						
-					}
 					int nbfichierbruler;
 					switch (rs.getString("classification"))
 					{
@@ -796,19 +782,36 @@ public class Main
 									rs.updateRow();
 								}
 							}
+							if (rs.getDate("timestamp_ajout").before(Param.dateJourM1))
+							{
+								long derniereactiviteilyaminutes = ((Param.dateDuJour.getTime()/1000) - (Integer)curr.getField(TorrentField.activityDate)) ;
+								if (derniereactiviteilyaminutes > (Integer.parseInt( Param.minutesdinactivitesautorize) *60)){
+									rs.updateString("classification","effacer");
+									rs.updateRow();
+								}
+							}
+
 							break;
 						case "film": 
-							if ((double) curr.getField(TorrentField.percentDone) == 1.0)
+							if (curr.getField(TorrentField.percentDone).equals(1))
 							{
 								if (transmission.all_fichier_absent(hash))
 								{
-									transmission.supprimer_hash(hash);
-									rs.updateString("timestamp_termine", (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour));
+									rs.updateString("classification","effacer");
 									rs.updateRow();
 								}
 								else
 								{
 									transmission.deplacer_fichier(hash, Param.CheminTemporaireFilm());
+								}
+							}
+							if (rs.getDate("timestamp_ajout").before(Param.dateJourM1))
+							{
+								long derniereactiviteilyaminutes = ((Param.dateDuJour.getTime()/1000) - (Integer)curr.getField(TorrentField.activityDate)) ;
+								if (derniereactiviteilyaminutes > (Integer.parseInt( Param.minutesdinactivitesautorize) *60)){
+									rs.updateString("classification","filemaeffacer");
+									rs.updateString("nom", (String) curr.getField(TorrentField.name));
+									rs.updateRow();
 								}
 							}
 							break;
@@ -820,7 +823,8 @@ public class Main
 						case "ignorer": 
 							break;
 						case "autres": 
-							FichierQR.demanderClassification((String)curr.getField(TorrentField.name), hash);
+							rs.updateString("nom", (String) curr.getField(TorrentField.name));
+							rs.updateRow();
 							break;
 					}
 				}
@@ -913,6 +917,7 @@ public class Main
 		//Param.stmt.executeUpdate("DROP TABLE hash ");
 		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS hash "
 								 + "(hash VARCHAR(255) not NULL , "
+								 + " nom VARCHAR(255) , "
 								 + " classification  VARCHAR(255) , "
 								 + " magnet  VARCHAR(255) , "
 								 + " timestamp_ajout DATE , "

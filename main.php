@@ -22,6 +22,8 @@
 				  'listseries' => 'interfaceweb/ListSerie.php',
 				  'listeepisodes' => 'interfaceweb/ListEpisodes.php',
 				  'listhash' => 'interfaceweb/ListHash.php',
+				  'status' => 'interfaceweb/StatusAutres.php',
+				  'purge' => 'interfaceweb/ForcePurgeFilm.php',
 				  'log' => 'Log/GestionnaireDownload'.date ("Y-m-d").'.html',
                   );
 
