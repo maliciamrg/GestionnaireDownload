@@ -174,61 +174,83 @@ public class Main
 	 * @throws NumberFormatException 
 	 *
 	 */
-	private static void lancerlesprochainshash(String[] args) throws SQLException, NumberFormatException, IOException {
+	private static void lancerlesprochainshash(String[] args)
+			throws SQLException, NumberFormatException, IOException {
 		System.out.println("lancerlesprochainshash");
 		int nbserieencours = nbhashserienonterminee();
-		int nbmagnetachercher = Param.nbtelechargementseriesimultaner - nbserieencours;
-		ResultSet rs = null;
-		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
-		String sql = ("SELECT *"
-				 + " FROM episodes "
-				 + " WHERE "
-				 + "      NOT encours "
-				 + "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
-				 + "  AND airdate < \"" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "\""
-				 + " ORDER BY "
-				 + "  airdate Desc");
-		rs = stmt.executeQuery(sql);
-		while (rs.next() && nbmagnetachercher > 0)
-		{
-			rs.updateBoolean("encours", true);
-			rs.updateRow();
-			ArrayList<String> magnet=new ArrayList<String>();
-			if ((rs.getDate("airdate")).before(Param.dateJourM300) || notlastsaisonactive(rs.getString("serie"),rs.getString("num_saison"))){
-				magnet = Torrent.getMagnetFor(rs.getString("serie"),Integer.parseInt(rs.getString("num_saison")),-1,Integer.parseInt(nbepisodesaison(rs.getString("serie"),rs.getString("num_saison"))));
-				mettretoutelasaisonaencours(rs.getString("serie"),rs.getString("num_saison"));
-			}else{
-				magnet = Torrent.getMagnetFor(rs.getString("serie"),Integer.parseInt(rs.getString("num_saison")),Integer.parseInt(rs.getString("num_episodes")),1);
-			}
-			Boolean ret=false;
-			String strHash="";
-			String strMagnet="";
-			for (String  _st : magnet )
-			{
-				strMagnet = _st;
-				int debSubStr = strMagnet.indexOf("btih:") + 5;
-				int finSubStr = strMagnet.indexOf("&");
-				strHash = strMagnet.substring(debSubStr, finSubStr);
-				if(!hashdanslabasehash(strHash)){
-					ret = transmission.ajouterlemagnetatransmission(strMagnet);
-					if (ret){
-						if(!strHash.equals("")){
-							ajouterhashserie(strHash,strMagnet);
-							Param.logger.debug("Torrent Ep:"+rs.getString("serie")+" "+rs.getString("num_saison")+"-"+rs.getString("num_episodes")+" Magnet:" + strMagnet); 
-						}
-						nbmagnetachercher--;
-					}
-				}
-				break;
+		int nbmagnetachercher = Param.nbtelechargementseriesimultaner
+				- nbserieencours;
+
+		while (nbmagnetachercher > 0) {
+
+			String serie = "";
+			String saison = "";
+			ResultSet rs = null;
+			Statement stmt = Param.con
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_UPDATABLE);
+			String sql = ("SELECT serie , num_saison"
+					+ " FROM episodes "
+					+ " WHERE "
+					+ "      NOT encours "
+					+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
+					+ "  AND ( isnull(freezesearchuntil) or freezesearchuntil < \""
+					+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "\")" 
+					+ "  AND airdate < \""
+					+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "\"" 
+					+ " ORDER BY " + "  airdate Desc");
+			rs = stmt.executeQuery(sql);
+			rs.first();
+			if (rs.getRow()>0) {
+				serie = rs.getString("serie");
+				saison = rs.getString("num_saison");
 			}
 			rs.close();
-			rs = stmt.executeQuery(sql);
-			
-		}
-		rs.close();
-	}
 
-	
+			ArrayList<Integer> episodes = new ArrayList<Integer>();
+			rs = null;
+			stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			sql = ("SELECT num_episodes"
+					+ " FROM episodes "
+					+ " WHERE "
+					+ "      NOT encours "
+					+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
+					+ "  AND serie=\"" + serie + "\""
+					+ "  AND num_saison=\"" + saison + "\"" + "");
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				episodes.add(Integer.parseInt( rs.getString("num_episodes")));
+			}
+			rs.close();
+			
+			mettretoutelasaisonaencours(serie, saison);
+			
+			ArrayList<String> magnet = Torrent.getMagnetFor(serie,
+					Integer.parseInt(saison), episodes,
+					Integer.parseInt(nbepisodesaison(serie, saison)));
+
+			if (magnet.size()==0){
+				mettreenattenteepisode(serie,saison,episodes);
+			}
+			for (String strMagnet : magnet) {
+				if (transmission.ajouterlemagnetatransmission(strMagnet)) {
+					String strHash = "";
+					int debSubStr = strMagnet.indexOf("btih:") + 5;
+					int finSubStr = strMagnet.indexOf("&");
+					strHash = strMagnet.substring(debSubStr, finSubStr);
+					if (!strHash.equals("")) {
+						ajouterhashserie(strHash, strMagnet);
+						Param.logger.debug("Torrent Ep:" + serie + " " + saison
+								+ "-" + episodes.toString()
+								+ " Magnet:" + strMagnet);
+					}
+					nbmagnetachercher--;
+				}
+			}
+
+		}
+	}
 
 	private static String nbepisodesaison(String serie, String num_saison) throws SQLException {
 		ResultSet rs = null;
@@ -378,7 +400,21 @@ public class Main
 		out += "</table>";// </table></body>";
 		return out;
 	}			
-			
+	
+	private static void mettreenattenteepisode(String serie, String saison, ArrayList<Integer> episodes) throws SQLException {
+		Statement stmt = Param.con.createStatement(
+				ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("UPDATE episodes "
+				 + " set freezesearchuntil = \""
+				 + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateJourP7)
+				 + "\""
+				 + "WHERE "
+				 + " serie = \"" + serie + "\""
+				 + " and num_saison = \"" + saison + "\""			 
+				 + " and num_episodes in \"" + episodes + "\""		
+				 + " ");
+	}
+
 	private static void ajouterhashserie(String hash,String Magnet) throws SQLException {
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
 //		stmt.executeUpdate("delete from hash "
@@ -676,23 +712,7 @@ public class Main
 		rs.close();
 		return true ;
 	}
-	
-	private static boolean hashdanslabasehash(String hash) throws SQLException {
-		ResultSet rs = null;
-		Statement stmt = Param.con.createStatement();
-		rs = stmt.executeQuery("SELECT * "
-									 + " FROM hash "
-									 + " WHERE "
-									 + "      hash = \"" + hash  + "\""
-									 + "  ");
-		rs.last();
-		if (rs.getRow() == 0)
-		{				
-			return false;
-		}
-		rs.close();
-		return true ;
-	}
+
 	
 	/**
 	 *transmisson
@@ -909,6 +929,7 @@ public class Main
 								 + " encours BOOLEAN , "					
 								 + " timestamp_completer DATE , "
 								 + " chemin_complet  VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL , "
+								 + " freezesearchuntil DATE , "
 								 + " PRIMARY KEY ( serie , num_saison , num_episodes  ) , "
 								 + "         INDEX   ( airdate ) "
 								 + ") "
@@ -1023,7 +1044,7 @@ public class Main
 		Param.cloture();
 	}
 	
-	private static Map<String, String> conversionnom2episodes(String fileName) throws SQLException
+	public static Map<String, String> conversionnom2episodes(String fileName) throws SQLException
 	{
 		//Param.logger.debug("episode-" + "decomposerNom " + fileName);
 		fileName = Param.getFilePartName(fileName);

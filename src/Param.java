@@ -48,6 +48,7 @@ public class Param
 	public static Date dateJourM1;
 	public static Date dateJourM30;
 	public static Date dateJourM300;
+	public static Date dateJourP7;	
 
 	public static int nbtelechargementseriesimultaner;
 
@@ -166,6 +167,10 @@ public class Param
 		usaCal.add(Calendar.HOUR_OF_DAY, -49);
 		dateDuJourUsa = usaCal.getTime();
 
+		Calendar JourP7 =  Calendar.getInstance();;
+		JourP7.add(Calendar.DAY_OF_YEAR, +7);
+		dateJourP7 = JourP7.getTime();	 
+		
 		Calendar JourM1 =  Calendar.getInstance();;
 		JourM1.add(Calendar.DAY_OF_YEAR, -1);
 		dateJourM1 = JourM1.getTime();	 
