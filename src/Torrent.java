@@ -37,8 +37,8 @@ public class Torrent {
 
 		String strMagnet3 = "";
 		String strMagnet6 = "";
-		String[] strMagnetep3 = new String[nbEpisodeSaison];
-		String[] strMagnetep6 = new String[nbEpisodeSaison];
+		String[] strMagnetep3 = new String[(int)nbEpisodeSaison];
+		String[] strMagnetep6 = new String[(int)nbEpisodeSaison];
 		
 		String html = getDataTorrents(serie, saison, (episode.size() > 1 ? -1 : episode.get(0)));
 		if (html == null) {

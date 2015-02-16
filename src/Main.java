@@ -1,41 +1,20 @@
-import ca.benow.transmission.model.TorrentStatus;
-import ca.benow.transmission.model.TorrentStatus.TorrentField;
-
-import java.awt.image.BufferedImage;
+import ca.benow.transmission.model.*;
+import ca.benow.transmission.model.TorrentStatus.*;
+import com.jcraft.jsch.*;
 import java.io.*;
-import java.net.URLEncoder;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.*; 
-import java.nio.file.SimpleFileVisitor;
+import java.net.*;
 import java.sql.*;
-import java.sql.Date;
 import java.text.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
-
-import org.apache.xmlrpc.XmlRpcException;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.PieSectionLabelGenerator;
-import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
-import org.jfree.chart.plot.PiePlot3D;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.util.Rotation;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.jcraft.jsch.JSchException;
-import com.mysql.jdbc.Constants;
+import java.util.concurrent.*;
+import java.util.regex.*;
+import org.apache.xmlrpc.*;
+import org.jfree.chart.labels.*;
+import org.jfree.chart.plot.*;
+import org.jfree.data.general.*;
+import org.jfree.util.*;
+import org.json.*;
+import org.jfree.chart.*;
 
 
 public class Main
@@ -135,7 +114,7 @@ public class Main
 	 * @throws JSchException 
 	 *
 	 */
-	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, XmlRpcException
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		(new File("error.txt")).delete();
 		try {
@@ -185,45 +164,10 @@ public class Main
 
 			String serie = "";
 			String saison = "";
-			ResultSet rs = null;
-			Statement stmt = Param.con
-					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-							ResultSet.CONCUR_UPDATABLE);
-			String sql = ("SELECT serie , num_saison"
-					+ " FROM episodes "
-					+ " WHERE "
-					+ "      NOT encours "
-					+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
-					+ "  AND ( isnull(freezesearchuntil) or freezesearchuntil < \""
-					+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "\")" 
-					+ "  AND airdate < \""
-					+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "\"" 
-					+ " ORDER BY " + "  airdate Desc");
-			rs = stmt.executeQuery(sql);
-			rs.first();
-			if (rs.getRow()>0) {
-				serie = rs.getString("serie");
-				saison = rs.getString("num_saison");
-			}
-			rs.close();
+			recupererprochainesaisonarechercher(serie, saison);
 
-			ArrayList<Integer> episodes = new ArrayList<Integer>();
-			rs = null;
-			stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
-			sql = ("SELECT num_episodes"
-					+ " FROM episodes "
-					+ " WHERE "
-					+ "      NOT encours "
-					+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
-					+ "  AND serie=\"" + serie + "\""
-					+ "  AND num_saison=\"" + saison + "\"" + "");
-			rs = stmt.executeQuery(sql);
-			while (rs.next()) {
-				episodes.add(Integer.parseInt( rs.getString("num_episodes")));
-			}
-			rs.close();
-			
+			ArrayList<Integer> episodes = recupurerlisteepisodesarechercher(serie, saison);
+		
 			mettretoutelasaisonaencours(serie, saison);
 			
 			ArrayList<String> magnet = Torrent.getMagnetFor(serie,
@@ -250,6 +194,54 @@ public class Main
 			}
 
 		}
+	}
+
+	private static ArrayList<Integer> recupurerlisteepisodesarechercher(String serie, String saison) throws SQLException, NumberFormatException
+	{
+		ArrayList<Integer> episodes = new ArrayList<Integer>();
+		ResultSet rs = null;
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+												   ResultSet.CONCUR_UPDATABLE);
+		String sql = ("SELECT num_episodes"
+			+ " FROM episodes "
+			+ " WHERE "
+			+ "      NOT encours "
+			+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
+			+ "  AND serie=\"" + serie + "\""
+			+ "  AND num_saison=\"" + saison + "\"" + "");
+		rs = stmt.executeQuery(sql);
+		while (rs.next())
+		{
+			episodes.add(Integer.parseInt(rs.getString("num_episodes")));
+		}
+		rs.close();
+		return episodes;
+	}
+
+	private static void recupererprochainesaisonarechercher(String serie, String saison) throws SQLException
+	{
+		ResultSet rs = null;
+		Statement stmt = Param.con
+			.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							 ResultSet.CONCUR_UPDATABLE);
+		String sql = ("SELECT serie , num_saison"
+			+ " FROM episodes "
+			+ " WHERE "
+			+ "      NOT encours "
+			+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
+			+ "  AND ( isnull(freezesearchuntil) or freezesearchuntil < \""
+			+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour) + "\")" 
+			+ "  AND airdate < \""
+			+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "\"" 
+			+ " ORDER BY " + "  airdate Desc");
+		rs = stmt.executeQuery(sql);
+		rs.first();
+		if (rs.getRow() > 0)
+		{
+			serie = rs.getString("serie");
+			saison = rs.getString("num_saison");
+		}
+		rs.close();
 	}
 
 	private static String nbepisodesaison(String serie, String num_saison) throws SQLException {
@@ -354,7 +346,6 @@ public class Main
 		//File pieChart = new File( "PieChart_"+serie+".jpeg" ); 
 
 		//ChartUtilities.writeChartAsPNG( imageString , objChart , width , height );
-		
 		BufferedImage objBufferedImage=objChart.createBufferedImage(width,height);
 		ByteArrayOutputStream bas = new ByteArrayOutputStream();
 		try {
@@ -365,6 +356,7 @@ public class Main
 		byte[] byteArray=bas.toByteArray();
 	    
 		String imagestatseriehtml = "<img src='data:image/png;base64," + DatatypeConverter.printBase64Binary(byteArray) + "'>";
+		
 		mettreimagestatmajserieserie(serie,imagestatseriehtml);
 		String tableaustatseriehtml =Miseenforme(visu);
 		mettretableaustatmajserieserie(serie,tableaustatseriehtml);
