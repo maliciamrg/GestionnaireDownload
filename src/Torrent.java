@@ -102,18 +102,19 @@ public class Torrent {
 							}
 						} else{
 							Map<String, String> ret = Main.conversionnom2episodes(strNom);
-							if (ret.get("serie") != null
-									&& !ret.get("serie").equals("")
-									&& episode.contains(Integer.parseInt(ret.get("episode")))) {
-								perfectSize=perfectSize3;
-								score3 = calculScore(unhumanize(retOrNull(strTaille)), seed,1);								
-								if (score3 > 0) {
-									strMagnetep3[Integer.parseInt(ret.get("episode"))-1] = strMagnet;
-								}
-								perfectSize=perfectSize6;
-								score6 = calculScore(unhumanize(retOrNull(strTaille)), seed,1);								
-								if (score6 > 0) {
-									strMagnetep6[Integer.parseInt(ret.get("episode"))-1] = strMagnet;
+							if (ret.get("serie") != null && ret.get("episode") != null
+									&& !ret.get("serie").equals("")){	
+								if (episode.contains(Integer.parseInt(ret.get("episode")))) {
+									perfectSize=perfectSize3;
+									score3 = calculScore(unhumanize(retOrNull(strTaille)), seed,1);								
+									if (score3 > 0) {
+										strMagnetep3[Integer.parseInt(ret.get("episode"))-1] = strMagnet;
+									}
+									perfectSize=perfectSize6;
+									score6 = calculScore(unhumanize(retOrNull(strTaille)), seed,1);								
+									if (score6 > 0) {
+										strMagnetep6[Integer.parseInt(ret.get("episode"))-1] = strMagnet;
+									}
 								}
 							}
 						}
@@ -161,7 +162,7 @@ public class Torrent {
 			if(strMagnet6!=""){
 				retTorrents.add(strMagnet6);
 			}else{
-				for (int i = 0;i<nbEpisodeSaison-1;i++){
+				for (int i = 0;i<nbEpisodeSaison;i++){
 					if(strMagnetep3[i]!=null){
 						retTorrents.add(strMagnetep3[i]);
 					}else{			

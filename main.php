@@ -24,7 +24,7 @@
 				  'listhash' => 'interfaceweb/ListHash.php',
 				  'status' => 'interfaceweb/StatusAutres.php',
 				  'purge' => 'interfaceweb/ForcePurgeFilm.php',
-				  'log' => 'Log/GestionnaireDownload'.date ("Y-m-d").'.html',
+				  'log' => 'Log/GestionnaireDownload-'.date ("Y-m-d").'.html',
                   );
 
   // On teste que le paramètre d'url existe et qu'il est bien autorisé

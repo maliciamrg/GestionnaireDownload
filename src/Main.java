@@ -1,6 +1,9 @@
 import ca.benow.transmission.model.*;
 import ca.benow.transmission.model.TorrentStatus.*;
+
 import com.jcraft.jsch.*;
+
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.sql.*;
@@ -8,6 +11,10 @@ import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.*;
+
+import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.xmlrpc.*;
 import org.jfree.chart.labels.*;
 import org.jfree.chart.plot.*;
@@ -114,7 +121,7 @@ public class Main
 	 * @throws JSchException 
 	 *
 	 */
-	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, XmlRpcException
 	{
 		(new File("error.txt")).delete();
 		try {
@@ -164,9 +171,13 @@ public class Main
 
 			String serie = "";
 			String saison = "";
-			recupererprochainesaisonarechercher(serie, saison);
+			Map<String, String> ret = recupererprochainesaisonarechercher();
 
-			ArrayList<Integer> episodes = recupurerlisteepisodesarechercher(serie, saison);
+			serie=ret.get("serie");
+			saison=ret.get("saison");
+			if (serie=="" || saison =="") {break;}
+			
+			ArrayList<Integer> episodes = recupurerlisteepisodesarechercher(ret.get("serie"), ret.get("saison"));
 		
 			mettretoutelasaisonaencours(serie, saison);
 			
@@ -218,8 +229,9 @@ public class Main
 		return episodes;
 	}
 
-	private static void recupererprochainesaisonarechercher(String serie, String saison) throws SQLException
+	private static Map<String, String> recupererprochainesaisonarechercher() throws SQLException
 	{
+		Map<String, String> ret = new HashMap<String, String>();
 		ResultSet rs = null;
 		Statement stmt = Param.con
 			.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -238,10 +250,14 @@ public class Main
 		rs.first();
 		if (rs.getRow() > 0)
 		{
-			serie = rs.getString("serie");
-			saison = rs.getString("num_saison");
+			ret.put("serie",  rs.getString("serie"));
+			ret.put("saison", rs.getString("num_saison"));
+		} else{
+			ret.put("serie",  "");
+			ret.put("saison", "");	
 		}
 		rs.close();
+		return ret;
 	}
 
 	private static String nbepisodesaison(String serie, String num_saison) throws SQLException {
@@ -396,6 +412,7 @@ public class Main
 	private static void mettreenattenteepisode(String serie, String saison, ArrayList<Integer> episodes) throws SQLException {
 		Statement stmt = Param.con.createStatement(
 				ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		String clausein = episodes.toString();
 		stmt.executeUpdate("UPDATE episodes "
 				 + " set freezesearchuntil = \""
 				 + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateJourP7)
@@ -403,7 +420,7 @@ public class Main
 				 + "WHERE "
 				 + " serie = \"" + serie + "\""
 				 + " and num_saison = \"" + saison + "\""			 
-				 + " and num_episodes in \"" + episodes + "\""		
+				 + " and num_episodes in (" +clausein.substring(1, clausein.length()-1) + ")"		
 				 + " ");
 	}
 

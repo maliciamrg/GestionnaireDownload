@@ -6,10 +6,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.jcraft.jsch.JSchException;
+
+
+
+
 
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
