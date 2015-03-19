@@ -21,20 +21,18 @@ public class FileBot
 	public static void rangerfilm(String pathdesfilmaranger, String pathdelabibliothequesdesfilm) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
-		Ssh.executeAction("nice -n 19 \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -clear-cache ");
-/*		Ssh.executeAction(
-				"nice -n 19 \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -rename \"" + pathdesfilmaranger
+		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
+		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdesfilmaranger
 				+ "\" --db TheMovieDB --lang en --conflict override --encoding=UTF-8 --format "
 				+ "\"" + pathdelabibliothequesdesfilm + "/{n.replaceAll(/[:]/,\"\")} ({y})/{n.replaceAll(/[:]/,\"\")} ({y}, {director}) {vf} {af}\""
 				+ " -r -non-strict ");
-*/	}
+	}
 
 	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
-		Ssh.executeAction("nice -n 19 \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -clear-cache ");
-		Ssh.executeAction(
-				"nice -n 19 \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -rename \"" + pathdelaseriearanger
+		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
+		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdelaseriearanger
 				+ "\" --db TheTVDB --lang en --conflict override --encoding=UTF-8 --format "
 				+ "\"" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\""
 				+ " -r -non-strict ");
@@ -45,7 +43,7 @@ public class FileBot
 	{
 		ArrayList<String> ret = new ArrayList<String>(0);
 	
-		ret = Ssh.executeAction("nice -n 19  \"/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh\" -list --db TheTVDB --q \"" + serie
+		ret = Ssh.executeAction(Param.filebotlaunchechaine + " -list --db TheTVDB --q \"" + serie
 							 + "\" --format '{n}#{s}#{e}#{absolute}#{airdate}#{t}#' ");
 
 		/**

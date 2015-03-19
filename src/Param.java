@@ -19,6 +19,32 @@ import java.net.*;
 
 public class Param 
 {
+	/*
+	 * "projet.properties"
+environement=prod
+db.url=jdbc:mysql://home.daisy-street.fr:3306/
+db.user=seriedownload
+db.passwd=seriedownload
+db.base=seriedownload
+gestdown.http=home.daisy-street.fr:9091/transmission/rpc/
+gestdown.username=admin
+gestdown.passwordadmin
+gestdown.minutesdinactivitesautorize=5
+WordPress.addpost=True
+WordPress.xmlRpcUrl=http://www.daisy-street.fr/wordpress/homebox/rpc
+WordPress.username=seriedownload
+WordPress.password=seriedownload
+ssh.host=192.168.1.100
+ssh.username=david
+ssh.password=haller
+nbtelechargementseriesimultaner=5
+CheminTemporaire=\\media\\videoclub\\unloading_dock\\
+RepertoireFilm=
+Urlkickassusearch=https://kickass.to/usearch/
+UrlduStreamerInterne=
+filebotlaunchechaine=filebot 
+'filebotlaunchechaine=nice -n 19  "/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh"
+	 */
 	public static String Fileseparator = "/";
 	
 	private static String CheminTemporaire;
@@ -80,6 +106,7 @@ public class Param
 	public static Object WordPresspwd;
 	public static String WordPressxmlRpcUrl;
 
+	public static String filebotlaunchechaine;
 
 	public Param() 
 	{
@@ -122,6 +149,8 @@ public class Param
 		RepertoireFilm = props.getProperty("RepertoireFilm");
 		Urlkickassusearch = props.getProperty("Urlkickassusearch");
 
+		filebotlaunchechaine = props.getProperty("filebotlaunchechaine");
+		
 		UrlduStreamerInterne  = props.getProperty("UrlduStreamerInterne");
 		initialiser_dates();
 
@@ -142,7 +171,9 @@ public class Param
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
-		session.connect();
+		if (!sshhost.equals("")){
+			session.connect();
+		}
 		
 		/**
 		 * init_alisation fichier trace
@@ -419,7 +450,7 @@ public class Param
 			{
 				boolean isError = true;
 
-				URL url = new URL("http://" + gestdownusername + ":" + gestdownpassword + "@" + gestdownhttp + "");
+				URL url = new URL("http://" +  gestdownusername + ":" + gestdownpassword + "@" +  gestdownhttp + "");
 
 				/*
 				 * url = new URL("http://" + this.username + ":" + this.password

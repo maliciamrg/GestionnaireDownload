@@ -127,7 +127,8 @@ public class Main
 		try {
 			initialisation(args);
 			initialisation_bdd(args);
-			alimentation_bdd(args);		  
+			alimentation_bdd(args);	
+			FileBot.rangerserie("/media/videoclub/anime/Detective Conan/","/media/videoclub/anime");
 			transmisson(args);
 			rangerdownload(args);
 			purgerrepertioiredetravail(args);

@@ -1,14 +1,12 @@
 <?php
+	// Analyse sans sections
+	$config_array = parse_ini_file("config.ini");
 
-	$hostname = "192.168.1.120";//host name
-	$dbname = "seriedownload";//database name
-	$username = "seriedownload";//username you use to login to php my admin
-	$password = "seriedownload";//password you use to login
 	
 	//CONNECTION OBJECT
 	//This Keeps the Connection to the Databade
-	$conn =  mysql_connect($hostname, $username, $password) or die('Can not connect to database')	;
-	mysql_select_db($dbname, $conn);	
+	$conn =  mysql_connect($config_array[hostname], $config_array[username], $config_array[password]) or die('Can not connect to database')	;
+	mysql_select_db($config_array[dbname], $conn);	
 
 ?>
 

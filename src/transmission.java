@@ -7,13 +7,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.jcraft.jsch.JSchException;
-
 import ca.benow.transmission.AddTorrentParameters;
 import ca.benow.transmission.SetTorrentParameters;
 import ca.benow.transmission.model.AddedTorrentInfo;
 import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
+
+import com.jcraft.jsch.JSchException;
 
 
 public class transmission {
