@@ -1,11 +1,9 @@
 # Applicatif
-*.properties
-*.html
 *.txt
 Log/
-lib/
 bin/
 _old/
+log*
 
 # AndroidIDE
 *.dex
