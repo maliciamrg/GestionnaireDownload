@@ -60,9 +60,13 @@ public class Ssh {
 		if (Fileexists(src)){
 			if (!Fileexists(dest)){
 				Ssh.executeAction("mkdir -p \"" + dest.substring(0,dest.lastIndexOf("/")) + "\"");
+			} else {
+				Ssh.executeAction("rm -R '"+dest+"'");
 			}
-			Ssh.executeAction("cp -r '"+src+"'* \"" + dest + "\"");
-			Ssh.executeAction("rm -R '"+src+"'");
+			/*Ssh.executeAction("cp -r '"+src+"'* \"" + dest + "\"");*/
+			/*Ssh.executeAction("rm -R '"+src+"'");*/
+			Ssh.executeAction("mv  \""+src+"\" \"" + dest + "\"");
+
 		}
 	}
 

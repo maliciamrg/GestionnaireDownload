@@ -121,6 +121,7 @@ public class Main
 	 * @throws JSchException 
 	 *
 	 */
+
 	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, XmlRpcException
 	{
 		(new File("error.txt")).delete();
@@ -128,12 +129,16 @@ public class Main
 			initialisation(args);
 			initialisation_bdd(args);
 			alimentation_bdd(args);	
-			FileBot.rangerserie("/media/videoclub/anime/Detective Conan/","/media/videoclub/anime");
-			transmisson(args);
-			rangerdownload(args);
-			purgerrepertioiredetravail(args);
-			analyserrepertoire(args);
-			lancerlesprochainshash(args);
+			if (Param.analyserrepertoire){
+				Param.WordPressPost = false;
+				analyserrepertoire(args);				
+			} else{
+				transmisson(args);
+				rangerdownload(args);
+				purgerrepertioiredetravail(args);
+				analyserrepertoire(args);
+				lancerlesprochainshash(args);	
+			}
 			cloture(args);
 		} catch (IOException | ParseException | SQLException | JSchException | InterruptedException e) {
 			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
@@ -600,7 +605,9 @@ public class Main
 		while (rs.next())
 		{
 	    	getseriestathtml(rs.getString("nom"));
+	    	Param.logger.debug(rs.getString("nom"));
 		    if ((Ssh.Fileexists(rs.getString("repertoire")))){
+		    	Param.logger.debug("   " + rs.getString("repertoire"));
 		    	ArrayList<String> files = Ssh.getRemoteFileList(rs.getString("repertoire"));
 		    	for (String file:files){
 		    		if (isvideo(file.toString())){

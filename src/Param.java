@@ -98,7 +98,8 @@ filebotlaunchechaine=filebot
 
 
 	public static boolean debug;
-
+	public static boolean analyserrepertoire;
+	
 	public static String UrlduStreamerInterne;
 
 	public static Boolean WordPressPost;
@@ -124,6 +125,8 @@ filebotlaunchechaine=filebot
 		System.out.println("environement=." + props.getProperty("environement") + ".");
 
 		debug = (props.getProperty("environement").equals("debug")) ?true: false; 
+		
+		analyserrepertoire = (props.getProperty("environement").equals("analyserrepertoire")) ?true: false; 
 
 		dburl = props.getProperty("db.url"); 
 		dbuser = props.getProperty("db.user"); 
