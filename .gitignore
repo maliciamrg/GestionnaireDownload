@@ -3,7 +3,8 @@
 Log/
 bin/
 _old/
-log*
+log*.html
+log*.txt
 
 # AndroidIDE
 *.dex
