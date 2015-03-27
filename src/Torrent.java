@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2015 by Malicia All rights reserved.
+ * 
+ * 26 mars 2015
+ * 
+ * 
+ */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,25 +27,54 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Torrent.
+ */
 public class Torrent {
 
 
+	/** The perfect size3. */
 	private static int perfectSize3 = 330;
+	
+	/** The perfect size6. */
 	private static int perfectSize6 = 660;
+	
+	/** The good for leech. */
 	private static int goodForLeech = 2000;
+	
+	/** The seuil pts. */
 	private static int seuilPts = 4000;
+	
+	/** The perfect size. */
 	public static int perfectSize;
 	
+	/**
+	 * Instantiates a new torrent.
+	 */
 	public Torrent() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	/**
+	 * Gets the magnet for.
+	 *
+	 * @param serie the serie
+	 * @param saison the saison
+	 * @param episode the episode
+	 * @param nbEpisodeSaison the nb episode saison
+	 * @return the magnet for
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws NumberFormatException the number format exception
+	 * @throws SQLException the SQL exception
+	 */
 	static ArrayList<String> getMagnetFor(String serie, Integer saison, ArrayList<Integer> episode,Integer nbEpisodeSaison) throws IOException, NumberFormatException, SQLException {
 		ArrayList<String> retTorrents = new ArrayList<String>(0);
 
 		String strMagnet3 = "";
 		String strMagnet6 = "";
-		String[] strMagnetep3 = new String[(int)nbEpisodeSaison];
-		String[] strMagnetep6 = new String[(int)nbEpisodeSaison];
+		String[] strMagnetep3 = new String[nbEpisodeSaison];
+		String[] strMagnetep6 = new String[nbEpisodeSaison];
 		
 		String html = getDataTorrents(serie, saison, (episode.size() > 1 ? -1 : episode.get(0)));
 		if (html == null) {
@@ -102,7 +138,8 @@ public class Torrent {
 							}
 						} else{
 							Map<String, String> ret = Main.conversionnom2episodes(strNom);
-							if (ret.get("serie") != null && ret.get("episode") != null
+							if (!ret.get("episode").equals("000")
+									&& !ret.get("saison").equals("000")
 									&& !ret.get("serie").equals("")){	
 								if (episode.contains(Integer.parseInt(ret.get("episode")))) {
 									perfectSize=perfectSize3;
@@ -179,6 +216,13 @@ public class Torrent {
 	}
 	
 	
+	/**
+	 * Hashdanslabasehash.
+	 *
+	 * @param hash the hash
+	 * @return true, if successful
+	 * @throws SQLException the SQL exception
+	 */
 	private static boolean hashdanslabasehash(String hash) throws SQLException {
 		ResultSet rs = null;
 		Statement stmt = Param.con.createStatement();
@@ -196,6 +240,12 @@ public class Torrent {
 		return true ;
 	}
 	
+	/**
+	 * Unhumanize.
+	 *
+	 * @param text the text
+	 * @return the double
+	 */
 	private static Double unhumanize(String text)
 	{
 
@@ -207,12 +257,19 @@ public class Torrent {
 		{
 			Double partieEntier = Double.valueOf(m.group(1).toString());
 			Integer facteur = Arrays.asList(power).indexOf(m.group(2)) + 1;
-			return (Double) (partieEntier * Math.pow(1024, facteur));
+			return partieEntier * Math.pow(1024, facteur);
 		}
 
 		return Double.parseDouble("0");
 
 	}
+	
+	/**
+	 * Ret or null.
+	 *
+	 * @param str the str
+	 * @return the string
+	 */
 	public static String retOrNull(String str)
 	{
 		if (str == null)
@@ -224,6 +281,14 @@ public class Torrent {
 	/*
 	 * calcul le score du torrents afiein de prioriser les torrents
 	 */
+	/**
+	 * Calcul score.
+	 *
+	 * @param taille the taille
+	 * @param seed the seed
+	 * @param nbEpisodeRechercher the nb episode rechercher
+	 * @return the integer
+	 */
 	public static Integer calculScore(Double taille, Integer seed, Integer nbEpisodeRechercher)
 	{
 		seed = seed;
@@ -233,7 +298,7 @@ public class Torrent {
 		if (nbEpisodeRechercher == 0)
 		{nbEpisodeRechercher = 1;}
 	//	System.out.println((getPerfectSize(nbEpisodeRechercher)));
-		double ecartTaille = (-1 * Math.abs((getPerfectSize(nbEpisodeRechercher) * nbEpisodeRechercher) - (taille / 1024 / 1024))) / (double) (getPerfectSize(nbEpisodeRechercher) * nbEpisodeRechercher);
+		double ecartTaille = (-1 * Math.abs((getPerfectSize(nbEpisodeRechercher) * nbEpisodeRechercher) - (taille / 1024 / 1024))) / (getPerfectSize(nbEpisodeRechercher) * nbEpisodeRechercher);
 		int ecartSeedBrut = -(seed - goodForLeech);
 		double ecartSeed = -((ecartSeedBrut + Math.abs(ecartSeedBrut)) / 2) / (double) goodForLeech;
 		int importanceSeed = (30 / nbEpisodeRechercher);
@@ -242,6 +307,13 @@ public class Torrent {
 	//	System.out.println("score="+this.score);
 	//	System.out.println(scoreToString());
 	}
+	
+	/**
+	 * Gets the perfect size.
+	 *
+	 * @param nbEpisodeRechercher the nb episode rechercher
+	 * @return the perfect size
+	 */
 	public static int getPerfectSize(Integer nbEpisodeRechercher)
 	{
 		if (nbEpisodeRechercher > 1)
@@ -253,6 +325,16 @@ public class Torrent {
 			return perfectSize;
 		}
 	}	
+	
+	/**
+	 * Gets the data torrents.
+	 *
+	 * @param nomSerie the nom serie
+	 * @param numSaison the num saison
+	 * @param numEpisode the num episode
+	 * @return the data torrents
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static String getDataTorrents(String nomSerie, Integer numSaison,Integer numEpisode) throws IOException
 	{
 		String[] listUrlPossible = new String[1];
@@ -286,6 +368,13 @@ public class Torrent {
 	}
 	
 	
+	/**
+	 * Valide_url.
+	 *
+	 * @param url the url
+	 * @return the string[]
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static String[] valide_url(String url) throws IOException {
 
 		String[] ret = new String[3];

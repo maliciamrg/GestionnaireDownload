@@ -1,23 +1,44 @@
-import java.net.*;
-import java.util.*;
+/*
+ * Copyright (c) 2015 by Malicia All rights reserved.
+ * 
+ * 26 mars 2015
+ * 
+ * 
+ */
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlrpc.*;
-import org.apache.xmlrpc.client.*;
+import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 
 
+// TODO: Auto-generated Javadoc
 /**
- *  * @author romain clement
+ *  * @author romain clement.
  */
 public class WordPressHome
 {
+	
+	/** The Constant logger. */
 	private final static Logger logger = Logger.getLogger(WordPressHome.class);
 //	private static String username = "mobile";	
 // 	private static String pwd = "mobile";
 //	private static String xmlRpcUrl = "http://www.daisy-street.fr/wordpress/xmlrpc";
-	private static ArrayList<HashMap> tableBlog = new ArrayList();
+	/** The table blog. */
+private static ArrayList<HashMap> tableBlog = new ArrayList();
 
+	/**
+	 * Gets the table blog.
+	 *
+	 * @return the table blog
+	 * @throws XmlRpcException the xml rpc exception
+	 * @throws MalformedURLException the malformed url exception
+	 */
 	public static ArrayList<HashMap> getTableBlog() throws XmlRpcException, MalformedURLException
 	{
 		if (tableBlog.size() - 1 < 1)
@@ -29,6 +50,15 @@ public class WordPressHome
 
 	/**
 	 *      * Publishes the given posts on the blog.      
+	 *
+	 * @param numBlog the num blog
+	 * @param title the title
+	 * @param Resume the resume
+	 * @param motcle the motcle
+	 * @param categorie the categorie
+	 * @param billet the billet
+	 * @throws XmlRpcException the xml rpc exception
+	 * @throws MalformedURLException the malformed url exception
 	 */
 	public static void publishOnBlog(int numBlog, String title, String Resume, String[] motcle, String[] categorie, String billet) throws XmlRpcException, MalformedURLException
 	{
@@ -79,6 +109,16 @@ public class WordPressHome
 
 	}
 
+	/**
+	 * Convert terms.
+	 *
+	 * @param hashsite the hashsite
+	 * @param termsValeurs the terms valeurs
+	 * @param motcle the motcle
+	 * @return the integer[]
+	 * @throws MalformedURLException the malformed url exception
+	 * @throws XmlRpcException the xml rpc exception
+	 */
 	private static Integer[] convertTerms(HashMap hashsite, String termsValeurs, String[] motcle) throws MalformedURLException, XmlRpcException
 	{
 		ArrayList<Integer> retId = new ArrayList<Integer>();
@@ -104,6 +144,9 @@ public class WordPressHome
 
 	/**
 	 *      * Publishes the given posts on the blog.      
+	 *
+	 * @throws MalformedURLException the malformed url exception
+	 * @throws XmlRpcException the xml rpc exception
 	 */
 	private static void initTableBlog() throws MalformedURLException, XmlRpcException
 	{
@@ -135,6 +178,12 @@ public class WordPressHome
 
 	/**
 	 *      * Publishes the given posts on the blog.      
+	 *
+	 * @param hashsite the hashsite
+	 * @param termsValeurs the terms valeurs
+	 * @return the terms
+	 * @throws MalformedURLException the malformed url exception
+	 * @throws XmlRpcException the xml rpc exception
 	 */
 	private static HashMap<String, HashMap> getTerms(HashMap hashsite, String termsValeurs) throws MalformedURLException, XmlRpcException
 	{
@@ -159,6 +208,16 @@ public class WordPressHome
 		return terms;
 	}
 
+	/**
+	 * New term.
+	 *
+	 * @param hashsite the hashsite
+	 * @param termsValeurs the terms valeurs
+	 * @param _ter the _ter
+	 * @return the hash map
+	 * @throws MalformedURLException the malformed url exception
+	 * @throws XmlRpcException the xml rpc exception
+	 */
 	private static HashMap newTerm(HashMap hashsite, String termsValeurs, String _ter) throws MalformedURLException, XmlRpcException
 	{
 		HashMap ret = new HashMap();

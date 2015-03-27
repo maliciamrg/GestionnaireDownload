@@ -1,4 +1,10 @@
-import java.io.File;
+/*
+ * Copyright (c) 2015 by Malicia All rights reserved.
+ * 
+ * 26 mars 2015
+ * 
+ * 
+ */
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +22,58 @@ import ca.benow.transmission.model.TorrentStatus.TorrentField;
 import com.jcraft.jsch.JSchException;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class transmission.
+ */
 public class transmission {
 
+	/**
+	 * Instantiates a new transmission.
+	 */
 	public transmission() {
 	}
-
+	
+	/**
+	 * Listhash transmission.
+	 *
+	 * @return the array list
+	 * @throws JSONException the JSON exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static ArrayList<String> listhashTransmission() throws JSONException, IOException { 
+		ArrayList<String> ret = new ArrayList<String>();
+	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString });
+		for (TorrentStatus curr : torrents)
+		{
+			String hash = (String) curr.getField(TorrentField.hashString);
+			ret.add(hash);
+		}
+		return ret;
+	}
+	
+	/**
+	 * Supprimer_hash.
+	 *
+	 * @param hash the hash
+	 * @throws JSONException the JSON exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static void supprimer_hash(String hash) throws JSONException, IOException {
 		int torrentId = torrentIdOfHash(hash);
 		Param.client.removeTorrents(new Object[] { torrentId }, true);
 	}
 
+	/**
+	 * All_fichier_absent.
+	 *
+	 * @param hash the hash
+	 * @return true, if successful
+	 * @throws JSONException the JSON exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JSchException the j sch exception
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static boolean all_fichier_absent(String hash) throws JSONException, IOException, JSchException, InterruptedException {
 		int torrentId = torrentIdOfHash(hash);
 		List<TorrentStatus> torrents =  Param.client.getTorrents( new int[] {torrentId}, TorrentField.downloadDir ,TorrentField.files);
@@ -48,6 +96,16 @@ public class transmission {
 		return false;
 	}
 
+	/**
+	 * Deplacer_fichier.
+	 *
+	 * @param hash the hash
+	 * @param cheminTemporaire the chemin temporaire
+	 * @throws JSONException the JSON exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 * @throws JSchException the j sch exception
+	 */
 	public static void deplacer_fichier(String hash, String cheminTemporaire) throws JSONException, IOException, InterruptedException, JSchException {
 		int torrentId = torrentIdOfHash(hash);
 		List<TorrentStatus> torrents =  Param.client.getTorrents( new int[] {torrentId}, TorrentField.downloadDir ,TorrentField.files);
@@ -67,6 +125,12 @@ public class transmission {
 		}
 	}
 
+	/**
+	 * Ajouterlemagnetatransmission.
+	 *
+	 * @param magnet the magnet
+	 * @return the boolean
+	 */
 	public static Boolean ajouterlemagnetatransmission(String magnet) {
 
 		AddTorrentParameters paramTorrent = new AddTorrentParameters(magnet);
@@ -78,7 +142,7 @@ public class transmission {
 		{
 			ret = Param.client.addTorrent(paramTorrent);
 		}
-		catch (JSONException | IOException e)
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -87,7 +151,12 @@ public class transmission {
 	}
 	
 	/**
-	 * cancelle un des fichier du torrent
+	 * cancelle un des fichier du torrent.
+	 *
+	 * @param hashTransmisionTorrents the hash transmision torrents
+	 * @param indiceOfFile the indice of file
+	 * @throws JSONException the JSON exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void cancelFilenameOfTorrent(String hashTransmisionTorrents, int indiceOfFile) throws JSONException, IOException
 	{
@@ -103,6 +172,14 @@ public class transmission {
 
 	}
 
+	/**
+	 * Torrent id of hash.
+	 *
+	 * @param hash the hash
+	 * @return the int
+	 * @throws JSONException the JSON exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private static int torrentIdOfHash(String hash) throws JSONException, IOException
 	{
 		List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.id, TorrentField.hashString });
@@ -118,6 +195,17 @@ public class transmission {
 	}
 
 
+	/**
+	 * Deplacer_fichier.
+	 *
+	 * @param hash the hash
+	 * @param cheminTemporaire the chemin temporaire
+	 * @param numfichiertransmission the numfichiertransmission
+	 * @throws JSONException the JSON exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 * @throws JSchException the j sch exception
+	 */
 	public static void deplacer_fichier(String hash, String cheminTemporaire, int numfichiertransmission) throws JSONException, IOException, InterruptedException, JSchException {
 		int torrentId = torrentIdOfHash(hash);
 		List<TorrentStatus> torrents =  Param.client.getTorrents( new int[] {torrentId}, TorrentField.downloadDir ,TorrentField.files);

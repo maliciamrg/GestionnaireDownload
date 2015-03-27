@@ -21,6 +21,7 @@
 				  'addserie' => 'interfaceweb/MajSeries.php',
 				  'listseries' => 'interfaceweb/ListSerie.php',
 				  'listeepisodes' => 'interfaceweb/ListEpisodes.php',
+				  'listhashnontermine' => 'interfaceweb/listhashnontermine.php',
 				  'listhash' => 'interfaceweb/ListHash.php',
 				  'status' => 'interfaceweb/StatusAutres.php',
 				  'purge' => 'interfaceweb/ForcePurgeFilm.php',

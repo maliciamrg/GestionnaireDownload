@@ -1,22 +1,51 @@
-import java.io.*;
-import java.nio.channels.*;
-import java.sql.*;
-import java.text.*;
-import java.util.*;
+/*
+ * Copyright (c) 2015 by Malicia All rights reserved.
+ * 
+ * 26 mars 2015
+ * 
+ * 
+ */
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.channels.FileChannel;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Properties;
 
-import org.apache.log4j.*;
-import org.apache.log4j.varia.*;
+import org.apache.log4j.Appender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.varia.DenyAllFilter;
+import org.apache.log4j.varia.LevelMatchFilter;
+import org.apache.log4j.varia.StringMatchFilter;
+
+import ca.benow.transmission.TransmissionClient;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import java.util.Date;
-
-import ca.benow.transmission.*;
-
-import java.net.*;
-
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Param.
+ */
 public class Param 
 {
 	/*
@@ -45,74 +74,165 @@ UrlduStreamerInterne=
 filebotlaunchechaine=filebot 
 'filebotlaunchechaine=nice -n 19  "/mnt/HD/HD_a2/ffp/opt/share/filebot/bin/filebot.sh"
 	 */
+	/** The Fileseparator. */
 	public static String Fileseparator = "/";
 	
+	/** The Chemin temporaire. */
 	private static String CheminTemporaire;
 
+	/** The Urlkickassusearch. */
 	public static String Urlkickassusearch;
 
+	/** The logger. */
 	public static Logger logger;
 
+	/** The work repertoire. */
 	public static String workRepertoire;
+	
+	/** The Repertoire film. */
 	public static String RepertoireFilm;
 
+	/** The log4j_chemin complet_error. */
 	private static String log4j_cheminComplet_error;
+	
+	/** The log4j_chemin complet_debug. */
 	private static String log4j_cheminComplet_debug;
+	
+	/** The log4j_chemin complet_debugtransmisson. */
 	private static String log4j_cheminComplet_debugtransmisson;
+	
+	/** The log4j_chemin complet_info. */
 	private static String log4j_cheminComplet_info;
+	
+	/** The log4j_chemin complet_warn. */
 	private static String log4j_cheminComplet_warn;
+	
+	/** The fa master. */
 	private static FileAppender faMaster;
+	
+	/** The fa debug. */
 	private static FileAppender faDebug;
+	
+	/** The fa debugtrans. */
 	private static FileAppender faDebugtrans;
+	
+	/** The fa warn. */
 	private static FileAppender faWarn;
+	
+	/** The fa info. */
 	private static FileAppender faInfo;
 
+	/** The date low value. */
 	public static Date dateLowValue;
+	
+	/** The date high value. */
 	public static Date dateHighValue;
-	public static Date dateDuJour;
+	
+	/** The date du jour usa. */
 	public static Date dateDuJourUsa;
+	
+	/** The date jour m1. */
 	public static Date dateJourM1;
+	
+	/** The date jour m30. */
 	public static Date dateJourM30;
+	
+	/** The date jour m300. */
 	public static Date dateJourM300;
+	
+	/** The date jour p7. */
 	public static Date dateJourP7;	
 
+	/** The nbtelechargementseriesimultaner. */
 	public static int nbtelechargementseriesimultaner;
 
+	/** The gestdownhttp. */
 	private static String gestdownhttp;
+	
+	/** The gestdownusername. */
 	private static String gestdownusername;
+	
+	/** The gestdownpassword. */
 	private static String gestdownpassword;
+	
+	/** The minutesdinactivitesautorize. */
 	public static String minutesdinactivitesautorize;
+	
+	/** The client. */
 	public static TransmissionClient client;
 	
+	/** The dburl. */
 	private static String dburl;
+	
+	/** The dbuser. */
 	private static String dbuser;
+	
+	/** The dbpasswd. */
 	private static String dbpasswd;
+	
+	/** The dbbase. */
 	private static String dbbase;
+	
+	/** The con. */
 	public static Connection con;
 	
+	/** The sshhost. */
 	private static String sshhost;
+	
+	/** The sshusername. */
 	private static String sshusername;
+	
+	/** The sshpassword. */
 	private static String sshpassword;
+	
+	/** The jsch. */
 	private static JSch jsch;
+	
+	/** The session. */
 	public static Session session;
 
 
+	/** The debug. */
 	public static boolean debug;
+	
+	/** The analyserrepertoire. */
 	public static boolean analyserrepertoire;
 	
+	/** The Urldu streamer interne. */
 	public static String UrlduStreamerInterne;
 
+	/** The Word press post. */
 	public static Boolean WordPressPost;
+	
+	/** The Word pressusername. */
 	public static Object WordPressusername;
+	
+	/** The Word presspwd. */
 	public static Object WordPresspwd;
+	
+	/** The Word pressxml rpc url. */
 	public static String WordPressxmlRpcUrl;
 
+	/** The filebotlaunchechaine. */
 	public static String filebotlaunchechaine;
 
+	/**
+	 * Instantiates a new param.
+	 */
 	public Param() 
 	{
 	}
 
+	/**
+	 * Charger parametrage.
+	 *
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws SQLException the SQL exception
+	 * @throws ParseException the parse exception
+	 * @throws JSchException the j sch exception
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void ChargerParametrage() throws FileNotFoundException, IOException, SQLException, ParseException, JSchException, InterruptedException
 	{
 		workRepertoire = currentPath("/mnt/storage/AppProjects/GestionnaireDownload/");
@@ -191,9 +311,23 @@ filebotlaunchechaine=filebot
 
 	}
 
+	/**
+	 * Date du jour.
+	 *
+	 * @return the date
+	 */
+	public static Date dateDuJour() 
+	{
+		return Calendar.getInstance().getTime();
+	}
+	
+	/**
+	 * Initialiser_dates.
+	 *
+	 * @throws ParseException the parse exception
+	 */
 	public static void initialiser_dates() throws ParseException
 	{
-		dateDuJour =  Calendar.getInstance().getTime();
 		dateLowValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("01/01/0001");
 		dateHighValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("31/12/2099");
 
@@ -219,6 +353,12 @@ filebotlaunchechaine=filebot
 	}
 		
 		
+	/**
+	 * Current path.
+	 *
+	 * @param defaultPath the default path
+	 * @return the string
+	 */
 	public static String currentPath(String defaultPath)
 	{
 		String workRepertoire = System.getProperty(("user.dir")) + Param.Fileseparator;
@@ -231,6 +371,13 @@ filebotlaunchechaine=filebot
 	}
 
 
+	/**
+	 * Initialisation trace.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JSchException the j sch exception
+	 * @throws InterruptedException the interrupted exception
+	 */
 	private static void initialisationTrace() throws IOException, JSchException, InterruptedException
 	{
 		
@@ -278,7 +425,7 @@ filebotlaunchechaine=filebot
 		faInfo = new FileAppender(new PatternLayout("%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"), log4j_cheminComplet_info);
 		faInfo.setName("info");
 
-		faMaster.setThreshold((Level) Level.ERROR);
+		faMaster.setThreshold(Level.ERROR);
 		faMaster.activateOptions();
 		logger.addAppender(faMaster);
 		faDebug.addFilter(filterReadOut);
@@ -305,6 +452,14 @@ filebotlaunchechaine=filebot
 		logger.addAppender(faInfo);
 	}
 	
+	/**
+	 * Cloture.
+	 *
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 * @throws SQLException the SQL exception
+	 */
 	public static void cloture() throws FileNotFoundException, IOException, InterruptedException, SQLException
 	{
 			session.disconnect();
@@ -312,6 +467,13 @@ filebotlaunchechaine=filebot
 			clotureTrace();
 	}
 	
+	/**
+	 * Cloture trace.
+	 *
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void clotureTrace() throws FileNotFoundException, IOException, InterruptedException
 	{
 		if (debug)
@@ -343,6 +505,9 @@ filebotlaunchechaine=filebot
 
 	}
 
+	/**
+	 * Prints the all appender.
+	 */
 	private static void printAllAppender()
 	{
 		Enumeration appenders =  logger.getAllAppenders();
@@ -353,10 +518,18 @@ filebotlaunchechaine=filebot
 		}
 	}
 
+	/**
+	 * Archive log.
+	 *
+	 * @param archive the archive
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	private static void archiveLog(String archive) throws FileNotFoundException, IOException, InterruptedException
 	{
 		File f = new File(archive);
-		if (copyLocalFile(f, new File(workRepertoire + "Log" + Param.Fileseparator + (new SimpleDateFormat("yyyyMMdd")).format(dateDuJour).toString() + "_" + f.getName()), true))
+		if (copyLocalFile(f, new File(workRepertoire + "Log" + Param.Fileseparator + (new SimpleDateFormat("yyyyMMdd")).format(dateDuJour()).toString() + "_" + f.getName()), true))
 		{
 			Thread.sleep(2000);
 			copyLocalFile(f, new File(workRepertoire + Param.Fileseparator + "last_log_" + f.getName()), false);
@@ -366,15 +539,26 @@ filebotlaunchechaine=filebot
 	}
 
 
+	/**
+	 * Tie system out and err to log.
+	 */
 	public static void tieSystemOutAndErrToLog() 
 	{ 
 		System.setOut(createLoggingProxy(System.out)); 
 		System.setErr(createLoggingProxyErr(System.err)); 
 	} 
+	
+	/**
+	 * Creates the logging proxy.
+	 *
+	 * @param realPrintStream the real print stream
+	 * @return the prints the stream
+	 */
 	public static PrintStream createLoggingProxy(final PrintStream realPrintStream) 
 	{ 
 		return new PrintStream(realPrintStream) 
 		{ 
+			@Override
 			public void print(final String string) 
 			{ 
 				realPrintStream.print(string); 
@@ -385,10 +569,18 @@ filebotlaunchechaine=filebot
 			} 
 		}; 
 	} 
+	
+	/**
+	 * Creates the logging proxy err.
+	 *
+	 * @param realPrintStream the real print stream
+	 * @return the prints the stream
+	 */
 	public static PrintStream createLoggingProxyErr(final PrintStream realPrintStream) 
 	{ 
 		return new PrintStream(realPrintStream) 
 		{ 
+			@Override
 			public void print(final String string) 
 			{ 
 				realPrintStream.print(string); 
@@ -397,6 +589,12 @@ filebotlaunchechaine=filebot
 		}; 
 	} 
 
+	/**
+	 * E to string.
+	 *
+	 * @param e the e
+	 * @return the string
+	 */
 	public static String eToString(Exception e)
 	{
 		StringWriter sw = new StringWriter();
@@ -404,6 +602,12 @@ filebotlaunchechaine=filebot
 		return sw.toString();
 	}
 
+	/**
+	 * Gets the file part name.
+	 *
+	 * @param fileName the file name
+	 * @return the file part name
+	 */
 	public static String getFilePartName(String fileName)
 	{
 		int pos;
@@ -420,6 +624,38 @@ filebotlaunchechaine=filebot
 		return fileName;
 	}
 	
+	/**
+	 * Gets the last path.
+	 *
+	 * @param fileName the file name
+	 * @return the last path
+	 */
+	public static String getlastPath(String fileName)
+	{
+		int pos;
+		pos = fileName.lastIndexOf("/");
+		if (pos > 0)
+		{
+			fileName = fileName.substring(0,pos );
+		}
+		pos = fileName.lastIndexOf("\\");
+		if (pos > 0)
+		{
+			fileName = fileName.substring(0,pos );
+		}
+		return fileName;
+	}
+	
+	/**
+	 * Copy local file.
+	 *
+	 * @param source the source
+	 * @param dest the dest
+	 * @param append the append
+	 * @return true, if successful
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static boolean copyLocalFile(File source, File dest, Boolean append) throws FileNotFoundException, IOException
 	{
 		FileChannel in = null; // canal d'entr?e
@@ -442,6 +678,14 @@ filebotlaunchechaine=filebot
 		return true;
 	}
 
+	/**
+	 * Connect client transmission.
+	 *
+	 * @throws MalformedURLException the malformed url exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JSchException the j sch exception
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void ConnectClientTransmission() throws MalformedURLException, IOException, JSchException, InterruptedException 
 	{
 			/**
@@ -502,24 +746,57 @@ filebotlaunchechaine=filebot
 		}
 	}
 
+	/**
+	 * Chemin temporaire.
+	 *
+	 * @return the string
+	 */
 	private static String CheminTemporaire() {
 		return CheminTemporaire;
 	}
 
+	/**
+	 * Chemin temporaire tmp.
+	 *
+	 * @return the string
+	 */
 	public static String CheminTemporaireTmp() {
 		return CheminTemporaire()+"tmp"+Param.Fileseparator;
 	}
 	
+	/**
+	 * Chemin temporaire film.
+	 *
+	 * @return the string
+	 */
 	public static String CheminTemporaireFilm() {
 		return CheminTemporaire()+"tmp"+Param.Fileseparator+"film"+Param.Fileseparator;
 	}
 
+	/**
+	 * Chemin temporaire serie.
+	 *
+	 * @return the string
+	 */
 	public static String CheminTemporaireSerie() {
 		return CheminTemporaire()+"tmp"+Param.Fileseparator+"serie"+Param.Fileseparator;
 	}
+	
+	/**
+	 * Checks if is numeric.
+	 *
+	 * @param s the s
+	 * @return true, if is numeric
+	 */
 	public static boolean isNumeric(String s) {  
 	    return s.matches("[-+]?\\d*\\.?\\d+");  
 	}  
+	
+	/**
+	 * Gets the os.
+	 *
+	 * @return the string
+	 */
 	public static String GetOs() { 
 		String s = "name: " + System.getProperty ("os.name");
 		s += ", version: " + System.getProperty ("os.version");

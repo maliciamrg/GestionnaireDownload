@@ -12,7 +12,7 @@
 
 <?php
 	if(isset($_POST['Delete'])){
-		$clenom = $_POST['updatenom'];
+		$clenom = $_POST['hash'];
 		$query="DELETE FROM series WHERE nom= '".$clenom ."'";
 		mysql_query($query);
 		echo mysql_error();
@@ -29,7 +29,7 @@
 <?php
 
 //Create a query
-$sql = "SELECT * FROM hash ";
+$sql = "SELECT * FROM hash order by timestamp_ajout	 desc";
 
 //submit the query and capture the result
 
@@ -42,6 +42,7 @@ echo mysql_error();
 
 
 <?php
+print_r($_POST);
 echo "Nb Row Found = ".mysql_num_rows($result);	
 if  (mysql_num_rows($result)>0){
 ?>
@@ -49,8 +50,9 @@ if  (mysql_num_rows($result)>0){
 		<tr>
 		<?php 
 		for ($i=0; $i<mysql_num_fields($result); $i++) {
+			$a = mysql_field_type ( $result , $i );
 			echo "<td>";
-			echo mysql_field_name($result,$i);
+			echo "(".$a.")</br>".mysql_field_name($result,$i);
 			echo"</td>";
 		}
 		?>
@@ -64,7 +66,7 @@ if  (mysql_num_rows($result)>0){
 		<?php 
 		for ($i=0; $i<mysql_num_fields($result); $i++) {
 			echo "<td>";
-			echo  $row[$i];
+			echo $row[$i];
 			echo"</td>";
 		}
 		?>

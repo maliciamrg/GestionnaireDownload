@@ -1,25 +1,27 @@
+/*
+ * Copyright (c) 2015 by Malicia All rights reserved.
+ * 
+ * 26 mars 2015
+ * 
+ * 
+ */
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Properties;
 import java.util.Vector;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 public class Ssh {
@@ -60,12 +62,13 @@ public class Ssh {
 		if (Fileexists(src)){
 			if (!Fileexists(dest)){
 				Ssh.executeAction("mkdir -p \"" + dest.substring(0,dest.lastIndexOf("/")) + "\"");
-			} else {
-				Ssh.executeAction("rm -R '"+dest+"'");
+	//		} else {
+	//			Ssh.executeAction("rm -R '"+dest+"'");
 			}
-			/*Ssh.executeAction("cp -r '"+src+"'* \"" + dest + "\"");*/
-			/*Ssh.executeAction("rm -R '"+src+"'");*/
-			Ssh.executeAction("mv  \""+src+"\" \"" + dest + "\"");
+	//		Ssh.executeAction("find '"+src+"'*  -exec mv {} \"" + dest + "\"");
+	//		Ssh.executeAction("rm -R '"+src+"'");
+	//		Ssh.executeAction("mv -vf \""+src+"\" \"" + dest + "\"");
+			Ssh.executeAction("cd "+ src +" ;find . -regex \'.*\\.\\(avi\\|mp4\\|mpg\\|mkv\\|wmv\\|divx\\|srt\\|sub\\)\' -printf \"mv -vf \\\"%h/%f\\\" \\\""+ dest +"%h/%f\\\"\n\" | sh  ");    
 
 		}
 	}
@@ -133,6 +136,12 @@ public class Ssh {
 	}
 
 
+	/**
+	 * Gets the remote file list.
+	 *
+	 * @param Remoterepertoire the remoterepertoire
+	 * @return the remote file list
+	 */
 	public static ArrayList<String> getRemoteFileList(String Remoterepertoire)
 	{
 		ArrayList<String> ret = new ArrayList<String>(0);
@@ -197,7 +206,7 @@ public class Ssh {
 	{
 		File newFile = null;
 
-		Channel channel = (ChannelSftp) Param.session.openChannel("sftp");
+		Channel channel = Param.session.openChannel("sftp");
 		channel.connect();
 		ChannelSftp channelSftp = (ChannelSftp) channel;
 		Param.logger.warn("ssh- " + remoteDir + " to " + localDir + " file: " + fileName);

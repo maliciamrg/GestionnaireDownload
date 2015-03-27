@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2015 by Malicia All rights reserved.
+ * 
+ * 26 mars 2015
+ * 
+ * 
+ */
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,14 +17,22 @@ import java.util.Date;
 import com.jcraft.jsch.JSchException;
 
 
-
-
-
-import ca.benow.transmission.model.TorrentStatus.TorrentField;
-
+// TODO: Auto-generated Javadoc
+/**
+ * The Class FileBot.
+ */
 public class FileBot
 {
 
+	/**
+	 * Rangerfilm.
+	 *
+	 * @param pathdesfilmaranger the pathdesfilmaranger
+	 * @param pathdelabibliothequesdesfilm the pathdelabibliothequesdesfilm
+	 * @throws JSchException the j sch exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void rangerfilm(String pathdesfilmaranger, String pathdelabibliothequesdesfilm) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
@@ -33,22 +48,39 @@ public class FileBot
 				+ " -r -non-strict ");*/
 	}
 
+	/**
+	 * Rangerserie.
+	 *
+	 * @param pathdelaseriearanger the pathdelaseriearanger
+	 * @param pathdelabibliothequesdelaserie the pathdelabibliothequesdelaserie
+	 * @throws JSchException the j sch exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
 		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
 		Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdelaserie
 				+ "\" --log-file amc.log --action move "
-				+ "\"" + pathdelaseriearanger + " -non-strict " 
+				+ "\"" + pathdelaseriearanger + "\" -non-strict " 
 				+ "--def \"animeFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absote.pad(3)} {t}\" "
 				+ "\"seriesFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\" "
-				+ "--def ut_label=tv --def clean=y --def artwork=y ");
+				+ "--def ut_label=tv --def clean=y --def artwork=y  --conflict override");
 /*		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdelaseriearanger
 				+ "\" --db TheTVDB --lang en --conflict override --encoding=UTF-8 --format "
 				+ "\"" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\""
 				+ " -r -non-strict ");*/		
 	}
 
+	/**
+	 * Gets the subtitleserie.
+	 *
+	 * @param pathdelabibliothequesdelaserie the pathdelabibliothequesdelaserie
+	 * @throws JSchException the j sch exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void getsubtitleserie( String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction(Param.filebotlaunchechaine + " -get-missing-subtitles \"" + pathdelabibliothequesdelaserie
@@ -57,6 +89,17 @@ public class FileBot
 				+ "\" --lang en --output srt --encoding utf8 -r -non-strict ");
 	}
 	
+	/**
+	 * Maj_liste_episodes.
+	 *
+	 * @param serie the serie
+	 * @throws NumberFormatException the number format exception
+	 * @throws SQLException the SQL exception
+	 * @throws ParseException the parse exception
+	 * @throws JSchException the j sch exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void maj_liste_episodes(String serie) throws NumberFormatException, SQLException, ParseException, JSchException, IOException, InterruptedException
 	{
 		ArrayList<String> ret = new ArrayList<String>(0);

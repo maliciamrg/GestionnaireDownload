@@ -49,8 +49,9 @@ if  (mysql_num_rows($result)>0){
 		<tr>
 		<?php 
 		for ($i=0; $i<mysql_num_fields($result); $i++) {
+			$a = mysql_field_type ( $result , $i );
 			echo "<td>";
-			echo mysql_field_name($result,$i);
+			echo "(".$a.")</br>".mysql_field_name($result,$i);
 			echo"</td>";
 		}
 		?>
