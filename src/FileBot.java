@@ -41,7 +41,7 @@ public class FileBot
 				+ "\" --log-file amc.log --action move "
 				+ "\"" + pathdesfilmaranger + "\" -non-strict " 
 				+ "--def \"movieFormat="+pathdelabibliothequesdesfilm+"/{n.replaceAll(/[:]/,'')} ({y})/{n.replaceAll(/[:]/,'')} ({y}, {director}) {vf} {af}\" "
-				+ "--def ut_label=movie --def clean=y --def artwork=y ");
+				+ "--def subtitles=en,fr --def ut_label=movie --def clean=y --def artwork=y ");
 /*		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdesfilmaranger
 				+ "\" --db TheMovieDB --lang en --conflict override --encoding=UTF-8 --format "
 				+ "\"" + pathdelabibliothequesdesfilm + "/{n.replaceAll(/[:]/,\"\")} ({y})/{n.replaceAll(/[:]/,\"\")} ({y}, {director}) {vf} {af}\""
@@ -66,7 +66,7 @@ public class FileBot
 				+ "\"" + pathdelaseriearanger + "\" -non-strict " 
 				+ "--def \"animeFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absote.pad(3)} {t}\" "
 				+ "\"seriesFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\" "
-				+ "--def ut_label=tv --def clean=y --def artwork=y  --conflict override");
+				+ "--def subtitles=en,fr ut_label=tv --def clean=y --def artwork=y  --conflict override");
 /*		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdelaseriearanger
 				+ "\" --db TheTVDB --lang en --conflict override --encoding=UTF-8 --format "
 				+ "\"" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\""
@@ -83,10 +83,8 @@ public class FileBot
 	 */
 	public static void getsubtitleserie( String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
 	{
-		Ssh.executeAction(Param.filebotlaunchechaine + " -get-missing-subtitles \"" + pathdelabibliothequesdelaserie
-				+ "\" --lang fr --output srt --encoding utf8 -r -non-strict ");
-		Ssh.executeAction(Param.filebotlaunchechaine + " -get-missing-subtitles \"" + pathdelabibliothequesdelaserie
-				+ "\" --lang en --output srt --encoding utf8 -r -non-strict ");
+		//Ssh.executeAction(Param.filebotlaunchechaine + " -get-missing-subtitles \"" + pathdelabibliothequesdelaserie
+		//		+ "\" --lang en,fr --output srt --encoding utf8 -r -non-strict ");
 	}
 	
 	/**
@@ -163,18 +161,20 @@ public class FileBot
 				if (rsFilebot.getRow() == 0)
 				{	
 					stmt.executeUpdate("INSERT INTO episodes "
-							 + " ( nom , airdate , serie , num_saison , num_episodes ) VALUES " 
+							 + " ( nom , airdate , serie , num_saison , num_episodes , sequentiel) VALUES " 
 							 + " ("
 							 + " \"" + nomnettoyer + "\" ,"
 							 + " \"" + (new SimpleDateFormat("yyyy-MM-dd")).format(airDate) + "\" ,"
 							 + " \"" + serie + "\" ,"
 							 + " \"" + Integer.valueOf(exLineEp[1]) + "\" ,"
-							 + " \"" + Integer.valueOf(exLineEp[2]) + "\" "				 
+							 + " \"" + Integer.valueOf(exLineEp[2]) + "\" ,"		
+							 + " \"" + Integer.valueOf(exLineEp[3]) + "\" "	
 							 + " )");
 				} else {
 					
 					rsFilebot.updateString("nom",nomnettoyer );
 					rsFilebot.updateString("airdate",  (new SimpleDateFormat("yyyy-MM-dd")).format(airDate));
+					rsFilebot.updateInt("sequentiel",  Integer.valueOf(exLineEp[3]));
 					rsFilebot.updateRow();
 				}
 				rsFilebot.close();

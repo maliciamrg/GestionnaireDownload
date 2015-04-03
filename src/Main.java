@@ -165,7 +165,7 @@ public class Main
 				analyserrepertoire(args);				
 			} else{
 				transmisson(args);
-				rangerdownload(args);
+				if (Param.actionrangerdownload){rangerdownload(args);}
 				purgerrepertioiredetravail(args);
 				analyserrepertoire(args);
 				lancerlesprochainshash(args);	
@@ -566,17 +566,27 @@ public class Main
 	 * @param serie the serie
 	 * @param numsaison the numsaison
 	 * @param numepisode the numepisode
+	 * @param sequentiel 
 	 * @throws SQLException the SQL exception
 	 */
-	private static void mettreepisodeaencours(String serie, String numsaison, String numepisode) throws SQLException {
+	private static void mettreepisodeaencours(String serie, String numsaison, String numepisode, String sequentiel) throws SQLException {
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
-		stmt.executeUpdate("UPDATE episodes "
-				 + " set encours = true "
-				 + "WHERE "
-				 + " serie = \"" + serie + "\""
-				 + " and num_saison = \"" + numsaison + "\""			 
-				 + " and num_episodes = \"" + numepisode + "\""		
-				 + " ");
+		if (sequentiel.equals("000")){
+			stmt.executeUpdate("UPDATE episodes "
+					 + " set encours = true "
+					 + "WHERE "
+					 + " serie = \"" + serie + "\""
+					 + " and num_saison = \"" + numsaison + "\""			 
+					 + " and num_episodes = \"" + numepisode + "\""		
+					 + " ");
+		}else {
+			stmt.executeUpdate("UPDATE episodes "
+					 + " set encours = true "
+					 + "WHERE "
+					 + " serie = \"" + serie + "\""
+					 + " and sequentiel = \"" + sequentiel + "\""			 	
+					 + " ");
+		}
 	}
 	
 	/**
@@ -748,14 +758,17 @@ public class Main
 		{
 			String src = Param.CheminTemporaireSerie() + rs.getString("nom") + Param.Fileseparator;
 			if (Ssh.Fileexists(src)){
-				Ssh.copyFile(src,  rs.getString("repertoire") );
+				Ssh.copyRepertoireFileVideo(src,  rs.getString("repertoire") );
 				Ssh.actionexecChmodR777(rs.getString("repertoire"));
+				FileBot.getsubtitleserie(rs.getString("repertoire"));
 			}
 		}
 		rs.close();
 
-		if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size()>0){
-			FileBot.rangerfilm(Param.CheminTemporaireFilm() , Param.RepertoireFilm);
+		if (Ssh.Fileexists(Param.CheminTemporaireFilm())){
+			if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size()>0){
+				FileBot.rangerfilm(Param.CheminTemporaireFilm() , Param.RepertoireFilm);
+			}
 		}
 
 	}
@@ -918,6 +931,26 @@ public class Main
 		
 		return Arrays.asList(Video).contains(extension.toLowerCase());
 	}
+	
+	/**
+	 * Checks if is video.
+	 *
+	 * @param pathfile the pathfile
+	 * @return true, if is video
+	 */
+	private static boolean issubtitle(String pathfile) {
+		String extension = "";
+		String[] Video = new String[] {"srt","sub"};
+		
+		int i = pathfile.lastIndexOf('.');
+		int p = Math.max(pathfile.lastIndexOf('/'), pathfile.lastIndexOf('\\'));
+		
+		if (i > p) {
+		    extension = pathfile.substring(i+1);
+		}
+		
+		return Arrays.asList(Video).contains(extension.toLowerCase());
+	}
 
 
 	/**
@@ -1007,27 +1040,36 @@ public class Main
 							int i = 0;
 							for (i = 0; i < listFile.length(); i++)
 							{
-								JSONObject n = (JSONObject) listFile.get(i);
-								Map<String, String> ret=conversionnom2episodes(n.getString("name"));
-								if (ret.get("serie").equals("") 
-										|| ret.get("saison").equals("000") 
-										|| ret.get("episode").equals("000") 
-										|| episodesachemincomplet(ret) )
+							JSONObject n = (JSONObject) listFile.get(i);
+								if (!isvideo(n.getString("name")) && !issubtitle(n.getString("name")))
 								{
 									nbfichierbruler ++;
 									transmission.cancelFilenameOfTorrent(hash, i);
 								}
 								else
 								{
-									mettreepisodeaencours(ret.get("serie"),ret.get("saison"),ret.get("episode"));
-									if (!n.get("bytesCompleted").equals(0))
+									Map<String, String> ret=conversionnom2episodes(n.getString("name"));
+									if (ret.get("serie").equals("") 
+											|| ret.get("saison").equals("000") 
+											|| ret.get("episode").equals("000") 
+											|| episodesachemincomplet(ret) )
 									{
-										if (n.get("bytesCompleted").equals(n.get("length")))
+										nbfichierbruler ++;
+										transmission.cancelFilenameOfTorrent(hash, i);
+									}
+									else
+									{
+										mettreepisodeaencours(ret.get("serie"),ret.get("saison"),ret.get("episode"),ret.get("sequentiel"));
+										if (!n.get("bytesCompleted").equals(0))
 										{
-											transmission.deplacer_fichier(hash, Param.CheminTemporaireSerie(),i);										
-											nbfichierbruler ++;
-										} else {
-											Param.logger.debug("Encours Ep:"+ret.get("serie")+" "+ret.get("saison")+"-"+ret.get("episode")+" name:" + n.getString("name")); 
+											if (n.get("bytesCompleted").equals(n.get("length")))
+											{
+												if(transmission.deplacer_fichier(hash, Param.CheminTemporaireSerie(),i)){										
+													nbfichierbruler ++;
+												}
+											} else {
+												Param.logger.debug("Encours Ep:"+ret.get("serie")+" "+ret.get("saison")+"-"+ret.get("episode")+" name:" + n.getString("name")); 
+											}
 										}
 									}
 								}
@@ -1189,6 +1231,7 @@ public class Main
 								 + "(serie VARCHAR(255) not NULL , "
 								 + " num_saison INTEGER  , "
 								 + " num_episodes INTEGER  , "
+								 + " sequentiel INTEGER  , "
 								 + " nom  VARCHAR(255) , "
 								 + " airdate DATE , "
 								 + " encours BOOLEAN , "					
@@ -1196,7 +1239,8 @@ public class Main
 								 + " chemin_complet  VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL , "
 								 + " freezesearchuntil DATE , "
 								 + " PRIMARY KEY ( serie , num_saison , num_episodes  ) , "
-								 + "         INDEX   ( airdate ) "
+								 + "         INDEX   ( airdate ) ,"
+								 + "         INDEX   ( serie , sequentiel ) "
 								 + ") "
 								 + " ");
 		
@@ -1341,7 +1385,7 @@ public class Main
 	 */
 	public static Map<String, String> conversionnom2episodes(String fileName) throws SQLException
 	{
-		//Param.logger.debug("episode-" + "decomposerNom " + fileName);
+		Param.logger.debug("episode-" + "decomposerNom " + fileName);
 		fileName = Param.getFilePartName(fileName);
 		Map<String, String> ret = new HashMap<String, String>();
 

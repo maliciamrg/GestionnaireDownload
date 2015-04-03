@@ -24,6 +24,10 @@ import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Ssh.
+ */
 public class Ssh {
 
 /*	public static ArrayList<String> executeAction(String command) throws InterruptedException, JSchException, IOException {
@@ -53,28 +57,70 @@ public class Ssh {
 	}
 */
 	
-	public static boolean Fileexists(String fichier) throws JSchException, IOException, InterruptedException {
+	/**
+ * Fileexists.
+ *
+ * @param fichier the fichier
+ * @return true, if successful
+ * @throws JSchException the j sch exception
+ * @throws IOException Signals that an I/O exception has occurred.
+ * @throws InterruptedException the interrupted exception
+ */
+public static boolean Fileexists(String fichier) throws JSchException, IOException, InterruptedException {
 		ArrayList<String> ret = Ssh.executeAction("stat \""+fichier+"\" > /dev/null 2>&1");
 		return !ret.contains("exit-status:1");
 	}
 
-	public static void copyFile(String src, String dest) throws InterruptedException, JSchException, IOException {
+	/**
+	 * Copy file.
+	 *
+	 * @param src the src
+	 * @param dest the dest
+	 * @throws InterruptedException the interrupted exception
+	 * @throws JSchException the j sch exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static Boolean copyFile(String src, String dest) throws InterruptedException, JSchException, IOException {
+		boolean ret = false ;
 		if (Fileexists(src)){
-			if (!Fileexists(dest)){
+			if (!Fileexists(dest.substring(0,dest.lastIndexOf("/")))){
 				Ssh.executeAction("mkdir -p \"" + dest.substring(0,dest.lastIndexOf("/")) + "\"");
-	//		} else {
-	//			Ssh.executeAction("rm -R '"+dest+"'");
 			}
-	//		Ssh.executeAction("find '"+src+"'*  -exec mv {} \"" + dest + "\"");
-	//		Ssh.executeAction("rm -R '"+src+"'");
-	//		Ssh.executeAction("mv -vf \""+src+"\" \"" + dest + "\"");
-			Ssh.executeAction("cd "+ src +" ;find . -regex \'.*\\.\\(avi\\|mp4\\|mpg\\|mkv\\|wmv\\|divx\\|srt\\|sub\\)\' -printf \"mv -vf \\\"%h/%f\\\" \\\""+ dest +"%h/%f\\\"\n\" | sh  ");    
-
+			ret = (Ssh.executeAction("mv  \""+src+"\"  \"" + dest + "\"")).contains("RC=0");
 		}
+		return ret;
 	}
 
 
 
+	/**
+	 * Copy repertoire file video.
+	 *
+	 * @param RepertoireSrc the repertoire src
+	 * @param RepertoireDest the repertoire dest
+	 * @throws InterruptedException the interrupted exception
+	 * @throws JSchException the j sch exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void copyRepertoireFileVideo(String RepertoireSrc, String RepertoireDest) throws InterruptedException, JSchException, IOException {
+		if (Fileexists(RepertoireSrc)){
+			if (!Fileexists(RepertoireDest)){
+				Ssh.executeAction("mkdir -p \"" + RepertoireDest + "\"");
+			}
+			Ssh.executeAction("cd \""+ RepertoireSrc +"\" ;find * -regex \'.*\\.\\(avi\\|mp4\\|mpg\\|mkv\\|wmv\\|divx\\|srt\\|sub\\)\' -printf \"mkdir -p \\\""+ RepertoireDest +"/"+"%h\\\" ; mv -vf \\\""+ RepertoireSrc +"%h/%f\\\" \\\""+ RepertoireDest +"/"+"%h/%f\\\"\n\" | sh  ");    
+
+		}
+	}
+
+	/**
+	 * Execute action.
+	 *
+	 * @param command the command
+	 * @return the array list
+	 * @throws JSchException the j sch exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static ArrayList<String> executeAction(String command) throws JSchException, IOException, InterruptedException
 	{
 
@@ -131,6 +177,7 @@ public class Ssh {
 			}
 			Thread.sleep(1000);
 		}
+		retour.add("RC="+channel.getExitStatus());
 		channel.disconnect();
 		return retour;
 	}
@@ -176,11 +223,13 @@ public class Ssh {
 	}
 
 	/**
-	 * @param ret
-	 * @param repertoire
-	 * @param directory
-	 * @param channelSftp
-	 * @throws SftpException
+	 * Boucle ls sftp.
+	 *
+	 * @param ret the ret
+	 * @param repertoire the repertoire
+	 * @param directory the directory
+	 * @param channelSftp the channel sftp
+	 * @throws SftpException the sftp exception
 	 */
 	private static void boucleLsSftp(ArrayList<String> ret, ArrayList<String> repertoire, String directory, ChannelSftp channelSftp) throws SftpException
 	{
@@ -202,6 +251,17 @@ public class Ssh {
 		}
 	}
 
+	/**
+	 * Gets the remote file.
+	 *
+	 * @param remoteDir the remote dir
+	 * @param localDir the local dir
+	 * @param fileName the file name
+	 * @return the remote file
+	 * @throws JSchException the j sch exception
+	 * @throws SftpException the sftp exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static File getRemoteFile(String remoteDir, String localDir, String fileName) throws JSchException, SftpException, IOException 
 	{
 		File newFile = null;
@@ -227,6 +287,14 @@ public class Ssh {
 		return newFile;
 	}
 
+	/**
+	 * Actionexec chmod r777.
+	 *
+	 * @param formatPath the format path
+	 * @throws JSchException the j sch exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void actionexecChmodR777(String formatPath) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction("chmod -R 777 \"" + formatPath.replace(" ", "*") + "\" ");

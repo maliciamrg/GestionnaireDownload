@@ -216,6 +216,9 @@ filebotlaunchechaine=filebot
 	/** The filebotlaunchechaine. */
 	public static String filebotlaunchechaine;
 
+
+	public static Boolean actionrangerdownload;
+	
 	/**
 	 * Instantiates a new param.
 	 */
@@ -247,7 +250,8 @@ filebotlaunchechaine=filebot
 		debug = (props.getProperty("environement").equals("debug")) ?true: false; 
 		
 		analyserrepertoire = (props.getProperty("environement").equals("analyserrepertoire")) ?true: false; 
-
+		actionrangerdownload = Boolean.parseBoolean(props.getProperty("action.rangerdownload")); 
+		
 		dburl = props.getProperty("db.url"); 
 		dbuser = props.getProperty("db.user"); 
 		dbpasswd = props.getProperty("db.passwd");
@@ -302,7 +306,7 @@ filebotlaunchechaine=filebot
 		 * init_alisation fichier trace
 		 */
 		initialisationTrace();
-		Ssh.actionexecChmodR777(workRepertoire);
+		//Ssh.actionexecChmodR777(workRepertoire);
 		
 		// capture stdout et stderr to log4j
 		tieSystemOutAndErrToLog();
