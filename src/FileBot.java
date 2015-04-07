@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 import com.jcraft.jsch.JSchException;
 
@@ -56,18 +57,60 @@ public class FileBot
 	 * @throws JSchException the j sch exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
+	 * @throws SQLException 
 	 */
-	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
+	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException, SQLException
 	{
-		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
-		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
-		Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdelaserie
-				+ "\" --log-file amc.log --action move "
-				+ "\"" + pathdelaseriearanger + "\" -non-strict " 
-				+ "--def \"animeFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absote.pad(3)} {t}\" "
-				+ "\"seriesFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\" "
-				+ "--def subtitles=en,fr ut_label=tv --def clean=y --def artwork=y  --conflict override");
-/*		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdelaseriearanger
+//		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
+//		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
+//		ArrayList<String> ret = Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdelaserie
+//				+ "\" --log-file amc.log --action "/*move " */+ "test "
+//				+ "\"" + pathdelaseriearanger + "\" -non-strict " 
+//				+ "--def \"animeFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
+//				+ "\"seriesFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
+//				+ "--def subtitles=en,fr ut_label=tv --def clean=y --def artwork=y  --conflict override");
+		/**
+		 * nettoyage tableau retour
+		 */
+		ArrayList<String> arrayListEpisode = new ArrayList<String>(0);
+		ArrayList<String> ret = new ArrayList<String>(0);
+		ret.add("Auto-detected query: [Detective Conan]");
+		ret.add("[TEST] Rename [/media/videoclub/unloading_dock/tmp/serie/Detective Conan Season 9/Detective Conan - 246-247 [DCTP][5F7ECB81].avi] to [/media/videoclub/unloading_dock/tmp/serie/Detective Conan/Saison 09/Detective Conan S09E27 ep_246 The Mystery in the Net (Part One).avi]");
+		ret.add("[TEST] Rename [/media/videoclub/unloading_dock/tmp/serie/Detective Conan Season 9/Detective Conan - 248 [AZFS][526F3797].avi] to [/media/videoclub/unloading_dock/tmp/serie/Detective Conan/Saison 09/Detective Conan S09E29 ep_248 The Alibi of the Soothing Forest.avi]");
+		ret.add("Processed 13 files");
+		for (String lineEp : ret )
+		{
+			if (lineEp.startsWith("[TEST] Rename"))
+			{
+				String[] spl = lineEp.substring(15, lineEp.length()-1).split("\\] to \\[");
+				String code0 = "";
+				String code1 = "";
+				Map<String, String> retepisode = Main.conversionnom2episodes(spl[0]) ;
+				if (!retepisode.get("serie").equals("")	&& !retepisode.get("saison").equals("000") 	&& !retepisode.get("episode").equals("000"))
+				{		
+						code0 = " Ep:"+retepisode.get("serie")+" "+retepisode.get("saison")+"-"+retepisode.get("episode")+ (retepisode.containsKey("episodebis") ?("-"+retepisode.get("episodebis")):("")) +" " ; 
+				}	
+				Map<String, String> retepisode2 = Main.conversionnom2episodes(spl[1]) ;
+				if (!retepisode2.get("serie").equals("")	&& !retepisode2.get("saison").equals("000") 	&& !retepisode2.get("episode").equals("000"))
+				{		
+						code1 = " Ep:"+retepisode2.get("serie")+" "+retepisode2.get("saison")+"-"+retepisode2.get("episode")+ (retepisode2.containsKey("episodebis") ?("-"+retepisode2.get("episodebis")):("")) +" " ; 
+				}	
+				if (code0.equals(code1))
+				{
+					Ssh.moveFile(spl[0], spl[1]);
+				} else {
+					String newname;
+					if (retepisode.containsKey("sequentielbis")){
+						newname=pathdelabibliothequesdelaserie+"/"+retepisode.get("serie")+"/Saison "+String.format("%02d", Integer.parseInt(retepisode.get("saison")))+"/"+retepisode.get("serie")+" S"+String.format("%02d", Integer.parseInt(retepisode.get("saison")))+"E"+String.format("%02d", Integer.parseInt(retepisode.get("episode")))+"-E"+String.format("%02d", Integer.parseInt(retepisode.get("episodebis")))+" ep_"+String.format("%03d", Integer.parseInt(retepisode.get("sequentiel")))+"_"+String.format("%03d", Integer.parseInt(retepisode.get("sequentielbis")))+"";
+					}else{
+						newname=pathdelabibliothequesdelaserie+"/"+retepisode.get("serie")+"/Saison "+String.format("%02d", Integer.parseInt(retepisode.get("saison")))+"/"+retepisode.get("serie")+" S"+String.format("%02d", Integer.parseInt(retepisode.get("saison")))+"E"+String.format("%02d", Integer.parseInt(retepisode.get("episode")))+" ep_"+String.format("%03d", Integer.parseInt(retepisode.get("sequentiel")))+"";
+					}
+					int debtitre = spl[1].indexOf(retepisode.get("episode"));
+					newname=newname;
+				}
+			}
+		}
+		/*		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdelaseriearanger
 				+ "\" --db TheTVDB --lang en --conflict override --encoding=UTF-8 --format "
 				+ "\"" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\""
 				+ " -r -non-strict ");*/		

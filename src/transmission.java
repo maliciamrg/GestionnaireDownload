@@ -147,7 +147,7 @@ public class transmission {
 				String src = downloadDir + Param.Fileseparator
 						+ n.getString("name");
 				String dest = cheminTemporaire + n.getString("name");
-				Ssh.copyFile(src, dest);
+				Ssh.moveFile(src, dest);
 			}
 		}
 	}
@@ -275,7 +275,7 @@ public class transmission {
 			String src = downloadDir + Param.Fileseparator
 					+ n.getString("name");
 			String dest = cheminTemporaire + n.getString("name");
-			ret = ret && Ssh.copyFile(src, dest);
+			ret = ret && Ssh.moveFile(src, dest);
 
 		}
 		return ret;

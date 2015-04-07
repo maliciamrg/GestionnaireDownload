@@ -80,7 +80,7 @@ public static boolean Fileexists(String fichier) throws JSchException, IOExcepti
 	 * @throws JSchException the j sch exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static Boolean copyFile(String src, String dest) throws InterruptedException, JSchException, IOException {
+	public static Boolean moveFile(String src, String dest) throws InterruptedException, JSchException, IOException {
 		boolean ret = false ;
 		if (Fileexists(src)){
 			if (!Fileexists(dest.substring(0,dest.lastIndexOf("/")))){

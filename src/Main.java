@@ -164,7 +164,7 @@ public class Main
 				Param.WordPressPost = false;
 				analyserrepertoire(args);				
 			} else{
-				transmisson(args);
+				//transmisson(args);
 				if (Param.actionrangerdownload){rangerdownload(args);}
 				purgerrepertioiredetravail(args);
 				analyserrepertoire(args);
@@ -1397,12 +1397,12 @@ public class Main
 		Pattern p6 = Pattern.compile("([Ss]eason[ ]*|[Ss]|[Ss][Nn])([0-9]{1,2})[ x._-]*([Ee]pisode[ ]*|[Ee]|[Ee][Pp])[ ._-]*([0-9]{0,2})[ ._-]");
 		Pattern p5 = Pattern.compile("([Ss]eason[ ]*|[Ss]|[Ss][Nn])([0-9]{1,2})[ x._-]*([Ee]pisode[ ]*|[Ee]|[Ee][Pp])[ ._-]*([0-9]{3,3})[ ._-]");
 		Pattern p2 = Pattern.compile("[._ (-]([0-9]+)x([0-9]+)");
-		Pattern p3 = Pattern.compile("[._ (-]([0-9]+)([0-9][0-9])");
-		Pattern p4 = Pattern.compile("[._ (-]([0-9]+)");
+		//Pattern p3 = Pattern.compile("[._ (-]([0-9]+)([0-9][0-9])");
+		Pattern p4 = Pattern.compile("[._ (-]([0-9]+)[._ (-]+([0-9]+)*");
 
 		Matcher m1 = p1.matcher(namecmp.toLowerCase());
 		Matcher m2 = p2.matcher(namecmp.toLowerCase());
-		Matcher m3 = p3.matcher(namecmp.toLowerCase());
+		//Matcher m3 = p3.matcher(namecmp.toLowerCase());
 		Matcher m4 = p4.matcher(namecmp.toLowerCase());
 		Matcher m5 = p5.matcher(namecmp.toLowerCase());
 		Matcher m6 = p6.matcher(namecmp.toLowerCase());
@@ -1420,18 +1420,27 @@ public class Main
 			numeroSaisonTrouve.clear();
 			partname = namecmp.substring(0, m4.start(0));
 			numeroSequentielTrouve.put("sequentiel", String.format("%03d", Integer.parseInt(m4.group(1))));
+			if (m4.groupCount()>1){
+				String seq2 = m4.group(2);
+				if (seq2!=null){
+					if (!seq2.equals("")){
+						numeroSequentielTrouve.put("sequentielbis", String.format("%03d", Integer.parseInt(m4.group(2))));
+					}
+				}
+			}
+			reste = m4.end();
 			//Param.logger.debug("episode-" + "decomposerNom 4-" + partname + " " + numeroSaisonTrouve.toString() + " " + numeroEpisodeTrouve.toString() + " "
 			//			 + numeroSequentielTrouve.toString());
 		}
 
-		if (m3.find())
-		{
-			partname = namecmp.substring(0, m3.start(0));
-			numeroSaisonTrouve.put("saison", String.format("%03d", Integer.parseInt(m3.group(1).toString())));
-			numeroEpisodeTrouve.put("episode", String.format("%03d", Integer.parseInt(m3.group(2).toString())));
-			//Param.logger.debug("episode-" + "decomposerNom 3-" + partname + " " + numeroSaisonTrouve.toString() + " " + numeroEpisodeTrouve.toString() + " "
-			//			 + numeroSequentielTrouve.toString());
-		}
+		//if (m3.find())
+		//{
+		//	partname = namecmp.substring(0, m3.start(0));
+		//	numeroSaisonTrouve.put("saison", String.format("%03d", Integer.parseInt(m3.group(1).toString())));
+		//	numeroEpisodeTrouve.put("episode", String.format("%03d", Integer.parseInt(m3.group(2).toString())));
+		//	//Param.logger.debug("episode-" + "decomposerNom 3-" + partname + " " + numeroSaisonTrouve.toString() + " " + numeroEpisodeTrouve.toString() + " "
+		//	//			 + numeroSequentielTrouve.toString());
+		//}
 
 		if (m2.find())
 		{
@@ -1526,6 +1535,30 @@ public class Main
 				{
 					nbtrouve++;
 					ret.put("serie", rs.getString("nom"));
+					String where;
+					if ((numeroSaisonTrouve.size()== 0 && numeroEpisodeTrouve.size()== 0))
+					{
+						where = " sequentiel = " + numeroSequentielTrouve.get("sequentiel");
+						if (numeroSequentielTrouve.get("sequentielbis")!=null)
+						{
+							where += " OR sequentiel = " + numeroSequentielTrouve.get("sequentielbis");
+						}
+						ResultSet rs2 = null;
+						Statement stmt2 = Param.con.createStatement();
+						rs2 = stmt2.executeQuery("SELECT * "
+													 + " FROM episodes "
+													 + " where " + where);
+						while (rs2.next())
+						{
+							numeroSaisonTrouve.put("saison", String.format("%03d", Integer.parseInt(rs2.getString("num_saison"))));
+							if (numeroEpisodeTrouve.size()== 0) 
+							{
+								numeroEpisodeTrouve.put("episode", String.format("%03d", Integer.parseInt(rs2.getString("num_episodes"))));
+							} else {
+								numeroEpisodeTrouve.put("episodebis", String.format("%03d", Integer.parseInt(rs2.getString("num_episodes"))));
+							}
+						}
+					}				
 					//Param.logger.debug("episode- decomposerNom" + rs.getString("nom"));
 				}
 
