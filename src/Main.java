@@ -161,6 +161,7 @@ public class Main
 			initialisation(args);
 			mise_a_jour_mpd(args);
 			alimentation_bdd(args);	
+
 			if (Param.analyserrepertoire)
 			{
 				Param.WordPressPost = false;
@@ -784,7 +785,7 @@ public class Main
 			//purge rep=ertzooire v,wide
 			//	Ssh.actionexecChmodR777(Param.CheminTemporaireTmp() );
 			//	Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -depth -exec rmdir 2>/dev/null '{}' \\;");
-			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -empty -print -delete \\;");
+			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -empty -print -delete ");
 		}
 	}
 
@@ -803,7 +804,7 @@ public class Main
 		// ranger les serie dans les sous repertoire de tmp
 		if (Ssh.getRemoteFileList(Param.CheminTemporaireSerie()).size() > 0)
 		{
-			FileBot.rangerserie(Param.CheminTemporaireSerie() , Param.CheminTemporaireSerie());
+			FileBot.rangerserie(Param.CheminTemporaireSerie() , Param.CheminTemporaireSerie(), Param.RepertoireFilm);
 		}
 
 		ResultSet rs = null;
@@ -865,7 +866,7 @@ public class Main
 			if (Param.analyserrepertoire)
 			{
 				Ssh.executeAction("find \"" + rs.getString("repertoire") + "\" -name \\*.nfo -exec rm {} \\;");
-				FileBot.rangerserie(rs.getString("repertoire") , Param.getlastPath(rs.getString("repertoire")));
+				FileBot.rangerserie(rs.getString("repertoire") , Param.getlastPath(rs.getString("repertoire")), Param.RepertoireFilm);
 				Ssh.executeAction("cd \"" + rs.getString("repertoire") + "\";find . -type d -delete \\;");
 			}
 
@@ -1491,7 +1492,7 @@ public class Main
 		Pattern p5 = Pattern.compile("([Ss]eason[ ]*|[Ss]|[Ss][Nn])([0-9]{1,2})[ x._-]*([Ee]pisode[ ]*|[Ee]|[Ee][Pp])[ ._-]*([0-9]{3,3})[ ._-]");
 		Pattern p2 = Pattern.compile("[._ (-]([0-9]+)x([0-9]+)");
 		//Pattern p3 = Pattern.compile("[._ (-]([0-9]+)([0-9][0-9])");
-		Pattern p4 = Pattern.compile("[._ (-]([0-9]+)[._ (-]+([0-9]+)*");
+		Pattern p4 = Pattern.compile("[np._ (-]([0-9]+)[._ (-]+([0-9]+)*");
 
 		Matcher m1 = p1.matcher(namecmp.toLowerCase());
 		Matcher m2 = p2.matcher(namecmp.toLowerCase());
@@ -1525,7 +1526,7 @@ public class Main
 					}
 				}
 			}
-			nometextension.put("partiedroite", namecmp.substring(m4.end()));
+			if (!nometextension.containsKey("partiedroite")){nometextension.put("partiedroite", namecmp.substring(m4.end()));}
 			//Param.logger.debug("episode-" + "decomposerNom 4-" + partname + " " + numeroSaisonTrouve.toString() + " " + numeroEpisodeTrouve.toString() + " "
 			//			 + numeroSequentielTrouve.toString());
 		}
@@ -1547,7 +1548,7 @@ public class Main
 			partname = namecmp.substring(0, m2.start(0));
 			numeroSaisonTrouve.put("saison", String.format("%03d", Integer.parseInt(m2.group(1).toString())));
 			numeroEpisodeTrouve.put("episode", String.format("%03d", Integer.parseInt(m2.group(2).toString())));
-			nometextension.put("partiedroite", namecmp.substring(m2.end()));
+			if (!nometextension.containsKey("partiedroite")){nometextension.put("partiedroite", namecmp.substring(m2.end()));}
 			//Param.logger.debug("episode-" + "decomposerNom 2-" + partname + " " + numeroSaisonTrouve.toString() + " " + numeroEpisodeTrouve.toString() + " "
 			//			 + numeroSequentielTrouve.toString());
 		}
@@ -1560,7 +1561,7 @@ public class Main
 			partname = namecmp.substring(0, m5.start(0));
 			numeroSaisonTrouve.put("saison", String.format("%03d", Integer.parseInt(m5.group(2).toString())));
 			numeroEpisodeTrouve.put("episode", String.format("%03d", Integer.parseInt(m5.group(4).toString())));
-			nometextension.put("partiedroite", namecmp.substring(m5.end()));
+			if (!nometextension.containsKey("partiedroite")){nometextension.put("partiedroite", namecmp.substring(m5.end()));}
 			//Param.logger.debug("episode-" + "decomposerNom 5-" + partname + " " + numeroSaisonTrouve.toString() + " " + numeroEpisodeTrouve.toString() + " "
 			//			 + numeroSequentielTrouve.toString());
 		}
@@ -1574,7 +1575,7 @@ public class Main
 				partname = namecmp.substring(0, m6.start(0));
 				numeroSaisonTrouve.put("saison", String.format("%03d", Integer.parseInt(m6.group(2).toString())));
 				numeroEpisodeTrouve.put("episode", String.format("%03d", Integer.parseInt(m6.group(4).toString())));
-				nometextension.put("partiedroite", namecmp.substring(m6.end()));
+				if (!nometextension.containsKey("partiedroite")){nometextension.put("partiedroite", namecmp.substring(m6.end()));}
 				//Param.logger.debug("episode-" + "decomposerNom 6-" + partname + " " + numeroSaisonTrouve.toString() + " " + numeroEpisodeTrouve.toString() + " "
 				//			 + numeroSequentielTrouve.toString());
 			}
@@ -1593,7 +1594,7 @@ public class Main
 							numeroSaisonTrouve.put("saison", String.format("%03d", Integer.parseInt(m1.group(2).toString())));
 							numeroEpisodeTrouve.put("episode", String.format("%03d", Integer.parseInt(m1.group(4).toString())));
 							numeroEpisodeTrouve.put("episodebis", String.format("%03d", Integer.parseInt(m1.group(5).toString())));
-							nometextension.put("partiedroite", namecmp.substring(m1.end()));
+							if (!nometextension.containsKey("partiedroite")){nometextension.put("partiedroite", namecmp.substring(m1.end()));}
 							//Param.logger.debug("episode-" + "decomposerNom 1-" + partname + " " + numeroSaisonTrouve.toString() + " "
 							//			 + numeroEpisodeTrouve.toString() + " " + numeroSequentielTrouve.toString());
 						}
