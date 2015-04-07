@@ -39,14 +39,14 @@ public class FileBot
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
 		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
 		Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdesfilm 
-				+ "\" --log-file amc.log --action move "
-				+ "\"" + pathdesfilmaranger + "\" -non-strict " 
-				+ "--def \"movieFormat="+pathdelabibliothequesdesfilm+"/{n.replaceAll(/[:]/,'')} ({y})/{n.replaceAll(/[:]/,'')} ({y}, {director}) {vf} {af}\" "
-				+ "--def subtitles=en,fr --def ut_label=movie --def clean=y --def artwork=y ");
-/*		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdesfilmaranger
-				+ "\" --db TheMovieDB --lang en --conflict override --encoding=UTF-8 --format "
-				+ "\"" + pathdelabibliothequesdesfilm + "/{n.replaceAll(/[:]/,\"\")} ({y})/{n.replaceAll(/[:]/,\"\")} ({y}, {director}) {vf} {af}\""
-				+ " -r -non-strict ");*/
+						  + "\" --log-file amc.log --action move "
+						  + "\"" + pathdesfilmaranger + "\" -non-strict " 
+						  + "--def \"movieFormat=" + pathdelabibliothequesdesfilm + "/{n.replaceAll(/[:]/,'')} ({y})/{n.replaceAll(/[:]/,'')} ({y}, {director}) {vf} {af}\" "
+						  + "--def subtitles=en,fr --def ut_label=movie --def clean=y --def artwork=y ");
+		/*		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdesfilmaranger
+		 + "\" --db TheMovieDB --lang en --conflict override --encoding=UTF-8 --format "
+		 + "\"" + pathdelabibliothequesdesfilm + "/{n.replaceAll(/[:]/,\"\")} ({y})/{n.replaceAll(/[:]/,\"\")} ({y}, {director}) {vf} {af}\""
+		 + " -r -non-strict ");*/
 	}
 
 	/**
@@ -61,59 +61,80 @@ public class FileBot
 	 */
 	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException, SQLException
 	{
-//		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
-//		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
-//		ArrayList<String> ret = Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdelaserie
-//				+ "\" --log-file amc.log --action "/*move " */+ "test "
-//				+ "\"" + pathdelaseriearanger + "\" -non-strict " 
-//				+ "--def \"animeFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
-//				+ "\"seriesFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
-//				+ "--def subtitles=en,fr ut_label=tv --def clean=y --def artwork=y  --conflict override");
+		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
+		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
+		ArrayList<String> ret = Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdelaserie
+				+ "\" --log-file amc.log --action "/*move " */+ "test "
+				+ "\"" + pathdelaseriearanger + "\" -non-strict " 
+				+ "--def \"animeFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
+				+ "\"seriesFormat="+pathdelabibliothequesdelaserie+"/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
+				+ "--def subtitles=en,fr ut_label=tv --def clean=y --def artwork=y  --conflict override");
 		/**
 		 * nettoyage tableau retour
 		 */
 		ArrayList<String> arrayListEpisode = new ArrayList<String>(0);
-		ArrayList<String> ret = new ArrayList<String>(0);
-		ret.add("Auto-detected query: [Detective Conan]");
-		ret.add("[TEST] Rename [/media/videoclub/unloading_dock/tmp/serie/Detective Conan Season 9/Detective Conan - 246-247 [DCTP][5F7ECB81].avi] to [/media/videoclub/unloading_dock/tmp/serie/Detective Conan/Saison 09/Detective Conan S09E27 ep_246 The Mystery in the Net (Part One).avi]");
-		ret.add("[TEST] Rename [/media/videoclub/unloading_dock/tmp/serie/Detective Conan Season 9/Detective Conan - 248 [AZFS][526F3797].avi] to [/media/videoclub/unloading_dock/tmp/serie/Detective Conan/Saison 09/Detective Conan S09E29 ep_248 The Alibi of the Soothing Forest.avi]");
-		ret.add("Processed 13 files");
-		for (String lineEp : ret )
+//		ArrayList<String> ret = new ArrayList<String>(0);
+//		ret.add("Auto-detected query: [Detective Conan]");
+//		ret.add("[TEST] Rename [/media/videoclub/unloading_dock/tmp/serie/Detective Conan Season 9/Detective Conan - 246-247 [DCTP][5F7ECB81].avi] to [/media/videoclub/unloading_dock/tmp/serie/Detective Conan/Saison 09/Detective Conan S09E27 ep_246 The Mystery in the Net (Part One).avi]");
+//		ret.add("[TEST] Rename [/media/videoclub/unloading_dock/tmp/serie/Detective Conan Season 9/Detective Conan - 248 [AZFS][526F3797].avi] to [/media/videoclub/unloading_dock/tmp/serie/Detective Conan/Saison 09/Detective Conan S09E29 ep_248 The Alibi of the Soothing Forest.avi]");
+//		ret.add("Processed 13 files");
+		for (String lineEp : ret)
 		{
 			if (lineEp.startsWith("[TEST] Rename"))
 			{
-				String[] spl = lineEp.substring(15, lineEp.length()-1).split("\\] to \\[");
+				String[] spl = lineEp.substring(15, lineEp.length() - 1).split("\\] to \\[");
 				String code0 = "";
 				String code1 = "";
 				Map<String, String> retepisode = Main.conversionnom2episodes(spl[0]) ;
 				if (!retepisode.get("serie").equals("")	&& !retepisode.get("saison").equals("000") 	&& !retepisode.get("episode").equals("000"))
 				{		
-						code0 = " Ep:"+retepisode.get("serie")+" "+retepisode.get("saison")+"-"+retepisode.get("episode")+ (retepisode.containsKey("episodebis") ?("-"+retepisode.get("episodebis")):("")) +" " ; 
+					code0 = " Ep:" + retepisode.get("serie") + " " + retepisode.get("saison") + "-" + retepisode.get("episode") + (retepisode.containsKey("episodebis") ?("-" + retepisode.get("episodebis")): ("")) + " " ; 
 				}	
 				Map<String, String> retepisode2 = Main.conversionnom2episodes(spl[1]) ;
 				if (!retepisode2.get("serie").equals("")	&& !retepisode2.get("saison").equals("000") 	&& !retepisode2.get("episode").equals("000"))
 				{		
-						code1 = " Ep:"+retepisode2.get("serie")+" "+retepisode2.get("saison")+"-"+retepisode2.get("episode")+ (retepisode2.containsKey("episodebis") ?("-"+retepisode2.get("episodebis")):("")) +" " ; 
+					code1 = " Ep:" + retepisode2.get("serie") + " " + retepisode2.get("saison") + "-" + retepisode2.get("episode") + (retepisode2.containsKey("episodebis") ?("-" + retepisode2.get("episodebis")): ("")) + " " ; 
 				}	
+				Param.logger.debug("deplacement:"+spl[0]);
 				if (code0.equals(code1))
 				{
 					Ssh.moveFile(spl[0], spl[1]);
-				} else {
+					Param.logger.debug("(1)vers:"+spl[1]);
+				}
+				else
+				{
 					String newname;
-					if (retepisode.containsKey("sequentielbis")){
-						newname=pathdelabibliothequesdelaserie+"/"+retepisode.get("serie")+"/Saison "+String.format("%02d", Integer.parseInt(retepisode.get("saison")))+"/"+retepisode.get("serie")+" S"+String.format("%02d", Integer.parseInt(retepisode.get("saison")))+"E"+String.format("%02d", Integer.parseInt(retepisode.get("episode")))+"-E"+String.format("%02d", Integer.parseInt(retepisode.get("episodebis")))+" ep_"+String.format("%03d", Integer.parseInt(retepisode.get("sequentiel")))+"_"+String.format("%03d", Integer.parseInt(retepisode.get("sequentielbis")))+"";
-					}else{
-						newname=pathdelabibliothequesdelaserie+"/"+retepisode.get("serie")+"/Saison "+String.format("%02d", Integer.parseInt(retepisode.get("saison")))+"/"+retepisode.get("serie")+" S"+String.format("%02d", Integer.parseInt(retepisode.get("saison")))+"E"+String.format("%02d", Integer.parseInt(retepisode.get("episode")))+" ep_"+String.format("%03d", Integer.parseInt(retepisode.get("sequentiel")))+"";
+					if (retepisode.containsKey("sequentielbis"))
+					{
+						newname = pathdelabibliothequesdelaserie + "/" + retepisode.get("serie") 
+						+ "/Saison " + String.format("%02d", Integer.parseInt(retepisode.get("saison"))) 
+						+ "/" + retepisode.get("serie") 
+						+ " S" + String.format("%02d", Integer.parseInt(retepisode.get("saison"))) 
+						+ "E" + String.format("%02d", Integer.parseInt(retepisode.get("episode"))) 
+						+ "-E" + String.format("%02d", Integer.parseInt(retepisode.get("episodebis"))) 
+						+ " ep_" + String.format("%03d", Integer.parseInt(retepisode.get("sequentiel"))) 
+						+ "_" + String.format("%03d", Integer.parseInt(retepisode.get("sequentielbis"))) + ""
+							+ retepisode2.get("partiedroite");
 					}
-					int debtitre = spl[1].indexOf(retepisode.get("episode"));
-					newname=newname;
+					else
+					{
+						newname = pathdelabibliothequesdelaserie + "/" + retepisode.get("serie") 
+						+ "/Saison " + String.format("%02d", Integer.parseInt(retepisode.get("saison"))) 
+						+ "/" + retepisode.get("serie") 
+						+ " S" + String.format("%02d", Integer.parseInt(retepisode.get("saison"))) 
+						+ "E" + String.format("%02d", Integer.parseInt(retepisode.get("episode"))) 
+						+ " ep_" + String.format("%03d", Integer.parseInt(retepisode.get("sequentiel"))) + ""
+							+ retepisode2.get("partiedroite");
+					}
+					Ssh.moveFile(spl[0], newname);	
+					Param.logger.debug("(2)vers:"+newname);
 				}
 			}
 		}
 		/*		Ssh.executeAction(Param.filebotlaunchechaine + " -rename \"" + pathdelaseriearanger
-				+ "\" --db TheTVDB --lang en --conflict override --encoding=UTF-8 --format "
-				+ "\"" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\""
-				+ " -r -non-strict ");*/		
+		 + "\" --db TheTVDB --lang en --conflict override --encoding=UTF-8 --format "
+		 + "\"" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\""
+		 + " -r -non-strict ");*/		
 	}
 
 	/**
@@ -124,12 +145,12 @@ public class FileBot
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 */
-	public static void getsubtitleserie( String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
+	public static void getsubtitleserie(String pathdelabibliothequesdelaserie) throws JSchException, IOException, InterruptedException
 	{
 		//Ssh.executeAction(Param.filebotlaunchechaine + " -get-missing-subtitles \"" + pathdelabibliothequesdelaserie
 		//		+ "\" --lang en,fr --output srt --encoding utf8 -r -non-strict ");
 	}
-	
+
 	/**
 	 * Maj_liste_episodes.
 	 *
@@ -144,9 +165,9 @@ public class FileBot
 	public static void maj_liste_episodes(String serie) throws NumberFormatException, SQLException, ParseException, JSchException, IOException, InterruptedException
 	{
 		ArrayList<String> ret = new ArrayList<String>(0);
-	
+
 		ret = Ssh.executeAction(Param.filebotlaunchechaine + " -list --db TheTVDB --q \"" + serie
-							 + "\" --format '{n}#{s}#{e}#{absolute}#{airdate}#{t}#' ");
+								+ "\" --format '{n}#{s}#{e}#{absolute}#{airdate}#{t}#' ");
 
 		/**
 		 * nettoyage tableau retour
@@ -178,44 +199,47 @@ public class FileBot
 					exLineEp[3] = String.valueOf(numSeqPrec + 1);
 				}
 				numSeqPrec = Integer.valueOf(exLineEp[3]);
-				
+
 				/* exLineEp[0] , */
 				Date airDate;
-				if(exLineEp[4].compareTo("") != 0){
-					airDate=(new SimpleDateFormat("yyyy-MM-dd")).parse(exLineEp[4]);
+				if (exLineEp[4].compareTo("") != 0)
+				{
+					airDate = (new SimpleDateFormat("yyyy-MM-dd")).parse(exLineEp[4]);
 				}
 				else
 				{
 					airDate = (new SimpleDateFormat("dd/mm/yyyy")).parse("31/12/2099");
 				}
-				
-			
+
+
 				ResultSet rsFilebot = null;
-				Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+				Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				rsFilebot = stmt.executeQuery("SELECT * "
-											 + " FROM episodes "
-											 + "WHERE "
-											 + " serie = \"" + serie + "\""
-											 + " and num_saison = \"" + Integer.valueOf(exLineEp[1]) + "\""
-											 + " and num_episodes = \"" + Integer.valueOf(exLineEp[2]) + "\""				 
-											 + " ");
+											  + " FROM episodes "
+											  + "WHERE "
+											  + " serie = \"" + serie + "\""
+											  + " and num_saison = \"" + Integer.valueOf(exLineEp[1]) + "\""
+											  + " and num_episodes = \"" + Integer.valueOf(exLineEp[2]) + "\""				 
+											  + " ");
 				rsFilebot.last();
 				String nomnettoyer = exLineEp[5].replaceAll("[^a-zA-Z0-9.-]", "_");
 				if (rsFilebot.getRow() == 0)
 				{	
 					stmt.executeUpdate("INSERT INTO episodes "
-							 + " ( nom , airdate , serie , num_saison , num_episodes , sequentiel) VALUES " 
-							 + " ("
-							 + " \"" + nomnettoyer + "\" ,"
-							 + " \"" + (new SimpleDateFormat("yyyy-MM-dd")).format(airDate) + "\" ,"
-							 + " \"" + serie + "\" ,"
-							 + " \"" + Integer.valueOf(exLineEp[1]) + "\" ,"
-							 + " \"" + Integer.valueOf(exLineEp[2]) + "\" ,"		
-							 + " \"" + Integer.valueOf(exLineEp[3]) + "\" "	
-							 + " )");
-				} else {
-					
-					rsFilebot.updateString("nom",nomnettoyer );
+									   + " ( nom , airdate , serie , num_saison , num_episodes , sequentiel) VALUES " 
+									   + " ("
+									   + " \"" + nomnettoyer + "\" ,"
+									   + " \"" + (new SimpleDateFormat("yyyy-MM-dd")).format(airDate) + "\" ,"
+									   + " \"" + serie + "\" ,"
+									   + " \"" + Integer.valueOf(exLineEp[1]) + "\" ,"
+									   + " \"" + Integer.valueOf(exLineEp[2]) + "\" ,"		
+									   + " \"" + Integer.valueOf(exLineEp[3]) + "\" "	
+									   + " )");
+				}
+				else
+				{
+
+					rsFilebot.updateString("nom", nomnettoyer);
 					rsFilebot.updateString("airdate",  (new SimpleDateFormat("yyyy-MM-dd")).format(airDate));
 					rsFilebot.updateInt("sequentiel",  Integer.valueOf(exLineEp[3]));
 					rsFilebot.updateRow();

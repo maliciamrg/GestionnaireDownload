@@ -68,7 +68,7 @@ public class Torrent {
 	 * @throws NumberFormatException the number format exception
 	 * @throws SQLException the SQL exception
 	 */
-	static ArrayList<String> getMagnetFor(String serie, Integer saison, ArrayList<Integer> episode,Integer nbEpisodeSaison) throws IOException, NumberFormatException, SQLException {
+	static ArrayList<String> getMagnetFor(String serie, Integer saison, ArrayList<Integer> episode,int nbEpisodeSaison) throws IOException, NumberFormatException, SQLException {
 		ArrayList<String> retTorrents = new ArrayList<String>(0);
 
 		String strMagnet3 = "";
