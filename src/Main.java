@@ -5,17 +5,13 @@
  * 
  * 
  */
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,13 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.PieSectionLabelGenerator;
-import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
-import org.jfree.chart.plot.PiePlot3D;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.util.Rotation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -144,12 +133,10 @@ public class Main
 	 * 			nbmagnetachercher - 1
 	 *
 	 * @param args the arguments
-	 * @throws FileNotFoundException the file not found exception
-	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @throws XmlRpcException the xml rpc exception
+	 * @throws Exception 
 	 */
 
-	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, XmlRpcException, JSchException, SQLException, InterruptedException, IOException
+	public static void main(String[] args) throws Exception
 	{
 		(new File("error.txt")).delete();
 		try
@@ -158,6 +145,13 @@ public class Main
 			mise_a_jour_mpd(args);
 			alimentation_bdd(args);	
 
+			if (!Param.actionrexlexionunique.equals(null))
+			{
+				System.out.println("actionrexlexionunique="+Param.actionrexlexionunique);
+				Reflex.lancerMethode(new Reflex() , new String []{Param.actionrexlexionuniqueparam}, Param.actionrexlexionunique);
+				cloture(args);
+				System.exit(0); 
+			}
 			if (Param.analyserrepertoire)
 			{
 				Param.WordPressPost = false;
@@ -615,21 +609,6 @@ public class Main
 						   + " ");
 	}
 
-	/**
-	 * Mettredatemajserieserie.
-	 *
-	 * @param serie the serie
-	 * @throws SQLException the SQL exception
-	 */
-	private static void mettredatemajserieserie(String serie) throws SQLException
-	{
-		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		stmt.executeUpdate("UPDATE series "
-						   + " set date_maj_web = \"" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\""
-						   + "WHERE "
-						   + " nom = \"" + serie + "\""		
-						   + " ");
-	}
 
 	/**
 	 * Mettretableaustatmajserieserie.
@@ -1263,7 +1242,7 @@ public class Main
      */
 	private static void mise_a_jour_mpd(String[] args) throws SQLException
 	{
-
+		// TODO: add auto alter
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS series "
 						   + "(nom VARCHAR(255) not NULL , "
@@ -1399,14 +1378,12 @@ public class Main
 			if (rs.getObject("MaxDate") == null || (rs.getDate("MaxDate")).after(Param.dateDuJour()))
 			{
 				FileBot.maj_liste_episodes(rs.getString("nom"));
-				mettredatemajserieserie(rs.getString("nom"));
 			}
 			else
 			{
 				if ((rs.getDate("MaxDate")).before(Param.dateJourM300))
 				{ 
 					FileBot.maj_liste_episodes(rs.getString("nom"));
-					mettredatemajserieserie(rs.getString("nom"));
 				}
 			}
 		}
@@ -1650,5 +1627,5 @@ public class Main
 
 	}
 
-
+	
 }

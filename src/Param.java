@@ -217,6 +217,9 @@ filebotlaunchechaine=filebot
 	public static String filebotlaunchechaine;
 
 
+	public static String actionrexlexionunique;
+	public static String actionrexlexionuniqueparam;
+	
 	public static Boolean actionrangerdownload;
 	
 	/**
@@ -251,6 +254,9 @@ filebotlaunchechaine=filebot
 		
 		analyserrepertoire = (props.getProperty("environement").equals("analyserrepertoire")) ?true: false; 
 		actionrangerdownload = Boolean.parseBoolean(props.getProperty("action.rangerdownload")); 
+		
+		actionrexlexionunique= props.getProperty("action.rexlexionunique"); 
+		actionrexlexionuniqueparam= props.getProperty("action.rexlexionuniqueparam"); 
 		
 		dburl = props.getProperty("db.url"); 
 		dbuser = props.getProperty("db.user"); 

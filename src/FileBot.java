@@ -218,11 +218,15 @@ public class FileBot
 			// {n}#{s}#{e}#{absolute}#{airdate}#{t}#
 			String[] exLineEp = (lineEp + "0#").split("[/#]");
 			// System.out.println(lineEp + "." + exLineEp.length);
-			if (Param.isNumeric(exLineEp[1]) && Param.isNumeric(exLineEp[2]))
+			if (Param.isNumeric(exLineEp[1]) && Param.isNumeric(exLineEp[2]) && Integer.parseInt(exLineEp[2]) >0)
 			{
 				if (!Param.isNumeric(exLineEp[3]))
 				{
 					exLineEp[3] = String.valueOf(numSeqPrec + 1);
+				}
+				if (numSeqPrec >= Integer.valueOf(exLineEp[3]))
+				{
+					exLineEp[3] = String.valueOf(numSeqPrec+1);
 				}
 				numSeqPrec = Integer.valueOf(exLineEp[3]);
 
@@ -274,6 +278,25 @@ public class FileBot
 
 			}
 		}
+		
+		mettredatemajserieserie(serie);
 
 	}
+	
+	/**
+	 * Mettredatemajserieserie.
+	 *
+	 * @param serie the serie
+	 * @throws SQLException the SQL exception
+	 */
+	private static void mettredatemajserieserie(String serie) throws SQLException
+	{
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("UPDATE series "
+						   + " set date_maj_web = \"" + (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\""
+						   + "WHERE "
+						   + " nom = \"" + serie + "\""		
+						   + " ");
+	}
+
 }

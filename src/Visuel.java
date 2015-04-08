@@ -1,6 +1,11 @@
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.text.*;
+
+import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
+
 import org.jfree.chart.*;
 import org.jfree.chart.labels.*;
 import org.jfree.chart.plot.*;
