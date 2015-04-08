@@ -5,7 +5,6 @@
  * 
  * 
  */
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,9 +27,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.jfree.chart.ChartFactory;
@@ -468,46 +464,10 @@ public class Main
 
 		}
 		rs.close();		 
-		String titre = serie + " " + strnbjourprochainepisodes;
-
-		/*JFreeChart*/
-		DefaultPieDataset objDataset = new DefaultPieDataset();
-		objDataset.setValue("nbpresent", nbpresent);
-		objDataset.setValue("nbencours", nbencours);
-		objDataset.setValue("nbabsent", nbabsent);
-		objDataset.setValue("nbavenir", nbavenir);
-		JFreeChart objChart = ChartFactory.createPieChart3D(
-		    titre,   //Chart title
-		    objDataset,          //Chart Data 
-		    true,               // include legend?
-		    true,               // include tooltips?
-		    false               // include URLs?
-		);
-        PieSectionLabelGenerator generator = new StandardPieSectionLabelGenerator(
-			"{0} {1}", new DecimalFormat("0"), new DecimalFormat("0.00"));
-        PiePlot3D plot = (PiePlot3D) objChart.getPlot();
-        plot.setStartAngle(180);
-        plot.setDirection(Rotation.CLOCKWISE);
-        plot.setForegroundAlpha(0.5f);
-        plot.setLabelGenerator(generator);
-        int width = 320; /* Width of the image */
-        int height = 240; /* Height of the image */ 
-		//File pieChart = new File( "PieChart_"+serie+".jpeg" ); 
-
-		//ChartUtilities.writeChartAsPNG( imageString , objChart , width , height );
-		BufferedImage objBufferedImage=objChart.createBufferedImage(width, height);
-		ByteArrayOutputStream bas = new ByteArrayOutputStream();
-		try
-		{
-			ImageIO.write(objBufferedImage, "png", bas);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		byte[] byteArray=bas.toByteArray();
-
-		String imagestatseriehtml = "<img src='data:image/png;base64," + DatatypeConverter.printBase64Binary(byteArray) + "'>";
+		
+		
+		
+		String imagestatseriehtml = Visuel.generate_image_resumer_serie(serie, strnbjourprochainepisodes, nbpresent, nbencours, nbabsent, nbavenir);
 
 		mettreimagestatmajserieserie(serie, imagestatseriehtml);
 		String tableaustatseriehtml =Miseenforme(visu);
@@ -518,6 +478,7 @@ public class Main
 
 		return returnhtml;
 	}
+
 
 	/**
 	 * Miseenforme.
@@ -1604,9 +1565,9 @@ public class Main
 		}
 
 		Integer nbtrouve = 0;
-		numeroSaisonTrouve.remove("saison", "000");
-		numeroEpisodeTrouve.remove("episode", "000");
-		numeroSequentielTrouve.remove("sequentiel", "000");
+//		numeroSaisonTrouve.remove("saison", "000");
+//		numeroEpisodeTrouve.remove("episode", "000");
+//		numeroSequentielTrouve.remove("sequentiel", "000");
 		if ((numeroSaisonTrouve.size() > 0 && numeroEpisodeTrouve.size() > 0) || numeroSequentielTrouve.size() > 0)
 		{
 
