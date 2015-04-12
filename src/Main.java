@@ -144,8 +144,8 @@ public class Main
 			initialisation(args);
 			mise_a_jour_mpd(args);
 			alimentation_bdd(args);	
-
-			if (!Param.actionrexlexionunique.equals(null))
+			transmisson(args);	
+			if (Param.actionrexlexionunique!=null)
 			{
 				System.out.println("actionrexlexionunique="+Param.actionrexlexionunique);
 				Reflex.lancerMethode(new Reflex() , new String []{Param.actionrexlexionuniqueparam}, Param.actionrexlexionunique);
@@ -257,9 +257,19 @@ public class Main
 
 			mettretoutelasaisonaencours(serie, saison);
 
+			
 			ArrayList<String> magnet = Torrent.getMagnetFor(serie,
-															Integer.parseInt(saison), episodes,
-															Integer.parseInt(nbepisodesaison(serie, saison)));
+					Integer.parseInt(saison), episodes,
+					Integer.parseInt(nbepisodesaison(serie, saison)));
+			if (magnet.size() == 0){
+				for (Integer ep: episodes ){
+					ArrayList<Integer> epi = new ArrayList<Integer>();
+					epi.add(ep);
+					magnet.addAll( Torrent.getMagnetFor(serie,
+							Integer.parseInt(saison),epi,
+							Integer.parseInt(nbepisodesaison(serie, saison))));	
+				}
+			}
 
 			if (magnet.size() == 0)
 			{
@@ -308,7 +318,9 @@ public class Main
 			+ "      NOT encours "
 			+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
 			+ "  AND serie=\"" + serie + "\""
-			+ "  AND num_saison=\"" + saison + "\"" + "");
+			+ "  AND num_saison=\"" + saison + "\""
+			+ "  AND airdate < \""
+			+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "\""  + "");
 		rs = stmt.executeQuery(sql);
 		while (rs.next())
 		{
@@ -336,8 +348,8 @@ public class Main
 			+ " WHERE "
 			+ "      NOT encours "
 			+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
-			+ "  AND ( isnull(freezesearchuntil) or freezesearchuntil < \""
-			+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\")" 
+		//	+ "  AND ( isnull(freezesearchuntil) or freezesearchuntil < \""
+		//	+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\")" 
 			+ "  AND airdate < \""
 			+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJourUsa) + "\"" 
 			+ " ORDER BY " + "  airdate Desc");
@@ -721,7 +733,7 @@ public class Main
 		if (Ssh.Fileexists(Param.CheminTemporaireTmp()))
 		{
 			//deplacer fichier a la racine
-			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type f -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaireTmp() + "\" \\;");
+			//Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type f -iname '*.*' -exec mv '{}' \"" + Param.CheminTemporaireTmp() + "\" \\;");
 			//purge rep=ertzooire v,wide
 			//	Ssh.actionexecChmodR777(Param.CheminTemporaireTmp() );
 			//	Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -depth -exec rmdir 2>/dev/null '{}' \\;");
@@ -764,13 +776,13 @@ public class Main
 		}
 		rs.close();
 
-		if (Ssh.Fileexists(Param.CheminTemporaireFilm()))
-		{
-			if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size() > 0)
-			{
-				FileBot.rangerfilm(Param.CheminTemporaireFilm() , Param.RepertoireFilm);
-			}
-		}
+//		if (Ssh.Fileexists(Param.CheminTemporaireFilm()))
+//		{
+//			if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size() > 0)
+//			{
+//				FileBot.rangerfilm(Param.CheminTemporaireFilm() , Param.RepertoireFilm);
+//			}
+//		}
 
 	}
 
@@ -1032,7 +1044,8 @@ public class Main
 	{
 		System.out.println("transmisson");
 		ResultSet rs = null;
-	  	List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString ,TorrentField.files,TorrentField.name,TorrentField.percentDone,TorrentField.activityDate ,TorrentField.eta});
+	  	long dtjour = Param.dateDuJour().getTime();
+		List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString ,TorrentField.files,TorrentField.name,TorrentField.percentDone,TorrentField.activityDate ,TorrentField.eta});
 		for (TorrentStatus curr : torrents)
 		{
 			String hash = (String) curr.getField(TorrentField.hashString);
@@ -1078,21 +1091,22 @@ public class Main
 									}
 									else
 									{
+										transmission.uncancelFilenameOfTorrent(hash, i);
 										mettreepisodeaencours(ret.get("serie"), ret.get("saison"), ret.get("episode"), ret.get("sequentiel"));
-										if (!n.get("bytesCompleted").equals(0))
-										{
-											if (n.get("bytesCompleted").equals(n.get("length")))
-											{
-												if (transmission.deplacer_fichier(hash, Param.CheminTemporaireSerie(), i))
-												{										
-													nbfichierbruler ++;
-												}
-											}
-											else
-											{
-												Param.logger.debug("Encours Ep:" + ret.get("serie") + " " + ret.get("saison") + "-" + ret.get("episode") + " name:" + n.getString("name")); 
-											}
-										}
+//										if (!n.get("bytesCompleted").equals(0))
+//										{
+//											if (n.get("bytesCompleted").equals(n.get("length")))
+//											{
+//												if (transmission.deplacer_fichier(hash, Param.CheminTemporaireSerie(), i))
+//												{										
+//													nbfichierbruler ++;
+//												}
+//											}
+//											else
+//											{
+//												Param.logger.debug("Encours Ep:" + ret.get("serie") + " " + ret.get("saison") + "-" + ret.get("episode") + " name:" + n.getString("name")); 
+//											}
+//										}
 									}
 								}
 							}
@@ -1102,11 +1116,13 @@ public class Main
 								{
 									rs.updateString("classification", "effacer");
 									rs.updateRow();
+								} else {
+									transmission.resume_hash(hash);
 								}
 							}
 							if (rs.getDate("timestamp_ajout").before(Param.dateJourM1))
 							{
-								long derniereactiviteilyaminutes = ((Param.dateDuJour().getTime() / 1000) - (Integer)curr.getField(TorrentField.activityDate)) ;
+								long derniereactiviteilyaminutes = ((dtjour / 1000) - (Integer)curr.getField(TorrentField.activityDate)) ;
 								if (derniereactiviteilyaminutes > (Integer.parseInt(Param.minutesdinactivitesautorize) * 60))
 								{
 									rs.updateString("classification", "effacer");
@@ -1131,7 +1147,7 @@ public class Main
 							}
 							if (rs.getDate("timestamp_ajout").before(Param.dateJourM1))
 							{
-								long derniereactiviteilyaminutes = ((Param.dateDuJour().getTime() / 1000) - (Integer)curr.getField(TorrentField.activityDate)) ;
+								long derniereactiviteilyaminutes = ((dtjour / 1000) - (Integer)curr.getField(TorrentField.activityDate)) ;
 								if (derniereactiviteilyaminutes > (Integer.parseInt(Param.minutesdinactivitesautorize) * 60))
 								{
 									rs.updateString("classification", "filemaeffacer");

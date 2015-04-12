@@ -72,6 +72,12 @@ public class transmission {
 		Param.client.removeTorrents(new Object[] { torrentId }, true);
 	}
 
+	public static void resume_hash(String hash) throws JSONException,
+			IOException {
+		int torrentId = torrentIdOfHash(hash);
+		Param.client.startTorrents(torrentId);
+	}
+
 	/**
 	 * All_fichier_absent.
 	 * 
@@ -197,6 +203,33 @@ public class transmission {
 		ArrayList<Integer> listFilesUnwanted = new ArrayList<Integer>(0);
 		listFilesUnwanted.add(indiceOfFile);
 		torrentParam.filesUnwanted = listFilesUnwanted;
+		Param.client.setTorrents(torrentParam);
+
+	}
+
+	/**
+	 * cancelle un des fichier du torrent.
+	 * 
+	 * @param hashTransmisionTorrents
+	 *            the hash transmision torrents
+	 * @param indiceOfFile
+	 *            the indice of file
+	 * @throws JSONException
+	 *             the JSON exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	public static void uncancelFilenameOfTorrent(
+			String hashTransmisionTorrents, int indiceOfFile)
+			throws JSONException, IOException {
+		if (Param.client == null) {
+			return;
+		}
+		SetTorrentParameters torrentParam = new SetTorrentParameters(
+				torrentIdOfHash(hashTransmisionTorrents));
+		ArrayList<Integer> listFilesWanted = new ArrayList<Integer>(0);
+		listFilesWanted.add(indiceOfFile);
+		torrentParam.filesWanted = listFilesWanted;
 		Param.client.setTorrents(torrentParam);
 
 	}

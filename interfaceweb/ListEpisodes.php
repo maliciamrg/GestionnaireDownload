@@ -29,7 +29,7 @@
 <?php
 
 //Create a query
-$sql = "SELECT * FROM episodes ";
+$sql = "SELECT * FROM episodes order by airdate desc";
 
 //submit the query and capture the result
 
@@ -52,7 +52,14 @@ if  (mysql_num_rows($result)>0){
 			$a = mysql_field_type ( $result , $i );
 			echo "<td>";
 			echo "(".$a.")</br>".mysql_field_name($result,$i);
-			echo"</td>";
+			echo"</td>";		
+			if (mysql_field_name($result,$i)=="timestamp_completer"){
+				$itc=$i;
+			}
+			if (mysql_field_name($result,$i)=="airdate"){
+				$iair=$i;
+				$dtnow=date('Y-m-d');
+			}
 		}
 		?>
 		</tr>
@@ -65,7 +72,16 @@ if  (mysql_num_rows($result)>0){
 		<?php 
 		for ($i=0; $i<mysql_num_fields($result); $i++) {
 			echo "<td>";
+			if ($row[$iair]>$dtnow){
+				echo "<p style='color:darkblue'>";
+			}
+			if ($row[$itc]!=""){
+				echo "<p style='color:green'>";
+			}
 			echo  $row[$i];
+			if ($row[$itc]!="" || $row[$iair]>$dtnow){
+				echo "<p>";
+			}
 			echo"</td>";
 		}
 		?>
