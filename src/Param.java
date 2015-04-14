@@ -771,7 +771,7 @@ filebotlaunchechaine=filebot
 	 * @return the string
 	 */
 	public static String CheminTemporaireTmp() {
-		return CheminTemporaire()+"tmp"+Param.Fileseparator;
+		return CheminTemporaire();//+"tmp"+Param.Fileseparator;
 	}
 	
 	/**
@@ -789,7 +789,7 @@ filebotlaunchechaine=filebot
 	 * @return the string
 	 */
 	public static String CheminTemporaireSerie() {
-		return CheminTemporaire()+"tmp"+Param.Fileseparator+"serie"+Param.Fileseparator;
+		return CheminTemporaire();//+"tmp"+Param.Fileseparator+"serie"+Param.Fileseparator;
 	}
 	
 	/**

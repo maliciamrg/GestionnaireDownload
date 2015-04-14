@@ -12,7 +12,10 @@ import org.jfree.chart.plot.*;
 import org.jfree.data.general.*;
 import org.jfree.util.*;public class Visuel
 {
-	public static String generate_image_resumer_serie(String serie, String strnbjourprochainepisodes, int nbpresent, int nbencours, int nbabsent, int nbavenir)
+	public Visuel(){
+	}
+	
+	public String generate_image_resumer_serie(String serie, String strnbjourprochainepisodes, int nbpresent, int nbencours, int nbabsent, int nbavenir)
 	{
 		String titre = serie + " " + strnbjourprochainepisodes;
 		/*JFreeChart*/

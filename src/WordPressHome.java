@@ -30,7 +30,7 @@ public class WordPressHome
 // 	private static String pwd = "mobile";
 //	private static String xmlRpcUrl = "http://www.daisy-street.fr/wordpress/xmlrpc";
 	/** The table blog. */
-private static ArrayList<HashMap> tableBlog = new ArrayList();
+	private static ArrayList<HashMap> tableBlog = new ArrayList();
 
 	/**
 	 * Gets the table blog.

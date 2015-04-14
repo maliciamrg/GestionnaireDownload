@@ -61,13 +61,13 @@ public class FileBot
 	 */
 	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie, String pathdelabibliothequesdesfilm) throws JSchException, IOException, InterruptedException, SQLException
 	{
-		String pathdelaseriearangercorriger = pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0, pathdelaseriearanger.length() - 1).lastIndexOf("/")).lastIndexOf("/")) + "/" ;
+		//String pathdelaseriearangercorriger = pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0, pathdelaseriearanger.length() - 1).lastIndexOf("/")).lastIndexOf("/")) + "/" ;
 		//String pathdelaseriearangercorriger = (pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0, pathdelaseriearanger.length()-1).lastIndexOf("/")))+"/" ;
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
 		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
 		ArrayList<String> ret = Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdelaserie
 												  + "\" --log-file amc.log --action "/*move " */+ "test "
-												  + "\"" + pathdelaseriearangercorriger + "\" -non-strict " 
+												  + "\"" + pathdelaseriearanger + "\" -non-strict " 
 												  + "--def \"animeFormat=" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
 												  + "\"seriesFormat=" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
 												  + "\"movieFormat=" + pathdelabibliothequesdesfilm + "/{n.replaceAll(/[:]/,'')} ({y})/{n.replaceAll(/[:]/,'')} ({y}, {director}) {vf} {af}\" "
