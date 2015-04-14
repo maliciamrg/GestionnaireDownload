@@ -1,3 +1,4 @@
+package com.maliciamrg.gestion.download;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
