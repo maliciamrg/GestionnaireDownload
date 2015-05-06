@@ -191,6 +191,7 @@ public class FileBot
 	 */
 	public static void maj_liste_episodes(String serie) throws NumberFormatException, SQLException, ParseException, JSchException, IOException, InterruptedException
 	{
+		Param.logger.debug("maj_liste_episodes :"+serie);
 		ArrayList<String> ret = new ArrayList<String>(0);
 
 		ret = Ssh.executeAction(Param.filebotlaunchechaine + " -list --db TheTVDB --q \"" + serie

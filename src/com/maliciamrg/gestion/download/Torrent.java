@@ -77,20 +77,28 @@ public class Torrent {
 		String[] strMagnetep3 = new String[nbEpisodeSaison];
 		String[] strMagnetep6 = new String[nbEpisodeSaison];
 		
-		String html = getDataTorrents(serie, saison, (episode.size() > 1 ? -1 : episode.get(0)));
-		if (html == null) {
+		String html="";
+		String rethtml []= getDataTorrents(serie, saison, (episode.size() > 1 ? -1 : episode.get(0)));
+		if (rethtml == null) {
 			return retTorrents;
 		}
-		if (html.indexOf("did not match any documents") > 0) {
-			return retTorrents;
+		int i = 0;
+		for (i = 0; i < rethtml.length; i++)
+		{
+			if (rethtml[i] != null) {
+				if (rethtml[i].indexOf("did not match any documents") == -1) {
+					html = rethtml[i];
+				}
+			}
 		}
-
+		if (html.equals("")){return retTorrents;}
+		
 		Source source = new Source(html);
 		Element eleDataTorrents = source.getFirstElementByClass("data");
 		if (eleDataTorrents != null) {
 			List<Element> eleRowTorrents = eleDataTorrents
 					.getAllElements(HTMLElementName.TR);
-			int i = 0;
+			i = 0;
 			for (Element row : eleRowTorrents) {
 				i++;
 				if (row.getFirstElementByClass("firstr") == null) {
@@ -200,7 +208,7 @@ public class Torrent {
 			if(strMagnet6!=""){
 				retTorrents.add(strMagnet6);
 			}else{
-				for (int i = 0;i<nbEpisodeSaison;i++){
+				for (i = 0;i<nbEpisodeSaison;i++){
 					if(strMagnetep3[i]!=null){
 						retTorrents.add(strMagnetep3[i]);
 					}else{			
@@ -336,36 +344,56 @@ public class Torrent {
 	 * @return the data torrents
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static String getDataTorrents(String nomSerie, Integer numSaison,Integer numEpisode) throws IOException
+	public static String[] getDataTorrents(String nomSerie, Integer numSaison,Integer numEpisode) throws IOException
 	{
-		String[] listUrlPossible = new String[1];
+		String[] listUrlPossible = new String[5];
+		String[] retour = new String[5];
+		
 		String nomSerieNettoyer = nomSerie.replaceAll("[^a-zA-Z0-9. ]", " ");
-
+		String nomSerieNettoyer2 = nomSerieNettoyer.replaceAll("[0-9]{4}", "");
+		
+		int n=0;
 		String urlRecherche;
 		if (numEpisode == -1)
 		{
+			
 			urlRecherche = nomSerieNettoyer.toLowerCase().trim() + " Season " + numSaison;
+			listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+			n++;
+			if (!nomSerieNettoyer.equals(nomSerieNettoyer2)){
+				urlRecherche = nomSerieNettoyer2.toLowerCase().trim() + " Season " + numSaison;
+				listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+				n++;	
+			}
 		}
 		else
 		{
 			urlRecherche = nomSerieNettoyer.toLowerCase().trim() + " S" + String.format("%1$02d", numSaison) + "E" + String.format("%1$02d", numEpisode);
-		}
-
-		listUrlPossible[0] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
-
-		Param.logger.debug("torrent-" + listUrlPossible[0]);
-		int i = 0;
-		for (i = 0; i < listUrlPossible.length; i++)
-		{
-			String[] ret;
-			ret = valide_url(listUrlPossible[i]);
-			if (ret[0] == "1")
-			{
-				return ret[1];
+			listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+			n++;
+			if (!nomSerieNettoyer.equals(nomSerieNettoyer2)){
+				urlRecherche = nomSerieNettoyer2.toLowerCase().trim() + " S" + String.format("%1$02d", numSaison) + "E" + String.format("%1$02d", numEpisode);
+				listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+				n++;
 			}
 		}
 
-		return null;
+
+		int i = 0;
+		for (i = 0; i < listUrlPossible.length; i++)
+		{
+			if(listUrlPossible[i]!=null){
+				Param.logger.debug("torrent-" + listUrlPossible[i]);
+				String[] ret = valide_url(listUrlPossible[i]);
+				retour[i]= ret[1];
+	//			if (ret[0] == "1")
+	//			{
+					//return ret[1];
+	//			}
+			}
+		}
+
+		return retour;
 	}
 	
 	

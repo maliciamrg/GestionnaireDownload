@@ -23,10 +23,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
@@ -140,6 +147,9 @@ filebotlaunchechaine=filebot
 	
 	/** The date jour m300. */
 	public static Date dateJourM300;
+	
+	/** The date jour mp00. */
+	public static Date dateJourP300;
 	
 	/** The date jour p7. */
 	public static Date dateJourP7;	
@@ -361,9 +371,12 @@ filebotlaunchechaine=filebot
 		Calendar JourM300 =  Calendar.getInstance();;
 		JourM300.add(Calendar.DAY_OF_YEAR, -300);
 		dateJourM300  = JourM300.getTime();
+
+		Calendar JourP300 =  Calendar.getInstance();;
+		JourP300.add(Calendar.DAY_OF_YEAR, +300);
+		dateJourP300  = JourP300.getTime();
 	}
-		
-		
+
 	/**
 	 * Current path.
 	 *
@@ -815,5 +828,32 @@ filebotlaunchechaine=filebot
 		Param.logger.debug("OS=" + s);
 		return s; 
 	}
+	
+	/**
+	 * Get a diff between two dates
+	 * @param date1 the oldest date
+	 * @param date2 the newest date
+	 * @param timeUnit the unit in which you want the diff
+	 * @return the diff value, in the provided unit
+	 */
+	public static String /*Map<TimeUnit,Long>*/ getDateDiff(Date date1, Date date2) {
+		if (date1 == null){return"()";}
+		if (date2 == null){return"()";}
+	    long diffInMillies = date2.getTime() - date1.getTime();
+	    List<TimeUnit> units = new ArrayList<TimeUnit>(EnumSet.allOf(TimeUnit.class));
+	    Collections.reverse(units);
+
+	    Map<TimeUnit,Long> result = new LinkedHashMap<TimeUnit,Long>();
+	    long milliesRest = diffInMillies;
+	    for ( TimeUnit unit : units ) {
+	        long diff = unit.convert(milliesRest,TimeUnit.MILLISECONDS);
+	        long diffInMilliesForUnit = unit.toMillis(diff);
+	        milliesRest = milliesRest - diffInMilliesForUnit;
+	        result.put(unit,diff);
+	    }
+	    return String.format("(%02d days %02d:%02d:%02d)", result.get(TimeUnit.DAYS), result.get(TimeUnit.HOURS), result.get(TimeUnit.MINUTES), result.get(TimeUnit.SECONDS));
+	    //return result;
+	}
+	
 	
 }
