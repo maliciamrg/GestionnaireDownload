@@ -191,25 +191,42 @@ public class Main {
 
 			ArrayList<Integer> episodes = recupurerlisteepisodesarechercher(
 					ret.get("serie"), ret.get("saison"));
-
+					ArrayList<Integer> sequentiel = recupurerlistesequentielarechercher(
+						ret.get("serie"), ret.get("saison"));
+					
 			mettretoutelasaisonaencours(serie, saison);
 
-			ArrayList<String> magnet = Torrent.getMagnetFor(serie,
-					Integer.parseInt(saison), episodes,
-					Integer.parseInt(nbepisodesaison(serie, saison)));
-			if (magnet.size() == 0) {
-				for (Integer ep : episodes) {
-					ArrayList<Integer> epi = new ArrayList<Integer>();
-					epi.add(ep);
-					magnet.addAll(Torrent.getMagnetFor(serie,
-							Integer.parseInt(saison), epi,
-							Integer.parseInt(nbepisodesaison(serie, saison))));
-				}
-			}
+					int nbepsaison=Integer.parseInt(nbepisodesaison(serie, saison));
 
+					//recherchede la saison complete
+			ArrayList<String> magnet = Torrent.getMagnetFor(serie,
+					Integer.parseInt(saison),null,null, episodes,
+					nbepsaison);
+					
+					//recherche des ep_sodes par episosdes
+			if (magnet.size() == 0) {
+				
+				for (Integer ep : episodes) {
+					magnet.addAll(Torrent.getMagnetFor(serie,
+							Integer.parseInt(saison), ep,null,null,
+															   nbepsaison));
+				}
+				
+			}
+			
+			//recherche des episodrs sequentiel par sequentiel
+					if (magnet.size() == 0) {
+						for (Integer seq : sequentiel) {
+							magnet.addAll(Torrent.getMagnetFor(serie,
+															   Integer.parseInt(saison), null,seq,null,
+															   nbepsaison));
+						}
+					}
+					
 			if (magnet.size() == 0) {
 				mettreenattenteepisode(serie, saison, episodes);
 			}
+			
 			for (String strMagnet : magnet) {
 				if (transmission.ajouterlemagnetatransmission(strMagnet)) {
 					String strHash = "";
@@ -269,6 +286,48 @@ public class Main {
 		}
 		rs.close();
 		return episodes;
+	}
+
+	/**
+	 * recupurerlistesequentielarechercher.
+	 *
+	 * @param serie
+	 *            the serie
+	 * @param saison
+	 *            the saison
+	 * @return the array list
+	 * @throws SQLException
+	 *             the SQL exception
+	 * @throws NumberFormatException
+	 *             the number format exception
+	 */
+	private static ArrayList<Integer> recupurerlistesequentielarechercher(
+		String serie, String saison) throws SQLException,
+	NumberFormatException {
+		ArrayList<Integer> sequentiels = new ArrayList<Integer>();
+		ResultSet rs = null;
+		Statement stmt = Param.con.createStatement(
+			ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		String sql = ("SELECT sequentiel"
+			+ " FROM episodes "
+			+ " WHERE "
+			+ "      NOT encours "
+			+ "  AND ( isnull(chemin_complet) or chemin_complet = \"\" )"
+			+ "  AND serie=\""
+			+ serie
+			+ "\""
+			+ "  AND num_saison=\""
+			+ saison
+			+ "\""
+			+ "  AND airdate < \""
+			+ (new SimpleDateFormat("yyyy-MM-dd"))
+			.format(Param.dateDuJourUsa) + "\"" + "");
+		rs = stmt.executeQuery(sql);
+		while (rs.next()) {
+			sequentiels.add(Integer.parseInt(rs.getString("sequentiel")));
+		}
+		rs.close();
+		return sequentiels;
 	}
 
 	/**
