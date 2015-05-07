@@ -37,7 +37,8 @@ import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
 import com.jcraft.jsch.JSchException;
-import com.maliciamrg.homeFunction.HomeFunction;
+import com.maliciamrg.homeFunction.*;
+
 
 // TODO: Auto-generated Javadoc
 /**

@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.17.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/org.json-20131017.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jericho-html-3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.34-bin.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jsch-0.1.51.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/org-apache-xmlrpc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ws-commons-util-1.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.23.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.19.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/benow-transmission-client-1.0.jar"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="bin"/>
+<?xml version="1.0" encoding="UTF-8"?><classpath>
+<classpathentry kind="src" path="src"/>
+<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.17.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/org.json-20131017.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/jericho-html-3.3.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.34-bin.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/jsch-0.1.51.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/org-apache-xmlrpc.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/ws-commons-util-1.0.2.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.23.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/jfreechart-1.0.19.jar"/>
+<classpathentry exported="true" kind="lib" path="lib/benow-transmission-client-1.0.jar"/>
+<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+<classpathentry kind="output" path="bin"/>
+<classpathentry kind="lib" path="lib/homeFunction.jar"/>
 </classpath>
