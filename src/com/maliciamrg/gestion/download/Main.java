@@ -37,6 +37,7 @@ import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
 import com.jcraft.jsch.JSchException;
+import com.maliciamrg.homeFunction.HomeFunction;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -476,7 +477,8 @@ public class Main {
 		}
 		rs.close();
 
-		String imagestatseriehtml = new Visuel().generate_image_resumer_serie(
+		String imagestatseriehtml = "";
+				new HomeFunction().generate_image_resumer_serie(
 				serie, strnbjourprochainepisodes, nbpresent, nbencours,
 				nbabsent, nbavenir);
 
