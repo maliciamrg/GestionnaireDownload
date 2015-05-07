@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -84,21 +85,12 @@ filebotlaunchechaine=filebot
 	 */
 	/** The Fileseparator. */
 	public static String Fileseparator = "/";
-	
-	/** The Chemin temporaire. */
-	private static String CheminTemporaire;
-
-	/** The Urlkickassusearch. */
-	public static String Urlkickassusearch;
 
 	/** The logger. */
 	public static Logger logger;
 
 	/** The work repertoire. */
 	public static String workRepertoire;
-	
-	/** The Repertoire film. */
-	public static String RepertoireFilm;
 
 	/** The log4j_chemin complet_error. */
 	private static String log4j_cheminComplet_error;
@@ -154,84 +146,21 @@ filebotlaunchechaine=filebot
 	/** The date jour p7. */
 	public static Date dateJourP7;	
 
-	/** The nbtelechargementseriesimultaner. */
-	public static int nbtelechargementseriesimultaner;
-
-	/** The gestdownhttp. */
-	private static String gestdownhttp;
-	
-	/** The gestdownusername. */
-	private static String gestdownusername;
-	
-	/** The gestdownpassword. */
-	private static String gestdownpassword;
-	
-	/** The minutesdinactivitesautorize. */
-	public static String minutesdinactivitesautorize;
-	
 	/** The client. */
 	public static TransmissionClient client;
 	
-	/** The dburl. */
-	private static String dburl;
-	
-	/** The dbuser. */
-	private static String dbuser;
-	
-	/** The dbpasswd. */
-	private static String dbpasswd;
-	
-	/** The dbbase. */
-	private static String dbbase;
-	
 	/** The con. */
 	public static Connection con;
-	
-	/** The sshhost. */
-	private static String sshhost;
-	
-	/** The sshusername. */
-	private static String sshusername;
-	
-	/** The sshpassword. */
-	private static String sshpassword;
-	
+
 	/** The jsch. */
 	private static JSch jsch;
 	
 	/** The session. */
 	public static Session session;
-
-
-	/** The debug. */
-	public static boolean debug;
 	
-	/** The analyserrepertoire. */
-	public static boolean analyserrepertoire;
-	
-	/** The Urldu streamer interne. */
-	public static String UrlduStreamerInterne;
+	public static Properties props; 
 
-	/** The Word press post. */
-	public static Boolean WordPressPost;
-	
-	/** The Word pressusername. */
-	public static Object WordPressusername;
-	
-	/** The Word presspwd. */
-	public static Object WordPresspwd;
-	
-	/** The Word pressxml rpc url. */
-	public static String WordPressxmlRpcUrl;
-
-	/** The filebotlaunchechaine. */
-	public static String filebotlaunchechaine;
-
-
-	public static String actionrexlexionunique;
-	public static String actionrexlexionuniqueparam;
-	
-	public static Boolean actionrangerdownload;
+	public static String filename = "projet.properties";
 	
 	/**
 	 * Instantiates a new param.
@@ -254,68 +183,33 @@ filebotlaunchechaine=filebot
 	{
 		workRepertoire = currentPath("/mnt/storage/AppProjects/GestionnaireDownload/");
 
-		Properties props = new Properties(); 
-		FileInputStream in = null;
-		in = new FileInputStream(workRepertoire + Param.Fileseparator + "projet.properties"); 
+		props= new Properties(); 
+		InputStream in = null;
+
+		in = Param.class.getClassLoader().getResourceAsStream(filename);
+		if(in==null){
+	        System.out.println("Sorry, unable to find " + filename);
+		    return;
+		}
+		//in = new FileInputStream(workRepertoire + Param.Fileseparator + "projet.properties"); 
 		props.load(in);
 
-		System.out.println("environement=." + props.getProperty("environement") + ".");
+		//System.out.println("environement=." + props.getProperty("environement") + ".");
 
-		debug = (props.getProperty("environement").equals("debug")) ?true: false; 
-		
-		analyserrepertoire = (props.getProperty("environement").equals("analyserrepertoire")) ?true: false; 
-		actionrangerdownload = Boolean.parseBoolean(props.getProperty("action.rangerdownload")); 
-		
-		actionrexlexionunique= props.getProperty("action.rexlexionunique"); 
-		actionrexlexionuniqueparam= props.getProperty("action.rexlexionuniqueparam"); 
-		
-		dburl = props.getProperty("db.url"); 
-		dbuser = props.getProperty("db.user"); 
-		dbpasswd = props.getProperty("db.passwd");
-		dbbase = props.getProperty("db.base");
 
-		gestdownhttp = props.getProperty("gestdown.http"); 
-		gestdownusername = props.getProperty("gestdown.username"); 
-		gestdownpassword = props.getProperty("gestdown.password");
-		minutesdinactivitesautorize = props.getProperty("gestdown.minutesdinactivitesautorize");
-		
-		WordPressPost = Boolean.parseBoolean(props.getProperty("WordPress.addpost")); 
-		WordPressxmlRpcUrl = props.getProperty("WordPress.xmlRpcUrl"); 
-		WordPressusername = props.getProperty("WordPress.username"); 
-		WordPresspwd = props.getProperty("WordPress.password");		
-
-		sshhost = props.getProperty("ssh.host"); 
-		sshusername = props.getProperty("ssh.username"); 
-		sshpassword = props.getProperty("ssh.password");
-
-		nbtelechargementseriesimultaner = Integer.parseInt(props.getProperty("nbtelechargementseriesimultaner"));
-		CheminTemporaire = props.getProperty("CheminTemporaire");
-		RepertoireFilm = props.getProperty("RepertoireFilm");
-		Urlkickassusearch = props.getProperty("Urlkickassusearch");
-
-		filebotlaunchechaine = props.getProperty("filebotlaunchechaine");
-		
-		UrlduStreamerInterne  = props.getProperty("UrlduStreamerInterne");
 		initialiser_dates();
 
-		if (debug)
-		{
-			System.out.println("pas de db2 en debug");
-			System.out.println(workRepertoire);
-		}
-		else
-		{
-			System.out.println(dburl + dbbase);
-			con = DriverManager.getConnection(dburl + dbbase+"?useUnicode=true&characterEncoding=utf-8", dbuser, dbpasswd);
-		}
+
+		System.out.println(props.getProperty("db.url") + props.getProperty("db.base"));
+		con = DriverManager.getConnection(props.getProperty("db.url") +  props.getProperty("db.base")+"?useUnicode=true&characterEncoding=utf-8", props.getProperty("db.user"), props.getProperty("db.passwd"));
 		
 		jsch = new JSch();
-		session = jsch.getSession(sshusername, sshhost, 22);
-		session.setPassword(sshpassword);
+		session = jsch.getSession(props.getProperty("ssh.username"), props.getProperty("ssh.host"), 22);
+		session.setPassword(props.getProperty("ssh.password"));
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
-		if (!sshhost.equals("")){
+		if (!props.getProperty("ssh.host").equals("")){
 			session.connect();
 		}
 		
@@ -500,12 +394,9 @@ filebotlaunchechaine=filebot
 	 */
 	public static void clotureTrace() throws FileNotFoundException, IOException, InterruptedException
 	{
-		if (debug)
-		{
+
 			printAllAppender();
-		}
-		else
-		{
+
 			Thread.sleep(500);
 			faMaster.close();
 			Thread.sleep(500);
@@ -518,7 +409,7 @@ filebotlaunchechaine=filebot
 			faInfo.close();
 			Thread.sleep(500);
 			logger.removeAllAppenders();
-		}
+		
 		Thread.sleep(5000);
 		archiveLog(log4j_cheminComplet_info);
 		archiveLog(log4j_cheminComplet_debug);
@@ -721,7 +612,7 @@ filebotlaunchechaine=filebot
 			{
 				boolean isError = true;
 
-				URL url = new URL("http://" +  gestdownusername + ":" + gestdownpassword + "@" +  gestdownhttp + "");
+				URL url = new URL("http://" +  props.getProperty("gestdown.username") + ":" + props.getProperty("gestdown.password") + "@" +  props.getProperty("gestdow.http") + "");
 
 				/*
 				 * url = new URL("http://" + this.username + ":" + this.password
@@ -776,7 +667,7 @@ filebotlaunchechaine=filebot
 	 * @return the string
 	 */
 	private static String CheminTemporaire() {
-		return CheminTemporaire;
+		return props.getProperty("Repertoire.Temporaire");
 	}
 
 	/**

@@ -393,12 +393,12 @@ public class Torrent
 		{
 			
 			urlRecherche = nomSerieNettoyer.toLowerCase().trim() + " S" + String.format("%1$02d", numSaison) + "E" + String.format("%1$02d", numEpisode);
-			listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+			listUrlPossible[n] = Param.props.getProperty("Url.kickassusearch") + urlRecherche	+ "/?field=seeders&sorder=desc";
 			n++;
 			if (!nomSerieNettoyer.equals(nomSerieNettoyer2))
 			{
 				urlRecherche = nomSerieNettoyer2.toLowerCase().trim() + " S" + String.format("%1$02d", numSaison) + "E" + String.format("%1$02d", numEpisode);
-				listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+				listUrlPossible[n] = Param.props.getProperty("Url.kickassusearch") + urlRecherche	+ "/?field=seeders&sorder=desc";
 				n++;
 			}
 			
@@ -408,12 +408,12 @@ public class Torrent
 			if (numSequentiel > 0)
 			{
 				urlRecherche = nomSerieNettoyer.toLowerCase().trim() + " " + String.format("%1$03d", numSequentiel);
-				listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+				listUrlPossible[n] = Param.props.getProperty("Url.kickassusearch") + urlRecherche	+ "/?field=seeders&sorder=desc";
 				n++;
 				if (!nomSerieNettoyer.equals(nomSerieNettoyer2))
 				{
 					urlRecherche = nomSerieNettoyer2.toLowerCase().trim() + " " + String.format("%1$03d", numSequentiel);
-					listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+					listUrlPossible[n] = Param.props.getProperty("Url.kickassusearch") + urlRecherche	+ "/?field=seeders&sorder=desc";
 					n++;
 				}
 
@@ -422,12 +422,12 @@ public class Torrent
 			{
 
 				urlRecherche = nomSerieNettoyer.toLowerCase().trim() + " Season " + numSaison;
-				listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+				listUrlPossible[n] = Param.props.getProperty("Url.kickassusearch") + urlRecherche	+ "/?field=seeders&sorder=desc";
 				n++;
 				if (!nomSerieNettoyer.equals(nomSerieNettoyer2))
 				{
 					urlRecherche = nomSerieNettoyer2.toLowerCase().trim() + " Season " + numSaison;
-					listUrlPossible[n] = Param.Urlkickassusearch + urlRecherche	+ "/?field=seeders&sorder=desc";
+					listUrlPossible[n] = Param.props.getProperty("Url.kickassusearch") + urlRecherche	+ "/?field=seeders&sorder=desc";
 					n++;	
 				}
 				

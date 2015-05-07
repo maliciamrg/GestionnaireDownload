@@ -37,7 +37,8 @@ import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
 import com.jcraft.jsch.JSchException;
-import com.maliciamrg.homeFunction.HomeFunction;
+import com.maliciamrg.homeFunction.*;
+
 
 // TODO: Auto-generated Javadoc
 /**
@@ -175,7 +176,7 @@ public class Main {
 			throws SQLException, NumberFormatException, IOException {
 		System.out.println("lancerlesprochainshash");
 		int nbserieencours = nbhashserienonterminee();
-		int nbmagnetachercher = Param.nbtelechargementseriesimultaner
+		int nbmagnetachercher = Integer.parseInt(Param.props.getProperty("Telechargement.nbseriesimultaner"))
 				- nbserieencours;
 
 		while (nbmagnetachercher > 0) {
@@ -783,7 +784,7 @@ public class Main {
 		// ranger les serie dans les sous repertoire de tmp
 		if (Ssh.getRemoteFileList(Param.CheminTemporaireSerie()).size() > 0) {
 			FileBot.rangerserie(Param.CheminTemporaireSerie(),
-					Param.CheminTemporaireSerie(), Param.RepertoireFilm);
+					Param.CheminTemporaireSerie(), Param.props.getProperty("Repertoire.Film"));
 		}
 
 		ResultSet rs = null;
@@ -846,15 +847,14 @@ public class Main {
 		while (rs.next()) {
 			Param.logger.debug(rs.getString("nom"));
 
-			if (Param.analyserrepertoire) {
-				Ssh.executeAction("find \"" + rs.getString("repertoire")
-						+ "\" -name \\*.nfo -exec rm {} \\;");
-				FileBot.rangerserie(rs.getString("repertoire"),
-						Param.getlastPath(rs.getString("repertoire")),
-						Param.RepertoireFilm);
-				Ssh.executeAction("cd \"" + rs.getString("repertoire")
-						+ "\";find . -type d -delete \\;");
-			}
+			Ssh.executeAction("find \"" + rs.getString("repertoire")
+					+ "\" -name \\*.nfo -exec rm {} \\;");
+			FileBot.rangerserie(rs.getString("repertoire"),
+					Param.getlastPath(rs.getString("repertoire")),
+					Param.props.getProperty("Repertoire.Film"));
+			Ssh.executeAction("cd \"" + rs.getString("repertoire")
+					+ "\";find . -type d -delete \\;");
+
 
 			getseriestathtml(rs.getString("nom"));
 
@@ -930,7 +930,7 @@ public class Main {
 					+ curr.get("saison") + "\"" + " and num_episodes = \""
 					+ curr.get("episode") + "\"" + " ");
 			String seriestathtml = getseriestathtml(curr.get("serie"));
-			if (Param.WordPressPost) {
+			if (Boolean.parseBoolean(Param.props.getProperty("WordPress.addpost"))) {
 				String NomFichier = curr.get("chemin").substring(
 						(Math.max(curr.get("chemin").lastIndexOf('/'), curr
 								.get("chemin").lastIndexOf('\\'))) + 1);
@@ -948,7 +948,7 @@ public class Main {
 								new String[] { "Serie" },
 								/* "http://home.daisy-street.fr/BibPerso/stream.php?flux=" */
 								"<a href=\""
-										+ Param.UrlduStreamerInterne
+										+ Param.props.getProperty("Url.StreamerInterne")
 										+ URLEncoder.encode(curr.get("chemin"),
 												"UTF-8") + "\">" + NomFichier
 										+ "</a>" + "\n" + seriestathtml + "");
@@ -1150,7 +1150,7 @@ public class Main {
 							long derniereactiviteilyaminutes = ((dtjour / 1000) - (Integer) curr
 									.getField(TorrentField.activityDate));
 							if (derniereactiviteilyaminutes > (Integer
-									.parseInt(Param.minutesdinactivitesautorize) * 60)) {
+									.parseInt(Param.props.getProperty("gestdown.minutesdinactivitesautorize")) * 60)) {
 								rs.updateString("classification", "effacer");
 								rs.updateRow();
 							}
@@ -1173,7 +1173,7 @@ public class Main {
 							long derniereactiviteilyaminutes = ((dtjour / 1000) - (Integer) curr
 									.getField(TorrentField.activityDate));
 							if (derniereactiviteilyaminutes > (Integer
-									.parseInt(Param.minutesdinactivitesautorize) * 60)) {
+									.parseInt(Param.props.getProperty("gestdown.minutesdinactivitesautorize")) * 60)) {
 								rs.updateString("classification",
 										"filemaeffacer");
 								rs.updateString("nom", (String) curr

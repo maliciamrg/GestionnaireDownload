@@ -38,8 +38,8 @@ public class FileBot
 	public static void rangerfilm(String pathdesfilmaranger, String pathdelabibliothequesdesfilm) throws JSchException, IOException, InterruptedException
 	{
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
-		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
-		Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdesfilm 
+		Ssh.executeAction(Param.props.getProperty("Filebot.launchechaine") + " -clear-cache ");
+		Ssh.executeAction(Param.props.getProperty("Filebot.launchechaine") + " -script fn:amc --output  \"" + pathdelabibliothequesdesfilm 
 						  + "\" --log-file amc.log --action move "
 						  + "\"" + pathdesfilmaranger + "\" -non-strict " 
 						  + "--def \"movieFormat=" + pathdelabibliothequesdesfilm + "/{n.replaceAll(/[:]/,'')} ({y})/{n.replaceAll(/[:]/,'')} ({y}, {director}) {vf} {af}\" "
@@ -65,8 +65,8 @@ public class FileBot
 		//String pathdelaseriearangercorriger = pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0, pathdelaseriearanger.length() - 1).lastIndexOf("/")).lastIndexOf("/")) + "/" ;
 		//String pathdelaseriearangercorriger = (pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0, pathdelaseriearanger.length()-1).lastIndexOf("/")))+"/" ;
 		Ssh.executeAction("rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml");
-		Ssh.executeAction(Param.filebotlaunchechaine + " -clear-cache ");
-		ArrayList<String> ret = Ssh.executeAction(Param.filebotlaunchechaine + " -script fn:amc --output  \"" + pathdelabibliothequesdelaserie
+		Ssh.executeAction(Param.props.getProperty("Filebot.launchechaine") + " -clear-cache ");
+		ArrayList<String> ret = Ssh.executeAction(Param.props.getProperty("Filebot.launchechaine") + " -script fn:amc --output  \"" + pathdelabibliothequesdelaserie
 												  + "\" --log-file amc.log --action "/*move " */+ "test "
 												  + "\"" + pathdelaseriearanger + "\" -non-strict " 
 												  + "--def \"animeFormat=" + pathdelabibliothequesdelaserie + "/{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}\" "
@@ -194,7 +194,7 @@ public class FileBot
 		Param.logger.debug("maj_liste_episodes :"+serie);
 		ArrayList<String> ret = new ArrayList<String>(0);
 
-		ret = Ssh.executeAction(Param.filebotlaunchechaine + " -list --db TheTVDB --q \"" + serie
+		ret = Ssh.executeAction(Param.props.getProperty("Filebot.launchechaine") + " -list --db TheTVDB --q \"" + serie
 								+ "\" --format '{n}#{s}#{e}#{absolute}#{airdate}#{t}#' ");
 
 		/**
