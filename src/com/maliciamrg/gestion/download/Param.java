@@ -612,7 +612,7 @@ filebotlaunchechaine=filebot
 			{
 				boolean isError = true;
 
-				URL url = new URL("http://" +  props.getProperty("gestdown.username") + ":" + props.getProperty("gestdown.password") + "@" +  props.getProperty("gestdow.http") + "");
+				URL url = new URL("http://" +  props.getProperty("gestdown.username") + ":" + props.getProperty("gestdown.password") + "@" +  props.getProperty("gestdown.http") + "");
 
 				/*
 				 * url = new URL("http://" + this.username + ":" + this.password

@@ -81,7 +81,24 @@ public class Torrent
 		String[] strMagnetep6 = new String[nbEpisodeSaison];
 
 		String html="";
-		String rethtml []= getDataTorrents(serie, saison, (episode.size() > 1 ? -1 : numepisode),(episode.size() > 1 ? -1 : numsequentiel));
+		String rethtml[] = null;
+		if(episode==null){
+			if(numepisode==null){
+				if(numsequentiel==null){
+					return retTorrents;
+				}
+				else{
+					rethtml = getDataTorrents(serie, saison, -1,numsequentiel);
+				}
+			}
+			else{
+				rethtml = getDataTorrents(serie, saison,  numepisode,-1);
+			}
+		}
+		else{
+			rethtml = getDataTorrents(serie, saison, -1,-1);
+		}
+		
 		if (rethtml == null)
 		{
 			return retTorrents;
@@ -141,7 +158,7 @@ public class Torrent
 							perfectSize = perfectSize3;
 							score3 = calculScore(
 								unhumanize(retOrNull(strTaille)), seed,
-								(episode.size() > 1 ? nbEpisodeSaison : 1));
+								(episode==null ? 1 : nbEpisodeSaison));
 							if (score3 > 0)
 							{
 								if (strMagnet3 == "")
@@ -153,7 +170,7 @@ public class Torrent
 							perfectSize = perfectSize6;
 							score6 = calculScore(
 								unhumanize(retOrNull(strTaille)), seed,
-								(episode.size() > 1 ? nbEpisodeSaison : 1));
+								(episode==null ? 1 : nbEpisodeSaison));
 							if (score6 > 0)
 							{
 								if (strMagnet6 == "")
@@ -169,7 +186,14 @@ public class Torrent
 								&& !ret.get("saison").equals("000")
 								&& !ret.get("serie").equals(""))
 							{	
-								if (episode.contains(Integer.parseInt(ret.get("episode"))))
+								if ((episode==null)?
+										((numepisode==null)?
+											((numsequentiel==null)?
+											false
+											:(numsequentiel.equals(Integer.parseInt(ret.get("sequentiel")))))
+										:(numepisode.equals(Integer.parseInt(ret.get("episode")))))
+									:(episode.contains(Integer.parseInt(ret.get("episode")))))
+								//if (episode.contains(Integer.parseInt(ret.get("episode"))))
 								{
 									perfectSize = perfectSize3;
 									score3 = calculScore(unhumanize(retOrNull(strTaille)), seed, 1);								
@@ -197,7 +221,7 @@ public class Torrent
 									   + " seed:"
 									   + seed
 									   + " nbep:"
-									   + (episode.size() > 1 ? nbEpisodeSaison : 1) 
+									   + (episode==null ? 1 : nbEpisodeSaison) 
 									   + " score:" 
 									   + ((score3 > 0) ?score3: score6)
 									   + " nom:" 
