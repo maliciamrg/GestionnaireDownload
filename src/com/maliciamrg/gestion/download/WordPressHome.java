@@ -103,7 +103,7 @@ public class WordPressHome
 		// hmContent.put("terms_names", terms);
 		hmContent.put("terms", terms);
 		// All set!! Let's roll~ and call the wordpress.
-		Object[] params = new Object[] { numBlog, Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.pwd"), hmContent, terms };
+		Object[] params = new Object[] { numBlog, Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.password"), hmContent, terms };
 		String result = (String) client.execute("wp.newPost", params);
 		logger.debug("WordPress-" + "post_id=" + result);
 
@@ -157,7 +157,7 @@ public class WordPressHome
 		XmlRpcClient client = new XmlRpcClient();
 		client.setConfig(config);
 
-		Object[] params2 = new Object[] { Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.pwd") };
+		Object[] params2 = new Object[] { Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.password") };
 		Object[] result2 = (Object[]) client.execute("wp.getUsersBlogs", params2);
 		for (Object _hi : result2)
 		{
@@ -194,7 +194,7 @@ public class WordPressHome
 		XmlRpcClient client = new XmlRpcClient();
 		client.setConfig(config);
 
-		Object[] params2 = new Object[] { 0, Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.pwd"), termsValeurs };
+		Object[] params2 = new Object[] { 0, Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.password"), termsValeurs };
 		Object[] result2 = (Object[]) client.execute("wp.getTerms", params2);
 
 		// Display.affichageListe("getTaxonomy", result2);
@@ -231,7 +231,7 @@ public class WordPressHome
 		terms.put("name", _ter);
 		terms.put("taxonomy", termsValeurs);
 		// Display.affichageListe("", terms);
-		Object[] params2 = new Object[] { 0, Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.pwd"), terms };
+		Object[] params2 = new Object[] { 0, Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.password"), terms };
 		String result2 = (String) client.execute("wp.newTerm", params2);
 
 		// Display.affichageLigne("newTerm", result2);

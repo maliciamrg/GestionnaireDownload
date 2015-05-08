@@ -356,6 +356,7 @@ public class Main {
 	 *             the SQL exception
 	 */
 	private static String getseriestathtml(String serie) throws SQLException {
+		System.out.println("getseriestathtml " + serie);
 		ResultSet rs = null;
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		rs = stmt.executeQuery("SELECT *" + " FROM episodes " + " WHERE " + "      serie = \"" + serie + "\"" + " ORDER BY " + "  airdate Desc" + "");
@@ -407,8 +408,7 @@ public class Main {
 		}
 		rs.close();
 
-		String imagestatseriehtml = "";
-		new HomeFunction().generate_image_resumer_serie(serie, strnbjourprochainepisodes, nbpresent, nbencours, nbabsent, nbavenir);
+		String imagestatseriehtml = new HomeFunction().generate_image_resumer_serie(serie, strnbjourprochainepisodes, nbpresent, nbencours, nbabsent, nbavenir);
 
 		mettreimagestatmajserieserie(serie, imagestatseriehtml);
 		String tableaustatseriehtml = Miseenforme(visu);
@@ -674,13 +674,13 @@ public class Main {
 		}
 		rs.close();
 
+		/*les films sont directioment deplaceer dans le bon repertoire par la fonction rangerserie*/
+		
 		// if (Ssh.Fileexists(Param.CheminTemporaireFilm()))
 		// {
-		// if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size() > 0)
-		// {
-		// FileBot.rangerfilm(Param.CheminTemporaireFilm() ,
-		// Param.RepertoireFilm);
-		// }
+//		if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size() > 0) {
+//			FileBot.rangerfilm(Param.CheminTemporaireFilm(), Param.RepertoireFilm);
+//		}
 		// }
 
 	}
@@ -775,18 +775,21 @@ public class Main {
 		rs.close();
 
 		for (Map<String, String> curr : listeret) {
+			Param.logger.debug("update : " + curr.get("serie") + " S" + curr.get("saison") + "E" + curr.get("episode") + " -> " + curr.get("chemin"));
 			int ret = stmt.executeUpdate("UPDATE episodes " + " set chemin_complet = \"" + curr.get("chemin") + "\"" + "   , timestamp_completer = \""
 					+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\"" + "WHERE " + " serie = \"" + curr.get("serie") + "\""
 					+ " and num_saison = \"" + curr.get("saison") + "\"" + " and num_episodes = \"" + curr.get("episode") + "\"" + " ");
 			String seriestathtml = getseriestathtml(curr.get("serie"));
-			if (Boolean.parseBoolean(Param.props.getProperty("WordPress.addpost"))) {
-				String NomFichier = curr.get("chemin").substring((Math.max(curr.get("chemin").lastIndexOf('/'), curr.get("chemin").lastIndexOf('\\'))) + 1);
-				WordPressHome.publishOnBlog(6, (new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour()) + "_" + NomFichier, NomFichier,
-						new String[] { curr.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") }, new String[] { "Serie" },
-						/* "http://home.daisy-street.fr/BibPerso/stream.php?flux=" */
-						"<a href=\"" + Param.props.getProperty("Url.StreamerInterne") + URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier
-								+ "</a>" + "\n" + seriestathtml + "");
-			}
+			// if
+			// (Boolean.parseBoolean(Param.props.getProperty("WordPress.addpost")))
+			// {
+			String NomFichier = curr.get("chemin").substring((Math.max(curr.get("chemin").lastIndexOf('/'), curr.get("chemin").lastIndexOf('\\'))) + 1);
+			WordPressHome.publishOnBlog(6, (new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour()) + "_" + NomFichier, NomFichier, new String[] {
+					curr.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") }, new String[] { "Serie" },
+			/* "http://home.daisy-street.fr/BibPerso/stream.php?flux=" */
+			"<a href=\"" + Param.props.getProperty("Url.StreamerInterne") + URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier + "</a>" + "\n"
+					+ seriestathtml + "");
+			// }
 		}
 	}
 
