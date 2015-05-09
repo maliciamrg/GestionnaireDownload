@@ -653,7 +653,7 @@ public class Main {
 	 *             the j sch exception
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
-	 * @throws XmlRpcException 
+	 * @throws XmlRpcException
 	 */
 	private static void rangerdownload(String[] args) throws SQLException, InterruptedException, JSchException, IOException, XmlRpcException {
 		System.out.println("rangerdownload");
@@ -675,13 +675,17 @@ public class Main {
 		}
 		rs.close();
 
-		/*les films sont directioment deplaceer dans le bon repertoire par la fonction rangerserie*/
-		
+		/*
+		 * les films sont directioment deplaceer dans le bon repertoire par la
+		 * fonction rangerserie
+		 */
+
 		// if (Ssh.Fileexists(Param.CheminTemporaireFilm()))
 		// {
-//		if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size() > 0) {
-//			FileBot.rangerfilm(Param.CheminTemporaireFilm(), Param.RepertoireFilm);
-//		}
+		// if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size() > 0) {
+		// FileBot.rangerfilm(Param.CheminTemporaireFilm(),
+		// Param.RepertoireFilm);
+		// }
 		// }
 
 	}
@@ -924,32 +928,32 @@ public class Main {
 							} else {
 								Map<String, String> ret = conversionnom2episodes(n.getString("name"));
 								if (ret.get("serie").equals("") || ret.get("saison").equals("000") || ret.get("episode").equals("000")
-										|| episodesachemincomplet(ret)) {
+										|| episodesachemincomplet(ret) || (!n.get("bytesCompleted").equals(0) && n.get("bytesCompleted").equals(n.get("length")))) {
 									nbfichierbruler++;
 									transmission.cancelFilenameOfTorrent(hash, i);
 								} else {
 									transmission.uncancelFilenameOfTorrent(hash, i);
 									mettreepisodeaencours(ret.get("serie"), ret.get("saison"), ret.get("episode"), ret.get("sequentiel"));
-									// if (!n.get("bytesCompleted").equals(0))
-									// {
+									//if (!n.get("bytesCompleted").equals(0) && n.get("bytesCompleted").equals(n.get("length"))) {
+									//		nbfichierbruler++;
+									//} else {
+				
+									//}
 									// if
-									// (n.get("bytesCompleted").equals(n.get("length")))
-									// {
-									// if (transmission.deplacer_fichier(hash,
-									// Param.CheminTemporaireSerie(), i))
-									// {
-									// nbfichierbruler ++;
-									// }
-									// }
-									// else
-									// {
-									// Param.logger.debug("Encours Ep:" +
-									// ret.get("serie") + " " +
-									// ret.get("saison") + "-" +
-									// ret.get("episode") + " name:" +
-									// n.getString("name"));
-									// }
-									// }
+											// (transmission.deplacer_fichier(hash,
+											// Param.CheminTemporaireSerie(),
+											// i))
+											// {										}
+										// }
+										// else
+										// {
+										// Param.logger.debug("Encours Ep:" +
+										// ret.get("serie") + " " +
+										// ret.get("saison") + "-" +
+										// ret.get("episode") + " name:" +
+										// n.getString("name"));
+										// }
+
 								}
 							}
 						}
