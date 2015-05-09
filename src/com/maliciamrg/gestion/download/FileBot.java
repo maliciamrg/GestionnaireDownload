@@ -73,9 +73,10 @@ public class FileBot {
 	 * @throws InterruptedException
 	 *             the interrupted exception
 	 * @throws SQLException
+	 * @throws XmlRpcException 
 	 */
 	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie, String pathdelabibliothequesdesfilm)
-			throws JSchException, IOException, InterruptedException, SQLException {
+			throws JSchException, IOException, InterruptedException, SQLException, XmlRpcException {
 		// String pathdelaseriearangercorriger =
 		// pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0,
 		// pathdelaseriearanger.substring(0, pathdelaseriearanger.length() -
@@ -111,15 +112,11 @@ public class FileBot {
 				Ssh.moveFile(spl[0], destmod);
 				if (spl[1].indexOf(pathdelabibliothequesdesfilm) > -1) {
 					String NomFichier = lineEp.substring((Math.max(lineEp.lastIndexOf('/'), lineEp.lastIndexOf('\\'))) );
-					try {
 						WordPressHome.publishOnBlog(6, (new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour()) + "_" + NomFichier, NomFichier,
 								new String[] { "Film" }, new String[] { "Film" },
 								"<a href=\"" + Param.props.getProperty("Url.StreamerInterne") + URLEncoder.encode(lineEp, "UTF-8") + "\">" + NomFichier
 										+ "</a>" + "\n");
-					} catch (XmlRpcException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+
 				}
 				Param.logger.debug("deplacement:" + spl[0]);
 				Param.logger.debug("vers:" + destmod);

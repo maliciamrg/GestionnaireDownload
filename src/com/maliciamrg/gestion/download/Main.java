@@ -653,8 +653,9 @@ public class Main {
 	 *             the j sch exception
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
+	 * @throws XmlRpcException 
 	 */
-	private static void rangerdownload(String[] args) throws SQLException, InterruptedException, JSchException, IOException {
+	private static void rangerdownload(String[] args) throws SQLException, InterruptedException, JSchException, IOException, XmlRpcException {
 		System.out.println("rangerdownload");
 		// ranger les serie dans les sous repertoire de tmp
 		if (Ssh.getRemoteFileList(Param.CheminTemporaireSerie()).size() > 0) {
