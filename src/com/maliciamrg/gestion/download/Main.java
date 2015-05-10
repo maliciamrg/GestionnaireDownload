@@ -38,6 +38,7 @@ import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
 import com.jcraft.jsch.JSchException;
 import com.maliciamrg.homeFunction.*;
+import com.mysql.jdbc.PreparedStatement;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -111,8 +112,9 @@ public class Main {
 				lancerlesprochainshash(args);
 			}
 			if (arrayArgs.contains("--rangerlesrepertoires")) {
-				rangerdownload(args);
-				purgerrepertioiredetravail(args);
+				// mettre l'indicateur "encours" de tout les episodes a zero
+				ArrayList<String> fileexclu = rangerdownload(args);
+				purgerrepertioiredetravail(args, fileexclu);
 				analyserrepertoire(args);
 			}
 
@@ -618,24 +620,38 @@ public class Main {
 	 *
 	 * @param args
 	 *            the args
+	 * @param listefichierexclu
 	 * @throws JSchException
 	 *             the j sch exception
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 * @throws InterruptedException
 	 *             the interrupted exception
+	 * @throws SQLException 
 	 */
-	private static void purgerrepertioiredetravail(String[] args) throws JSchException, IOException, InterruptedException {
+	private static void purgerrepertioiredetravail(String[] args, ArrayList<String> listefichierexclu) throws JSchException, IOException, InterruptedException, SQLException {
 		System.out.println("purgerrepertioiredetravail");
+
+		ArrayList<String> listfichiertransmission = new ArrayList<String>(0);
+		List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString, TorrentField.files, TorrentField.name,
+				TorrentField.percentDone, TorrentField.activityDate, TorrentField.eta });
+		for (TorrentStatus curr : torrents) {
+			JSONArray listFile = ((JSONArray) curr.getField(TorrentField.files));
+			int i = 0;
+			for (i = 0; i < listFile.length(); i++) {
+				JSONObject n = (JSONObject) listFile.get(i);
+				listfichiertransmission.add(Param.CheminTemporaireSerie()+ n.getString("name"));
+				listfichiertransmission.add(Param.CheminTemporaireSerie()+ n.getString("name")+".part");
+			}
+		}
+
+		listefichierexclu.removeAll(listfichiertransmission);
+		for (String fileExclu : listefichierexclu) {
+			Ssh.executeAction("rm '" + fileExclu + "'");
+		}
+
+		// suprimer repertoire vide
 		if (Ssh.Fileexists(Param.CheminTemporaireTmp())) {
-			// deplacer fichier a la racine
-			// Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() +
-			// "\";find . -type f -iname '*.*' -exec mv '{}' \"" +
-			// Param.CheminTemporaireTmp() + "\" \\;");
-			// purge rep=ertzooire v,wide
-			// Ssh.actionexecChmodR777(Param.CheminTemporaireTmp() );
-			// Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() +
-			// "\";find . -type d -depth -exec rmdir 2>/dev/null '{}' \\;");
 			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -empty -print -delete ");
 		}
 	}
@@ -655,15 +671,19 @@ public class Main {
 	 *             Signals that an I/O exception has occurred.
 	 * @throws XmlRpcException
 	 */
-	private static void rangerdownload(String[] args) throws SQLException, InterruptedException, JSchException, IOException, XmlRpcException {
+	private static ArrayList<String> rangerdownload(String[] args) throws SQLException, InterruptedException, JSchException, IOException, XmlRpcException {
 		System.out.println("rangerdownload");
+
+		ArrayList<String> listefichierexclu = new ArrayList<String>(0);
+
 		// ranger les serie dans les sous repertoire de tmp
 		if (Ssh.getRemoteFileList(Param.CheminTemporaireSerie()).size() > 0) {
-			FileBot.rangerserie(Param.CheminTemporaireSerie(), Param.CheminTemporaireSerie(), Param.props.getProperty("Repertoire.Film"));
+			listefichierexclu = FileBot.rangerserie(Param.CheminTemporaireSerie(), Param.CheminTemporaireSerie(), Param.props.getProperty("Repertoire.Film"));
 		}
 
 		ResultSet rs = null;
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
 		rs = stmt.executeQuery("SELECT * " + " FROM series " + "  ");
 		while (rs.next()) {
 			String src = Param.CheminTemporaireSerie() + rs.getString("nom") + Param.Fileseparator;
@@ -688,6 +708,10 @@ public class Main {
 		// }
 		// }
 
+		// de mise a encours des episodes
+		stmt.executeUpdate("update episodes set encours = false where timestamp_completer is not null");
+
+		return listefichierexclu;
 	}
 
 	/**
@@ -911,6 +935,8 @@ public class Main {
 			Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			rs = stmt.executeQuery("SELECT * " + " FROM hash " + " WHERE " + "      hash = \"" + hash + "\"" + "  ");
 			while (rs.next()) {
+				JSONArray listFile = ((JSONArray) curr.getField(TorrentField.files));
+
 				if (rs.getDate("timestamp_termine") != null) {
 					transmission.supprimer_hash(hash);
 				} else {
@@ -918,7 +944,6 @@ public class Main {
 					switch (rs.getString("classification")) {
 					case "serie":
 						nbfichierbruler = 0;
-						JSONArray listFile = (JSONArray) curr.getField(TorrentField.files);
 						int i = 0;
 						for (i = 0; i < listFile.length(); i++) {
 							JSONObject n = (JSONObject) listFile.get(i);
@@ -928,31 +953,34 @@ public class Main {
 							} else {
 								Map<String, String> ret = conversionnom2episodes(n.getString("name"));
 								if (ret.get("serie").equals("") || ret.get("saison").equals("000") || ret.get("episode").equals("000")
-										|| episodesachemincomplet(ret) || (!n.get("bytesCompleted").equals(0) && n.get("bytesCompleted").equals(n.get("length")))) {
+										|| episodesachemincomplet(ret)
+										|| (!n.get("bytesCompleted").equals(0) && n.get("bytesCompleted").equals(n.get("length")))) {
 									nbfichierbruler++;
 									transmission.cancelFilenameOfTorrent(hash, i);
 								} else {
 									transmission.uncancelFilenameOfTorrent(hash, i);
 									mettreepisodeaencours(ret.get("serie"), ret.get("saison"), ret.get("episode"), ret.get("sequentiel"));
-									//if (!n.get("bytesCompleted").equals(0) && n.get("bytesCompleted").equals(n.get("length"))) {
-									//		nbfichierbruler++;
-									//} else {
-				
-									//}
+									// if (!n.get("bytesCompleted").equals(0) &&
+									// n.get("bytesCompleted").equals(n.get("length")))
+									// {
+									// nbfichierbruler++;
+									// } else {
+
+									// }
 									// if
-											// (transmission.deplacer_fichier(hash,
-											// Param.CheminTemporaireSerie(),
-											// i))
-											// {										}
-										// }
-										// else
-										// {
-										// Param.logger.debug("Encours Ep:" +
-										// ret.get("serie") + " " +
-										// ret.get("saison") + "-" +
-										// ret.get("episode") + " name:" +
-										// n.getString("name"));
-										// }
+									// (transmission.deplacer_fichier(hash,
+									// Param.CheminTemporaireSerie(),
+									// i))
+									// { }
+									// }
+									// else
+									// {
+									// Param.logger.debug("Encours Ep:" +
+									// ret.get("serie") + " " +
+									// ret.get("saison") + "-" +
+									// ret.get("episode") + " name:" +
+									// n.getString("name"));
+									// }
 
 								}
 							}
@@ -1144,9 +1172,6 @@ public class Main {
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 		mise_a_jour_liste_episodes(stmt);
-
-		// mettre l'indicateur "encours" de tout les episodes a zero
-		stmt.executeUpdate("update episodes set encours = false ");
 
 		synchronisation_bdd_transmission(stmt);
 	}

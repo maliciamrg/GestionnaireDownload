@@ -1,27 +1,460 @@
-2015-05-09 13:32:24 WARN  Main:482 - args=.[--gestiontransmission].
-2015-05-09 13:32:24 WARN  Main:482 - <pre>
-2015-05-09 13:32:24 WARN  Main:482 - +---+----+----+----+
-2015-05-09 13:32:24 WARN  Main:482 - +       Debut      +2015-05-09 13:32:24
-2015-05-09 13:32:25 WARN  Main:482 - name: Windows 7, version: 6.1, arch: amd64
-2015-05-09 13:32:25 WARN  Main:482 - transmisson
-2015-05-09 13:32:25 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem.mp4" > /dev/null 2>&1
-2015-05-09 13:32:26 WARN  Main:161 - ssh- exit-status: 1
-2015-05-09 13:32:26 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs.rar" > /dev/null 2>&1
-2015-05-09 13:32:27 WARN  Main:161 - ssh- exit-status: 0
-2015-05-09 13:32:27 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/eXistenZ.DvDRip-FxM/eXistenZ.DvDRip-FxM.avi" > /dev/null 2>&1
-2015-05-09 13:32:28 WARN  Main:161 - ssh- exit-status: 0
-2015-05-09 13:32:29 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Training Day (2001)/Other/AhaShare.com.txt" > /dev/null 2>&1
-2015-05-09 13:32:30 WARN  Main:161 - ssh- exit-status: 0
-2015-05-09 13:32:30 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/No Country For Old Men.2007.BRRip.x264-VLiS/No Country For Old Men.2007.BRRip.x264-VLiS.mp4" > /dev/null 2>&1
-2015-05-09 13:32:31 WARN  Main:161 - ssh- exit-status: 0
-2015-05-09 13:32:31 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Strange Days 1995 BRRip Ita Ac3 x264/Strange Days 1995 BRRip Ita Ac3 x264.mkv" > /dev/null 2>&1
-2015-05-09 13:32:32 WARN  Main:161 - ssh- exit-status: 0
-2015-05-09 13:32:34 WARN  Main:482 - lancerlesprochainshash
-2015-05-09 13:32:36 WARN  Main:482 - +        Fin       +2015-05-09 13:32:36
-2015-05-09 13:32:36 WARN  Main:482 - +---+----+----+----+
-2015-05-09 13:32:36 WARN  Main:482 - </pre>
-2015-05-09 13:32:36 WARN  Main:482 - <error-1354003114>
-2015-05-09 13:32:36 WARN  Main:482 - <debug-825658265>
-2015-05-09 13:32:36 WARN  Main:482 - <debugtrans-388357135>
-2015-05-09 13:32:36 WARN  Main:482 - <warn-957465255>
-2015-05-09 13:32:36 WARN  Main:482 - <info-1254344205>
+2015-05-10 02:03:16 WARN  Main:482 - args=.[--rangerlesrepertoires].
+2015-05-10 02:03:16 WARN  Main:482 - <pre>
+2015-05-10 02:03:16 WARN  Main:482 - +---+----+----+----+
+2015-05-10 02:03:16 WARN  Main:482 - +       Debut      +2015-05-10 02:03:16
+2015-05-10 02:03:16 WARN  Main:482 - name: Windows 7, version: 6.1, arch: amd64
+2015-05-10 02:03:17 WARN  Main:482 - rangerdownload
+2015-05-10 02:03:18 WARN  Main:129 - command: rm /mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml
+2015-05-10 02:03:19 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:03:19 WARN  Main:170 - ssh- rm: cannot remove ‘/mnt/HD/HD_a2/ffp/opt/share/filebot/data/history.xml’: No such file or directory
+2015-05-10 02:03:19 WARN  Main:129 - command: filebot  -clear-cache 
+2015-05-10 02:03:21 WARN  Main:153 - ssh- Clear cache and temporary files
+2015-05-10 02:03:21 WARN  Main:153 - ssh- * Delete /home/david/.filebot/logs
+2015-05-10 02:03:21 WARN  Main:153 - ssh- * Delete /home/david/.filebot/cache
+2015-05-10 02:03:21 WARN  Main:153 - ssh- * Delete /home/david/.filebot/temp
+2015-05-10 02:03:24 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:03:24 WARN  Main:129 - command: filebot  -script fn:amc --output  "/media/videoclub/unloading_dock/" --log-file amc.log --action test "/media/videoclub/unloading_dock/" -non-strict --def "animeFormat=/media/videoclub/unloading_dock//{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}" "seriesFormat=/media/videoclub/unloading_dock//{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}" "movieFormat=/media/videoclub/film//{n.replaceAll(/[:]/,'')} ({y})/{n.replaceAll(/[:]/,'')} ({y}, {director}) {vf} {af}"  --def clean=y --def artwork=y  --conflict override
+2015-05-10 02:03:26 WARN  Main:153 - ssh- Locking /home/david/.filebot/logs/amc.log
+2015-05-10 02:03:46 WARN  Main:153 - ssh- Parameter: animeFormat = /media/videoclub/unloading_dock//{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}
+2015-05-10 02:03:46 WARN  Main:153 - ssh- Parameter: seriesFormat = /media/videoclub/unloading_dock//{n}/Saison {s.pad(2)}/{n} S{s.pad(2)}E{es*.pad(2).join('-E')} ep_{absolute*.pad(3).join('_')} {t}
+2015-05-10 02:03:46 WARN  Main:153 - ssh- Parameter: movieFormat = /media/videoclub/film//{n.replaceAll(/[:]/,'')} ({y})/{n.replaceAll(/[:]/,'')} ({y}, {director}) {vf} {af}
+2015-05-10 02:03:46 WARN  Main:153 - ssh- Parameter: clean = y
+2015-05-10 02:03:46 WARN  Main:153 - ssh- Parameter: artwork = y
+2015-05-10 02:03:46 WARN  Main:153 - ssh- Argument: /media/videoclub/unloading_dock
+2015-05-10 02:03:49 WARN  Main:153 - ssh- Read archive [Subs.rar] and extract to [/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem]
+2015-05-10 02:03:49 WARN  Main:153 - ssh- Extracting files [/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/English_exp.idx, /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/English_exp.sub, /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/French_exp.idx, /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/French_exp.sub, /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Portuguese_exp.idx, /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Portuguese_exp.sub, /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Spanish_exp.idx, /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Spanish_exp.sub]
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Input: /media/videoclub/unloading_dock/[HorribleSubs] Detective Conan - 773 [720p].mkv
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Input: /media/videoclub/unloading_dock/[HorribleSubs] Detective Conan - 768 [720p].mkv
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Input: /media/videoclub/unloading_dock/[HorribleSubs] Detective Conan - 770 [720p].mkv
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Input: /media/videoclub/unloading_dock/[HorribleSubs] Detective Conan - 767 [720p].mkv
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/White Collar/White Collar Season 3/White Collar - 3x02 - Where There's a Will.720p HDTV.DIMENSION.en.srt.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/White Collar/White Collar Season 3/White Collar - 3x02 - Where There's a Will.HDTV.en.srt.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Стрела. Третий �?езон/Strela.S03E04.HDTVRip.Kerob.avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Стрела. Третий �?езон/Strela.S03E20.HDTVRip.Kerob.avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/English_exp.idx
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/English_exp.sub
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/French_exp.idx
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/French_exp.sub
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Portuguese_exp.idx
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Portuguese_exp.sub
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Spanish_exp.idx
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Spanish_exp.sub
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/[ www.torrenting.com ] - Once.Upon.a.Time.S04E08E09.480p.HDTV.x264-mSD/Downloaded from www.torrenting.com.txt
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/[ www.torrenting.com ] - Once.Upon.a.Time.S04E08E09.480p.HDTV.x264-mSD/Once.Upon.a.Time.S04E08E09.480p.HDTV.x264-mSD.nfo
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/[ www.torrenting.com ] - Once.Upon.a.Time.S04E08E09.480p.HDTV.x264-mSD/Once.Upon.a.Time.S04E08E09.480p.HDTV.x264-mSD.mkv.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/U2   Gospel Choir - I still haven't found what I'm looking for.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/The Nature of Angels and Spiritual Warfare 2 of 3 Chuck Missler.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Cancer Cured in 3 Minutes - Awesome Presentation by Gregg Braden.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 3 The real story behind Aliens  Ufos  Demons  Illuminati.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 10 The real story behind Aliens  Ufos  Demons  Illuminati   Satanism.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 9 The real story behind Aliens  Ufos  Demons  Illuminati   Satanism.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/3 of 4  -  Dark Stars  -  Predictive Programming.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 6 The real story behind Aliens  Ufos  Demons  Illuminati   Satanism.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 1 The real story behind Aliens  Ufos  Demons  Illuminati   Satanism.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 2 The real story behind Aliens  Ufos  Demons  Illuminati.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/1 of 4  -  Dark Stars  -  Illuminati in Hollywood.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/The Blood Moon Tetrad _ Comet Ison_ Signs In The Heavens From God Himself!.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/The Nature of Angels and Spiritual Warfare 3 of 3 Chuck Missler.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Charlotte   Jonathan   Britain's Got Talent 2012 Audition.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/B O N O  --   A Conversation About Christianity  --  U2.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/2 of 4  - Dark Stars  -  9 11 Synchronicities.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/M A G N I F I C E N T  --  Christian Music Video by Tom Howe - Music by U2.mp4.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/01 - Person of Interest 3 - 01 Liberty.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/07 - Person of Interest 3 - 07 The Perfect Mark.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/10 - Person of Interest 3 - 10 The Devil's Share.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/11 - Person of Interest 3 - 11 Lethe.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/04 - Person of Interest 3 - 04 Reasonable Doubt.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/02 - Person of Interest 3 - 02 Nothing To Hide.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/03 - Person of Interest 3 - 03 Lady Killer.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/S03E15 - POI.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/S03E17 - POI.vob.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E05.HDTV.XviD-AFG/Once.Upon.a.Time.S04E05.HDTV.XviD-AFG.nfo
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E05.HDTV.XviD-AFG/Read Me.txt
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E05.HDTV.XviD-AFG/Torrent Has Been Downloaded from www.SceneTime.com.txt
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person.of.Interest.Season.4.720p.WEB-DL.x265.ShAaNiG/Person.of.Interest.S04E06.720p.WEB-DL.x265.ShAaNiG.mkv.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person.of.Interest.Season.4.720p.WEB-DL.x265.ShAaNiG/Person.of.Interest.S04E11.720p.WEB-DL.x265.ShAaNiG.mkv.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Person.of.Interest.Season.4.720p.WEB-DL.x265.ShAaNiG/Person.of.Interest.S04E17.720p.WEB-DL.x265.ShAaNiG.mkv.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/[ www.torrenting.com ] - Once.Upon.A.Time.S04E03.WEB-DL.x264-WLR/Once.Upon.A.Time.S04E03.WEB-DL.x264-WLR.nfo
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/[ www.torrenting.com ] - Once.Upon.A.Time.S04E03.WEB-DL.x264-WLR/Downloaded from www.torrenting.com.txt
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E06.HDTV.XviD-AFG/Once.Upon.a.Time.S04E06.HDTV.XviD-AFG.nfo
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E06.HDTV.XviD-AFG/Read Me.txt
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E06.HDTV.XviD-AFG/Torrent Has Been Downloaded from www.SceneTime.com.txt
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Once Upon a Time S04E20 HDTV XviD-FUM[ettv]/Torrent-Downloaded-From-extratorrent.cc.txt
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 173 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 186 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 176 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 192 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 187 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 193 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 175 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 183 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 190 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 184 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 182 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 172 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 165 [KnKF][62E3F9FC].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 191 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 189 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 181 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 188 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 169 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 174 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 168 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 177 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 170 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 178 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 171 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 164 [KnKF][648025B9].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 163 [KnKF][E5CF4EC7].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 185 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 179 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 180 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 167 [KnKF].avi.part
+2015-05-10 02:03:58 WARN  Main:153 - ssh- Exclude: /media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 166 [KnKF].avi.part
+2015-05-10 02:04:13 WARN  Main:153 - ssh- Group: [anime:detective conan] => [[HorribleSubs] Detective Conan - 773 [720p].mkv, [HorribleSubs] Detective Conan - 768 [720p].mkv, [HorribleSubs] Detective Conan - 770 [720p].mkv, [HorribleSubs] Detective Conan - 767 [720p].mkv]
+2015-05-10 02:04:13 WARN  Main:153 - ssh- Rename episodes using [AniDB]
+2015-05-10 02:04:15 WARN  Main:153 - ssh- Auto-detected query: [Detective Conan]
+2015-05-10 02:04:37 WARN  Main:153 - ssh- Fetching episode data for [Meitantei Conan: 16 Nin no Yougisha]
+2015-05-10 02:04:38 WARN  Main:153 - ssh- Fetching episode data for [Meitantei Conan: Conan to Kid to Crystal Mother]
+2015-05-10 02:04:39 WARN  Main:153 - ssh- Fetching episode data for [Meitantei Conan: Hyouteki wa Kogoro! Shounen Tanteidan Maruhi Chousa]
+2015-05-10 02:04:39 WARN  Main:153 - ssh- Fetching episode data for [Meitantei Conan: Agasa-sensei no Chousenjou! Agasa vs Conan & Shounen Tanteidan]
+2015-05-10 02:04:39 WARN  Main:153 - ssh- Fetching episode data for [Meitantei Conan: Joshikousei Tantei Suzuki Sonoko no Jikenbo]
+2015-05-10 02:04:40 WARN  Main:153 - ssh- Failure (°_°)
+2015-05-10 02:04:40 WARN  Main:161 - ssh- exit-status: 255
+2015-05-10 02:04:40 WARN  Main:170 - ssh- May 10, 2015 2:04:38 AM net.filebot.web.AnidbClient fetchEpisodeList
+2015-05-10 02:04:40 WARN  Main:170 - ssh- WARNING: Unable to parse any episode data from xml: Meitantei Conan: 16 Nin no Yougisha (3591)
+2015-05-10 02:04:40 WARN  Main:170 - ssh- May 10, 2015 2:04:39 AM net.filebot.web.AnidbClient fetchEpisodeList
+2015-05-10 02:04:40 WARN  Main:170 - ssh- WARNING: Unable to parse any episode data from xml: Meitantei Conan: Conan to Kid to Crystal Mother (3597)
+2015-05-10 02:04:40 WARN  Main:170 - ssh- May 10, 2015 2:04:39 AM net.filebot.web.AnidbClient fetchEpisodeList
+2015-05-10 02:04:40 WARN  Main:170 - ssh- WARNING: Unable to parse any episode data from xml: Meitantei Conan: Hyouteki wa Kogoro! Shounen Tanteidan Maruhi Chousa (3598)
+2015-05-10 02:04:40 WARN  Main:170 - ssh- May 10, 2015 2:04:39 AM net.filebot.web.AnidbClient fetchEpisodeList
+2015-05-10 02:04:40 WARN  Main:170 - ssh- WARNING: Unable to parse any episode data from xml: Meitantei Conan: Agasa-sensei no Chousenjou! Agasa vs Conan & Shounen Tanteidan (5444)
+2015-05-10 02:04:40 WARN  Main:170 - ssh- May 10, 2015 2:04:40 AM net.filebot.web.AnidbClient fetchEpisodeList
+2015-05-10 02:04:40 WARN  Main:170 - ssh- WARNING: Unable to parse any episode data from xml: Meitantei Conan: Joshikousei Tantei Suzuki Sonoko no Jikenbo (6240)
+2015-05-10 02:04:40 WARN  Main:170 - ssh- Failed to fetch episode data: [Detective Conan]
+2015-05-10 02:04:40 WARN  Main:170 - ssh- CmdlineException: Unable to match files to episode data
+2015-05-10 02:04:40 WARN  Main:170 - ssh- Finished without processing any files
+2015-05-10 02:04:40 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Aldnoah.Zero/" > /dev/null 2>&1
+2015-05-10 02:04:41 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:41 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/American Horror Story/" > /dev/null 2>&1
+2015-05-10 02:04:42 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:42 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Arrow/" > /dev/null 2>&1
+2015-05-10 02:04:43 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:43 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Constantine/" > /dev/null 2>&1
+2015-05-10 02:04:44 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:44 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Detective Conan/" > /dev/null 2>&1
+2015-05-10 02:04:45 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:04:45 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Detective Conan/" > /dev/null 2>&1
+2015-05-10 02:04:46 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:04:46 WARN  Main:129 - command: stat "/media/videoclub/anime/Detective Conan" > /dev/null 2>&1
+2015-05-10 02:04:47 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:04:47 WARN  Main:129 - command: cd "/media/videoclub/unloading_dock/Detective Conan/" ;find * -regex '.*\.\(avi\|mp4\|mpg\|mkv\|wmv\|divx\|srt\|sub\)' -printf "mkdir -p \"/media/videoclub/anime/Detective Conan/%h\" ; mv -vf \"/media/videoclub/unloading_dock/Detective Conan/%h/%f\" \"/media/videoclub/anime/Detective Conan/%h/%f\"
+" | sh  
+2015-05-10 02:04:48 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:04:48 WARN  Main:129 - command: chmod -R 777 "/media/videoclub/anime/Detective*Conan" 
+2015-05-10 02:04:49 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:49 WARN  Main:170 - ssh- chmod: cannot access ‘/media/videoclub/anime/Detective*Conan’: No such file or directory
+2015-05-10 02:04:49 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Doctor Who (2005)/" > /dev/null 2>&1
+2015-05-10 02:04:50 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:50 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Dungeons & Dragons/" > /dev/null 2>&1
+2015-05-10 02:04:51 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:51 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Elfen Lied/" > /dev/null 2>&1
+2015-05-10 02:04:52 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:52 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Fullmetal Alchemist Brotherhood/" > /dev/null 2>&1
+2015-05-10 02:04:53 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:53 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Game of Thrones/" > /dev/null 2>&1
+2015-05-10 02:04:54 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:04:54 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Game of Thrones/" > /dev/null 2>&1
+2015-05-10 02:04:55 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:04:55 WARN  Main:129 - command: stat "/media/videoclub/serie/Game of Thrones" > /dev/null 2>&1
+2015-05-10 02:04:56 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:04:56 WARN  Main:129 - command: cd "/media/videoclub/unloading_dock/Game of Thrones/" ;find * -regex '.*\.\(avi\|mp4\|mpg\|mkv\|wmv\|divx\|srt\|sub\)' -printf "mkdir -p \"/media/videoclub/serie/Game of Thrones/%h\" ; mv -vf \"/media/videoclub/unloading_dock/Game of Thrones/%h/%f\" \"/media/videoclub/serie/Game of Thrones/%h/%f\"
+" | sh  
+2015-05-10 02:04:57 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:04:57 WARN  Main:129 - command: chmod -R 777 "/media/videoclub/serie/Game*of*Thrones" 
+2015-05-10 02:04:58 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:58 WARN  Main:170 - ssh- chmod: cannot access ‘/media/videoclub/serie/Game*of*Thrones’: No such file or directory
+2015-05-10 02:04:58 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Gracepoint/" > /dev/null 2>&1
+2015-05-10 02:04:59 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:04:59 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Marvel's Agents of S.H.I.E.L.D/" > /dev/null 2>&1
+2015-05-10 02:05:00 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:00 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/NCIS New Orleans/" > /dev/null 2>&1
+2015-05-10 02:05:01 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:05:02 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/NCIS New Orleans/" > /dev/null 2>&1
+2015-05-10 02:05:03 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:05:03 WARN  Main:129 - command: stat "/media/videoclub/serie/NCIS New Orleans" > /dev/null 2>&1
+2015-05-10 02:05:04 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:05:04 WARN  Main:129 - command: cd "/media/videoclub/unloading_dock/NCIS New Orleans/" ;find * -regex '.*\.\(avi\|mp4\|mpg\|mkv\|wmv\|divx\|srt\|sub\)' -printf "mkdir -p \"/media/videoclub/serie/NCIS New Orleans/%h\" ; mv -vf \"/media/videoclub/unloading_dock/NCIS New Orleans/%h/%f\" \"/media/videoclub/serie/NCIS New Orleans/%h/%f\"
+" | sh  
+2015-05-10 02:05:05 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:05:05 WARN  Main:129 - command: chmod -R 777 "/media/videoclub/serie/NCIS*New*Orleans" 
+2015-05-10 02:05:06 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:06 WARN  Main:170 - ssh- chmod: cannot access ‘/media/videoclub/serie/NCIS*New*Orleans’: No such file or directory
+2015-05-10 02:05:06 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Once Upon a Time (2011)/" > /dev/null 2>&1
+2015-05-10 02:05:07 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:05:07 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Once Upon a Time (2011)/" > /dev/null 2>&1
+2015-05-10 02:05:08 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:05:08 WARN  Main:129 - command: stat "/media/videoclub/serie/Once Upon a Time (2011)" > /dev/null 2>&1
+2015-05-10 02:05:09 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:05:09 WARN  Main:129 - command: cd "/media/videoclub/unloading_dock/Once Upon a Time (2011)/" ;find * -regex '.*\.\(avi\|mp4\|mpg\|mkv\|wmv\|divx\|srt\|sub\)' -printf "mkdir -p \"/media/videoclub/serie/Once Upon a Time (2011)/%h\" ; mv -vf \"/media/videoclub/unloading_dock/Once Upon a Time (2011)/%h/%f\" \"/media/videoclub/serie/Once Upon a Time (2011)/%h/%f\"
+" | sh  
+2015-05-10 02:05:10 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:05:10 WARN  Main:129 - command: chmod -R 777 "/media/videoclub/serie/Once*Upon*a*Time*(2011)" 
+2015-05-10 02:05:11 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:11 WARN  Main:170 - ssh- chmod: cannot access ‘/media/videoclub/serie/Once*Upon*a*Time*(2011)’: No such file or directory
+2015-05-10 02:05:11 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Person of Interest/" > /dev/null 2>&1
+2015-05-10 02:05:12 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:13 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Revolution/" > /dev/null 2>&1
+2015-05-10 02:05:14 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:14 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Sherlock/" > /dev/null 2>&1
+2015-05-10 02:05:15 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:15 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Spooks/" > /dev/null 2>&1
+2015-05-10 02:05:16 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:16 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Sword Art Online/" > /dev/null 2>&1
+2015-05-10 02:05:17 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:17 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/The 100/" > /dev/null 2>&1
+2015-05-10 02:05:18 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:18 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/The Blacklist/" > /dev/null 2>&1
+2015-05-10 02:05:19 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:19 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/The Flash (2014)/" > /dev/null 2>&1
+2015-05-10 02:05:20 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:20 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/True Detective/" > /dev/null 2>&1
+2015-05-10 02:05:21 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:21 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/Under the Dome/" > /dev/null 2>&1
+2015-05-10 02:05:22 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:05:30 WARN  Main:482 - purgerrepertioiredetravail
+2015-05-10 02:10:31 WARN  Main:482 - args=.[--gestiontransmission].
+2015-05-10 02:10:31 WARN  Main:482 - <pre>
+2015-05-10 02:10:31 WARN  Main:482 - +---+----+----+----+
+2015-05-10 02:10:31 WARN  Main:482 - +       Debut      +2015-05-10 02:10:31
+2015-05-10 02:10:31 WARN  Main:482 - name: Linux, version: 3.13.0-52-generic, arch: i386
+2015-05-10 02:10:31 WARN  Main:482 - transmisson
+2015-05-10 02:10:31 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem.mp4" > /dev/null 2>&1
+2015-05-10 02:10:32 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:10:32 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs.rar" > /dev/null 2>&1
+2015-05-10 02:10:33 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:10:35 WARN  Main:482 - lancerlesprochainshash
+2015-05-10 02:10:46 WARN  Main:482 - +        Fin       +2015-05-10 02:10:46
+2015-05-10 02:10:47 WARN  Main:482 - +---+----+----+----+
+2015-05-10 02:10:47 WARN  Main:482 - </pre>
+2015-05-10 02:10:47 WARN  Main:482 - <error-27897155>
+2015-05-10 02:10:47 WARN  Main:482 - <debug-30999788>
+2015-05-10 02:10:47 WARN  Main:482 - <debugtrans-9323380>
+2015-05-10 02:10:47 WARN  Main:482 - <warn-23595866>
+2015-05-10 02:10:47 WARN  Main:482 - <info-22899201>
+2015-05-10 02:11:51 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/White Collar/White Collar Season 3/White Collar - 3x02 - Where There's a Will.720p HDTV.DIMENSION.en.srt.part'
+2015-05-10 02:11:52 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:11:52 WARN  Main:170 - ssh- bash: -c: line 0: unexpected EOF while looking for matching `''
+2015-05-10 02:11:52 WARN  Main:170 - ssh- bash: -c: line 1: syntax error: unexpected end of file
+2015-05-10 02:11:52 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/White Collar/White Collar Season 3/White Collar - 3x02 - Where There's a Will.HDTV.en.srt.part'
+2015-05-10 02:11:53 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:11:53 WARN  Main:170 - ssh- bash: -c: line 0: unexpected EOF while looking for matching `''
+2015-05-10 02:11:53 WARN  Main:170 - ssh- bash: -c: line 1: syntax error: unexpected end of file
+2015-05-10 02:11:53 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Стрела. Третий �?езон/Strela.S03E04.HDTVRip.Kerob.avi.part'
+2015-05-10 02:11:54 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:11:55 WARN  Main:170 - ssh- rm: cannot remove ‘/media/videoclub/unloading_dock/�?¡Ñ‚Ñ€�?µ�?»�?°. �?¢Ñ€�?µÑ‚�?¸�?¹ Ñ��?µ�?·�?¾�?½/Strela.S03E04.HDTVRip.Kerob.avi.part’: No such file or directory
+2015-05-10 02:11:55 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Стрела. Третий �?езон/Strela.S03E20.HDTVRip.Kerob.avi.part'
+2015-05-10 02:11:56 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:11:56 WARN  Main:170 - ssh- rm: cannot remove ‘/media/videoclub/unloading_dock/�?¡Ñ‚Ñ€�?µ�?»�?°. �?¢Ñ€�?µÑ‚�?¸�?¹ Ñ��?µ�?·�?¾�?½/Strela.S03E20.HDTVRip.Kerob.avi.part’: No such file or directory
+2015-05-10 02:11:56 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/English_exp.idx'
+2015-05-10 02:11:57 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:11:57 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/English_exp.sub'
+2015-05-10 02:11:58 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:11:58 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/French_exp.idx'
+2015-05-10 02:11:59 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:11:59 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/French_exp.sub'
+2015-05-10 02:12:00 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:00 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Portuguese_exp.idx'
+2015-05-10 02:12:01 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:01 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Portuguese_exp.sub'
+2015-05-10 02:12:02 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:02 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Spanish_exp.idx'
+2015-05-10 02:12:03 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:03 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/Spanish_exp.sub'
+2015-05-10 02:12:04 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:04 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/U2   Gospel Choir - I still haven't found what I'm looking for.mp4.part'
+2015-05-10 02:12:06 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:12:06 WARN  Main:170 - ssh- rm: cannot remove ‘/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/U2   Gospel Choir - I still havent’: No such file or directory
+2015-05-10 02:12:06 WARN  Main:170 - ssh- rm: cannot remove ‘found’: No such file or directory
+2015-05-10 02:12:06 WARN  Main:170 - ssh- rm: cannot remove ‘what’: No such file or directory
+2015-05-10 02:12:06 WARN  Main:170 - ssh- rm: cannot remove ‘Im looking for.mp4.part’: No such file or directory
+2015-05-10 02:12:06 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/The Nature of Angels and Spiritual Warfare 2 of 3 Chuck Missler.mp4.part'
+2015-05-10 02:12:07 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:07 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Cancer Cured in 3 Minutes - Awesome Presentation by Gregg Braden.mp4.part'
+2015-05-10 02:12:08 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:08 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 3 The real story behind Aliens  Ufos  Demons  Illuminati.mp4.part'
+2015-05-10 02:12:09 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:09 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 10 The real story behind Aliens  Ufos  Demons  Illuminati   Satanism.mp4.part'
+2015-05-10 02:12:10 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:10 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 9 The real story behind Aliens  Ufos  Demons  Illuminati   Satanism.mp4.part'
+2015-05-10 02:12:11 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:11 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/3 of 4  -  Dark Stars  -  Predictive Programming.mp4.part'
+2015-05-10 02:12:12 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:12 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 6 The real story behind Aliens  Ufos  Demons  Illuminati   Satanism.mp4.part'
+2015-05-10 02:12:13 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:14 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 1 The real story behind Aliens  Ufos  Demons  Illuminati   Satanism.mp4.part'
+2015-05-10 02:12:15 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:15 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Pt 2 The real story behind Aliens  Ufos  Demons  Illuminati.mp4.part'
+2015-05-10 02:12:16 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:16 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/1 of 4  -  Dark Stars  -  Illuminati in Hollywood.mp4.part'
+2015-05-10 02:12:17 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:17 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/The Blood Moon Tetrad _ Comet Ison_ Signs In The Heavens From God Himself!.mp4.part'
+2015-05-10 02:12:18 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:18 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/The Nature of Angels and Spiritual Warfare 3 of 3 Chuck Missler.mp4.part'
+2015-05-10 02:12:19 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:19 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/Charlotte   Jonathan   Britain's Got Talent 2012 Audition.mp4.part'
+2015-05-10 02:12:20 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:12:20 WARN  Main:170 - ssh- bash: -c: line 0: unexpected EOF while looking for matching `''
+2015-05-10 02:12:20 WARN  Main:170 - ssh- bash: -c: line 1: syntax error: unexpected end of file
+2015-05-10 02:12:20 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/B O N O  --   A Conversation About Christianity  --  U2.mp4.part'
+2015-05-10 02:12:21 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:21 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/2 of 4  - Dark Stars  -  9 11 Synchronicities.mp4.part'
+2015-05-10 02:12:22 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:22 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/Xtras/M A G N I F I C E N T  --  Christian Music Video by Tom Howe - Music by U2.mp4.part'
+2015-05-10 02:12:23 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:23 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/01 - Person of Interest 3 - 01 Liberty.vob.part'
+2015-05-10 02:12:24 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:24 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/07 - Person of Interest 3 - 07 The Perfect Mark.vob.part'
+2015-05-10 02:12:25 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:25 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/10 - Person of Interest 3 - 10 The Devil's Share.vob.part'
+2015-05-10 02:12:26 WARN  Main:161 - ssh- exit-status: 1
+2015-05-10 02:12:26 WARN  Main:170 - ssh- bash: -c: line 0: unexpected EOF while looking for matching `''
+2015-05-10 02:12:26 WARN  Main:170 - ssh- bash: -c: line 1: syntax error: unexpected end of file
+2015-05-10 02:12:26 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/11 - Person of Interest 3 - 11 Lethe.vob.part'
+2015-05-10 02:12:27 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:28 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/04 - Person of Interest 3 - 04 Reasonable Doubt.vob.part'
+2015-05-10 02:12:29 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:29 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/02 - Person of Interest 3 - 02 Nothing To Hide.vob.part'
+2015-05-10 02:12:30 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:30 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/03 - Person of Interest 3 - 03 Lady Killer.vob.part'
+2015-05-10 02:12:31 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:31 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/S03E15 - POI.vob.part'
+2015-05-10 02:12:32 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:32 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person of Interest - Season 3 - 1 thru 17  DVD/S03E17 - POI.vob.part'
+2015-05-10 02:12:33 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:33 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E05.HDTV.XviD-AFG/Once.Upon.a.Time.S04E05.HDTV.XviD-AFG.nfo'
+2015-05-10 02:12:34 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:34 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E05.HDTV.XviD-AFG/Read Me.txt'
+2015-05-10 02:12:35 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:35 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E05.HDTV.XviD-AFG/Torrent Has Been Downloaded from www.SceneTime.com.txt'
+2015-05-10 02:12:36 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:36 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person.of.Interest.Season.4.720p.WEB-DL.x265.ShAaNiG/Person.of.Interest.S04E06.720p.WEB-DL.x265.ShAaNiG.mkv.part'
+2015-05-10 02:12:37 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:37 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person.of.Interest.Season.4.720p.WEB-DL.x265.ShAaNiG/Person.of.Interest.S04E11.720p.WEB-DL.x265.ShAaNiG.mkv.part'
+2015-05-10 02:12:38 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:38 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Person.of.Interest.Season.4.720p.WEB-DL.x265.ShAaNiG/Person.of.Interest.S04E17.720p.WEB-DL.x265.ShAaNiG.mkv.part'
+2015-05-10 02:12:39 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:39 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/[ www.torrenting.com ] - Once.Upon.A.Time.S04E03.WEB-DL.x264-WLR/Once.Upon.A.Time.S04E03.WEB-DL.x264-WLR.nfo'
+2015-05-10 02:12:40 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:40 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/[ www.torrenting.com ] - Once.Upon.A.Time.S04E03.WEB-DL.x264-WLR/Downloaded from www.torrenting.com.txt'
+2015-05-10 02:12:41 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:41 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E06.HDTV.XviD-AFG/Once.Upon.a.Time.S04E06.HDTV.XviD-AFG.nfo'
+2015-05-10 02:12:42 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:42 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E06.HDTV.XviD-AFG/Read Me.txt'
+2015-05-10 02:12:43 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:43 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E06.HDTV.XviD-AFG/Torrent Has Been Downloaded from www.SceneTime.com.txt'
+2015-05-10 02:12:44 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:44 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Once Upon a Time S04E20 HDTV XviD-FUM[ettv]/Torrent-Downloaded-From-extratorrent.cc.txt'
+2015-05-10 02:12:45 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:45 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 173 [KnKF].avi.part'
+2015-05-10 02:12:46 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:46 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 186 [KnKF].avi.part'
+2015-05-10 02:12:47 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:47 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 176 [KnKF].avi.part'
+2015-05-10 02:12:48 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:49 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 192 [KnKF].avi.part'
+2015-05-10 02:12:50 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:50 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 187 [KnKF].avi.part'
+2015-05-10 02:12:51 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:51 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 193 [KnKF].avi.part'
+2015-05-10 02:12:52 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:52 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 175 [KnKF].avi.part'
+2015-05-10 02:12:53 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:53 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 183 [KnKF].avi.part'
+2015-05-10 02:12:54 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:54 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 190 [KnKF].avi.part'
+2015-05-10 02:12:55 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:55 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 184 [KnKF].avi.part'
+2015-05-10 02:12:56 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:56 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 182 [KnKF].avi.part'
+2015-05-10 02:12:57 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:58 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 172 [KnKF].avi.part'
+2015-05-10 02:12:59 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:12:59 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 165 [KnKF][62E3F9FC].avi.part'
+2015-05-10 02:13:00 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:00 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 191 [KnKF].avi.part'
+2015-05-10 02:13:01 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:01 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 189 [KnKF].avi.part'
+2015-05-10 02:13:02 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:02 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 181 [KnKF].avi.part'
+2015-05-10 02:13:03 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:03 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 188 [KnKF].avi.part'
+2015-05-10 02:13:04 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:04 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 169 [KnKF].avi.part'
+2015-05-10 02:13:05 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:05 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 174 [KnKF].avi.part'
+2015-05-10 02:13:06 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:06 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 168 [KnKF].avi.part'
+2015-05-10 02:13:07 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:07 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 177 [KnKF].avi.part'
+2015-05-10 02:13:08 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:08 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 170 [KnKF].avi.part'
+2015-05-10 02:13:09 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:09 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 178 [KnKF].avi.part'
+2015-05-10 02:13:10 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:10 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 171 [KnKF].avi.part'
+2015-05-10 02:13:11 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:11 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 164 [KnKF][648025B9].avi.part'
+2015-05-10 02:13:13 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:13 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 163 [KnKF][E5CF4EC7].avi.part'
+2015-05-10 02:13:14 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:14 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 185 [KnKF].avi.part'
+2015-05-10 02:13:15 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:15 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 179 [KnKF].avi.part'
+2015-05-10 02:13:16 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:16 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 180 [KnKF].avi.part'
+2015-05-10 02:13:17 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:17 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 167 [KnKF].avi.part'
+2015-05-10 02:13:18 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:18 WARN  Main:129 - command: rm '/media/videoclub/unloading_dock/Detective Conan Season 7/Detective Conan - 166 [KnKF].avi.part'
+2015-05-10 02:13:19 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:34 WARN  Main:129 - command: stat "/media/videoclub/unloading_dock/" > /dev/null 2>&1
+2015-05-10 02:13:35 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:13:36 WARN  Main:129 - command: cd "/media/videoclub/unloading_dock/";find . -type d -empty -print -delete 
+2015-05-10 02:13:37 WARN  Main:153 - ssh- ./White Collar/White Collar Season 2
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Once Upon a Time (2011)/Saison 14
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Once Upon a Time (2011)/Saison 04
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Once Upon a Time (2011)
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./[ www.torrenting.com ] - Once.Upon.a.Time.S04E11.HDTV.XviD-AFG
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Game.of.Thrones.HDTV.[Season 5 Ep 1-4]~kaugip~
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./- [ www.scenetime.com ]Once.Upon.a.Time.S04E21.HDTV.XviD-AFG
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs/The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./The Sky Crawlers 2008 720p BluRay x264 AAC - Ozlem/Subs
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Detective Conan Season 5
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./[ www.torrenting.com ] - Once.Upon.A.Time.S04E02.WEB-DL.x264-WLR
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Detective Conan Season 6
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Lethal Weapon 4
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./NCIS New Orleans/Saison 05
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./NCIS New Orleans
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Once.Upon.a.Time.S04E19.HDTV.x264-LOL[rarbg]
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E05.HDTV.XviD-AFG
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Person.of.Interest.Season.4.720p.WEB-DL.x265.ShAaNiG
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Detective Conan/Saison 24
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Detective Conan
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Game of Thrones/Saison 05
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Game of Thrones
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./[ www.torrenting.com ] - Once.Upon.A.Time.S04E03.WEB-DL.x264-WLR
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./- [ Hey visit www.SceneTime.com ]Once.Upon.a.Time.S04E06.HDTV.XviD-AFG
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Once Upon a Time S04E20 HDTV XviD-FUM[ettv]
+2015-05-10 02:13:38 WARN  Main:153 - ssh- ./Detective Conan Season 7
+2015-05-10 02:13:38 WARN  Main:161 - ssh- exit-status: 0
+2015-05-10 02:14:09 WARN  Main:482 - analyserrepertoire
+2015-05-10 02:14:13 WARN  Main:482 - +        Fin       +2015-05-10 02:14:13
+2015-05-10 02:14:13 WARN  Main:482 - +---+----+----+----+
+2015-05-10 02:14:13 WARN  Main:482 - </pre>
+2015-05-10 02:14:13 WARN  Main:482 - <error-741730375>
+2015-05-10 02:14:13 WARN  Main:482 - <debug-2077528955>
+2015-05-10 02:14:13 WARN  Main:482 - <debugtrans-35534346>
+2015-05-10 02:14:13 WARN  Main:482 - <warn-1537471098>
+2015-05-10 02:14:14 WARN  Main:482 - <info-1490509465>

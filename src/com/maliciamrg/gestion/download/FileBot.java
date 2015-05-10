@@ -75,8 +75,9 @@ public class FileBot {
 	 * @throws SQLException
 	 * @throws XmlRpcException 
 	 */
-	public static void rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie, String pathdelabibliothequesdesfilm)
+	public static ArrayList<String> rangerserie(String pathdelaseriearanger, String pathdelabibliothequesdelaserie, String pathdelabibliothequesdesfilm)
 			throws JSchException, IOException, InterruptedException, SQLException, XmlRpcException {
+		ArrayList<String> retour= new ArrayList<String>(0);
 		// String pathdelaseriearangercorriger =
 		// pathdelaseriearanger.substring(0, pathdelaseriearanger.substring(0,
 		// pathdelaseriearanger.substring(0, pathdelaseriearanger.length() -
@@ -123,11 +124,7 @@ public class FileBot {
 			}
 			if (lineEp.startsWith("Exclude: ")) {
 				String fileExclu = lineEp.substring(9, lineEp.length());
-				int i = fileExclu.lastIndexOf('.');
-				String extension = fileExclu.substring(i + 1);
-				if (!extension.equalsIgnoreCase("part")) {
-					Ssh.executeAction("rm '" + fileExclu + "'");
-				}
+				retour.add(fileExclu);
 			}
 		}
 		/*
@@ -138,6 +135,7 @@ public class FileBot {
 		 * "/{n}/Saison {s.pad(2)}/{n} {s00e00} ep_{absolute.pad(3)} {t}\"" +
 		 * " -r -non-strict ");
 		 */
+		return retour;
 	}
 
 	/**
