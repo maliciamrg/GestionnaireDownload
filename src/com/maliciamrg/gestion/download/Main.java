@@ -39,6 +39,7 @@ import ca.benow.transmission.model.TorrentStatus.TorrentField;
 import com.jcraft.jsch.JSchException;
 import com.maliciamrg.homeFunction.*;
 import com.mysql.jdbc.PreparedStatement;
+import java.io.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -98,60 +99,93 @@ public class Main {
 	 * @throws Exception
 	 */
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args)
+	{
 		(new File("error.txt")).delete();
-		try {
-			initialisation(args);
-			mise_a_jour_mpd(args);
-			List<String> arrayArgs = Arrays.asList(args);
-			if (arrayArgs.contains("--majbase")) {
-				alimentation_bdd(args);
-			}
-			if (arrayArgs.contains("--gestiontransmission")) {
-				transmisson(args);
-				lancerlesprochainshash(args);
-			}
-			if (arrayArgs.contains("--rangerlesrepertoires")) {
-				// mettre l'indicateur "encours" de tout les episodes a zero
-				ArrayList<String> fileexclu = rangerdownload(args);
-				purgerrepertioiredetravail(args, fileexclu);
-				analyserrepertoire(args);
-			}
+		try
+		{
+			try
+			{
+				initialisation(args);
+				mise_a_jour_mpd(args);
+				List<String> arrayArgs = Arrays.asList(args);
+				if (arrayArgs.contains("--majbase"))
+				{
+					alimentation_bdd(args);
+				}
+				if (arrayArgs.contains("--gestiontransmission"))
+				{
+					transmisson(args);
+					lancerlesprochainshash(args);
+				}
+				if (arrayArgs.contains("--rangerlesrepertoires"))
+				{
+					// mettre l'indicateur "encours" de tout les episodes a zero
+					ArrayList<String> fileexclu = rangerdownload(args);
+					purgerrepertioiredetravail(args, fileexclu);
+					analyserrepertoire(args);
+				}
 
-			cloture(args);
-		} catch (InterruptedException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (SQLException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (IOException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (JSchException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (ParseException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
+				cloture(args);
+			}
+			catch (InterruptedException e)
+			{
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+			}
+			catch (NumberFormatException e)
+			{
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+			}
+			catch (SQLException e)
+			{
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+			}
+			catch (JSchException e)
+			{
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+			}
+			catch (ParseException e)
+			{
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+			}
+			catch (XmlRpcException e)
+			{
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+			}
 		}
-	}
+		catch (FileNotFoundException e)
+		{}
+		catch (UnsupportedEncodingException e)
+		{}
 
+
+	}
+	
 	/**
 	 * lancer les prochains hash serie: nbserieencours = nb hash de class serie
 	 * sans timestamp terminé nbmagnetachercher =
