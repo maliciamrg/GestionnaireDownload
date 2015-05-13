@@ -640,14 +640,16 @@ public class Main {
 			int i = 0;
 			for (i = 0; i < listFile.length(); i++) {
 				JSONObject n = (JSONObject) listFile.get(i);
-				listfichiertransmission.add(Param.CheminTemporaireSerie()+ n.getString("name"));
-				listfichiertransmission.add(Param.CheminTemporaireSerie()+ n.getString("name")+".part");
+				if (isvideo(n.getString("name"))) {
+					listfichiertransmission.add(Param.CheminTemporaireSerie() + n.getString("name"));
+					listfichiertransmission.add(Param.CheminTemporaireSerie() + n.getString("name") + ".part");
+				}
 			}
 		}
 
 		listefichierexclu.removeAll(listfichiertransmission);
 		for (String fileExclu : listefichierexclu) {
-			Ssh.executeAction("rm '" + fileExclu + "'");
+			Ssh.executeAction("rm \"" + fileExclu + "\"");
 		}
 
 		// suprimer repertoire vide
@@ -709,8 +711,7 @@ public class Main {
 		// }
 
 		// de mise a encours des episodes
-		stmt.executeUpdate("update episodes set encours = false where timestamp_completer is not null");
-
+		stmt.executeUpdate("update episodes set encours = false "/*+"where timestamp_completer is not null"*/);
 		return listefichierexclu;
 	}
 

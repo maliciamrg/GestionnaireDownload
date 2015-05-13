@@ -122,6 +122,11 @@ public class FileBot {
 				Param.logger.debug("deplacement:" + spl[0]);
 				Param.logger.debug("vers:" + destmod);
 			}
+			if (lineEp.startsWith("Read archive")) {
+				String[] spl = lineEp.substring(14, lineEp.length() - 1).split("\\] and extract to \\[");
+				String fileExclu =spl[1]+"/"+spl[0];
+				retour.add(fileExclu);
+			}
 			if (lineEp.startsWith("Exclude: ")) {
 				String fileExclu = lineEp.substring(9, lineEp.length());
 				retour.add(fileExclu);
