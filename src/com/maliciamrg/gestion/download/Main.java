@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import ca.benow.transmission.model.TorrentStatus.TorrentField;
 import com.jcraft.jsch.JSchException;
 import com.maliciamrg.homeFunction.*;
 import com.mysql.jdbc.PreparedStatement;
+
 import java.io.*;
 
 // TODO: Auto-generated Javadoc
@@ -115,6 +117,7 @@ public class Main {
 				}
 				if (arrayArgs.contains("--gestiontransmission"))
 				{
+					synchronisation_bdd_transmission();
 					transmisson(args);
 					lancerlesprochainshash(args);
 				}
@@ -769,7 +772,15 @@ public class Main {
 	 */
 	private static void analyserrepertoire(String[] args) throws SQLException, IOException, JSchException, InterruptedException, XmlRpcException {
 		System.out.println("analyserrepertoire");
-		String clausewhere = (args.length > 0) ? " WHERE nom = \"" + args[0] + "\"" : "";
+		
+		ArrayList<String> argsclean = new ArrayList<String>(0);
+		for (int i = 0; i < args.length; i++) {
+			if (!args[i].substring(0, 2).equals("--")) {
+				argsclean.add(args[i]);
+			}
+		}
+		String[] argscleans = argsclean.toArray(new String[0]);
+		String clausewhere = (argscleans.length > 0) ? " WHERE nom = \"" + argscleans[0] + "\"" : "";
 
 		final List<Map<String, String>> listeret = new ArrayList<Map<String, String>>();
 		ResultSet rs = null;
@@ -1208,10 +1219,10 @@ public class Main {
 
 		mise_a_jour_liste_episodes(stmt);
 
-		synchronisation_bdd_transmission(stmt);
 	}
 
-	private static void synchronisation_bdd_transmission(Statement stmt) throws SQLException, IOException, JSONException {
+	private static void synchronisation_bdd_transmission() throws SQLException, IOException, JSONException {
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		ResultSet rs;
 
 		for (String hash : transmission.listhashTransmission()) {
@@ -1231,6 +1242,11 @@ public class Main {
 		while (rs.next()) {
 			if (!lstHash.contains(rs.getString("hash").toLowerCase())) {
 				rs.updateString("timestamp_termine", (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(Param.dateDuJour()));
+				if (rs.getString("nom") == null) {
+					rs.updateString("nom", "null");
+				} else {
+					rs.updateString("nom", Normalizer.normalize(rs.getString("nom"), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", ""));
+				}
 				rs.updateRow();
 			}
 		}

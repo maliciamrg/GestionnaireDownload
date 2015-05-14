@@ -124,8 +124,14 @@ public class FileBot {
 			}
 			if (lineEp.startsWith("Read archive")) {
 				String[] spl = lineEp.substring(14, lineEp.length() - 1).split("\\] and extract to \\[");
-				String fileExclu =spl[1]+"/"+spl[0];
-				retour.add(fileExclu);
+				String[] path = spl[1].substring( pathdelabibliothequesdelaserie.length()).split("/");
+				String subpath = pathdelabibliothequesdelaserie;
+				for(int i = 0; i < path.length; i++)
+				{
+				  subpath += path[i]+"/";
+				  retour.add(subpath+spl[0]);
+				}
+				retour.add(spl[1]+"/"+spl[0]);
 			}
 			if (lineEp.startsWith("Exclude: ")) {
 				String fileExclu = lineEp.substring(9, lineEp.length());
