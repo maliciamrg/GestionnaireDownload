@@ -126,8 +126,12 @@ public class Main {
 					// mettre l'indicateur "encours" de tout les episodes a zero
 					ArrayList<String> fileexclu = rangerdownload(args);
 					purgerrepertioiredetravail(args, fileexclu);
+				}
+				if (arrayArgs.contains("--analyserrepertoire"))
+				{
 					analyserrepertoire(args);
 				}
+	
 
 				cloture(args);
 			}
@@ -773,6 +777,8 @@ public class Main {
 	private static void analyserrepertoire(String[] args) throws SQLException, IOException, JSchException, InterruptedException, XmlRpcException {
 		System.out.println("analyserrepertoire");
 		
+		List<String> arrayArgs = Arrays.asList(args);
+		
 		ArrayList<String> argsclean = new ArrayList<String>(0);
 		for (int i = 0; i < args.length; i++) {
 			if (!args[i].substring(0, 2).equals("--")) {
@@ -790,10 +796,12 @@ public class Main {
 		while (rs.next()) {
 			Param.logger.debug(rs.getString("nom"));
 
-			Ssh.executeAction("find \"" + rs.getString("repertoire") + "\" -name \\*.nfo -exec rm {} \\;");
-			FileBot.rangerserie(rs.getString("repertoire"), Param.getlastPath(rs.getString("repertoire")), Param.props.getProperty("Repertoire.Film"));
-			Ssh.executeAction("cd \"" + rs.getString("repertoire") + "\";find . -type d -delete \\;");
-
+			if (arrayArgs.contains("--rangerlesrepertoires")) {
+				Ssh.executeAction("find \"" + rs.getString("repertoire") + "\" -name \\*.nfo -exec rm {} \\;");
+				FileBot.rangerserie(rs.getString("repertoire"), Param.getlastPath(rs.getString("repertoire")), Param.props.getProperty("Repertoire.Film"));
+				Ssh.executeAction("cd \"" + rs.getString("repertoire") + "\";find . -type d -delete \\;");
+			}
+			
 			getseriestathtml(rs.getString("nom"));
 
 			if ((Ssh.Fileexists(rs.getString("repertoire")))) {

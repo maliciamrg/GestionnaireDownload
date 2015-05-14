@@ -110,17 +110,23 @@ public class FileBot {
 			if (lineEp.startsWith("[TEST] Rename")) {
 				String[] spl = lineEp.substring(15, lineEp.length() - 1).split("\\] to \\[");
 				String destmod = correctiondestination(spl[0], spl[1], pathdelabibliothequesdelaserie, pathdelabibliothequesdesfilm);
-				Ssh.moveFile(spl[0], destmod);
-				if (spl[1].indexOf(pathdelabibliothequesdesfilm) > -1) {
-					String NomFichier = lineEp.substring((Math.max(lineEp.lastIndexOf('/'), lineEp.lastIndexOf('\\'))) );
+				if (destmod.equals(spl[1])) {
+					Ssh.moveFile(spl[0], destmod);
+					if (spl[1].indexOf(pathdelabibliothequesdesfilm) > -1) {
+						String NomFichier = lineEp.substring((Math.max(lineEp.lastIndexOf('/'), lineEp.lastIndexOf('\\'))));
 						WordPressHome.publishOnBlog(6, (new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour()) + "_" + NomFichier, NomFichier,
 								new String[] { "Film" }, new String[] { "Film" },
 								"<a href=\"" + Param.props.getProperty("Url.StreamerInterne") + URLEncoder.encode(lineEp, "UTF-8") + "\">" + NomFichier
 										+ "</a>" + "\n");
 
+					}
+					Param.logger.debug("deplacement:" + spl[0]);
+					Param.logger.debug("vers:" + destmod);
+				} else {
+					Param.logger.debug("contradiction pour :" + spl[0]);
+					Param.logger.debug("filebot:" + spl[1]);
+					Param.logger.debug("perso  :" + destmod);
 				}
-				Param.logger.debug("deplacement:" + spl[0]);
-				Param.logger.debug("vers:" + destmod);
 			}
 			if (lineEp.startsWith("Read archive")) {
 				String[] spl = lineEp.substring(14, lineEp.length() - 1).split("\\] and extract to \\[");

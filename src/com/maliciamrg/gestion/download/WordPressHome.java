@@ -6,6 +6,7 @@ package com.maliciamrg.gestion.download;
  * 
  * 
  */
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import org.apache.log4j.Logger;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-
 
 
 // TODO: Auto-generated Javadoc
@@ -33,6 +33,7 @@ public class WordPressHome
 	/** The table blog. */
 	private static ArrayList<HashMap> tableBlog = new ArrayList();
 
+	private static HashMap<String, HashMap> persitenceterms = new  HashMap<String, HashMap>(0);
 	/**
 	 * Gets the table blog.
 	 *
@@ -63,7 +64,7 @@ public class WordPressHome
 	 */
 	public static void publishOnBlog(int numBlog, String title, String Resume, String[] motcle, String[] categorie, String billet) throws XmlRpcException, MalformedURLException
 	{
-		Param.logger.debug("WordPressHome.publishOnBlog:"+title);
+		System.out.println("WordPressHome.publishOnBlog:"+title);
 		if (tableBlog.size() - 1 < numBlog)
 		{
 			initTableBlog();
@@ -128,11 +129,20 @@ public class WordPressHome
 		{
 			_ter = _ter.trim();
 			String key = _ter + "." + termsValeurs;
+			key = key.replace("&", "&amp;");
 			if (!terms.containsKey(key))
 			{
+
+//				for (String _t : terms.keySet()) {
+//					if (_t.substring(0, 1).equalsIgnoreCase("d")) {
+//						System.out.println("-" + _t + "-");
+//					}
+//				}
+				
 				if (_ter != null && termsValeurs != null)
 				{
 					// Display.affichageLigne(key);
+					System.out.println("newTerm="+key);
 					terms.put(key, newTerm(hashsite, termsValeurs, _ter));
 				}
 			}
@@ -188,6 +198,9 @@ public class WordPressHome
 	 */
 	private static HashMap<String, HashMap> getTerms(HashMap hashsite, String termsValeurs) throws MalformedURLException, XmlRpcException
 	{
+		
+		if (persitenceterms.containsKey(termsValeurs)){return persitenceterms.get(termsValeurs);}
+		
 		HashMap<String, HashMap> terms = new HashMap<String, HashMap>();
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 		config.setServerURL(new URL((String) hashsite.get("xmlrpc")));
@@ -195,6 +208,7 @@ public class WordPressHome
 		client.setConfig(config);
 
 		Object[] params2 = new Object[] { 0, Param.props.getProperty("WordPress.username"), Param.props.getProperty("WordPress.password"), termsValeurs };
+		System.out.println("wp.getTerms:("+termsValeurs+")");
 		Object[] result2 = (Object[]) client.execute("wp.getTerms", params2);
 
 		// Display.affichageListe("getTaxonomy", result2);
@@ -205,7 +219,7 @@ public class WordPressHome
 			terms.put((String) _h.get("name") + "." + termsValeurs, _h);
 		}
 
-
+		persitenceterms.put(termsValeurs, terms);
 		return terms;
 	}
 
@@ -221,6 +235,9 @@ public class WordPressHome
 	 */
 	private static HashMap newTerm(HashMap hashsite, String termsValeurs, String _ter) throws MalformedURLException, XmlRpcException
 	{
+		
+		persitenceterms.remove(termsValeurs);
+		
 		HashMap ret = new HashMap();
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 		config.setServerURL(new URL((String) hashsite.get("xmlrpc")));
