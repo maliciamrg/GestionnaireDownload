@@ -103,6 +103,7 @@ public class Main {
 
 	public static void main(String[] args)
 	{
+		say("main-start");
 		(new File("error.txt")).delete();
 		try
 		{
@@ -113,86 +114,130 @@ public class Main {
 				List<String> arrayArgs = Arrays.asList(args);
 				if (arrayArgs.contains("--majbase"))
 				{
+					say("majbase-start");
 					alimentation_bdd(args);
+					say("majbase-stop");
 				}
 				if (arrayArgs.contains("--gestiontransmission"))
 				{
+					say("gestiontransmission-start");
 					synchronisation_bdd_transmission();
 					transmisson(args);
 					lancerlesprochainshash(args);
+					say("gestiontransmission-stop");
 				}
 				if (arrayArgs.contains("--rangerlesrepertoires"))
 				{
+					say("rangerlesrepertoires-start");
 					// mettre l'indicateur "encours" de tout les episodes a zero
 					ArrayList<String> fileexclu = rangerdownload(args);
 					purgerrepertioiredetravail(args, fileexclu);
+					say("rangerlesrepertoires-stop");
 				}
 				if (arrayArgs.contains("--analyserrepertoire"))
 				{
+					say("analyserrepertoire-start");
 					analyserrepertoire(args);
+					say("analyserrepertoire-stop");
 				}
 	
-
-				cloture(args);
 			}
 			catch (InterruptedException e)
 			{
+				say("InterruptedException-start");
 				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
 				writer.println(Param.eToString(e));
 				writer.close();
 				e.printStackTrace();
+				say("InterruptedException-stop");
 			}
 			catch (NumberFormatException e)
 			{
+				say("NumberFormatException-start");
 				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
 				writer.println(Param.eToString(e));
 				writer.close();
 				e.printStackTrace();
+				say("NumberFormatException-stop");
 			}
 			catch (SQLException e)
 			{
+				say("SQLException-start");
 				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
 				writer.println(Param.eToString(e));
 				writer.close();
 				e.printStackTrace();
+				say("SQLException-stop");
 			}
 			catch (IOException e)
 			{
+				say("IOException-start");
 				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
 				writer.println(Param.eToString(e));
 				writer.close();
 				e.printStackTrace();
+				say("IOException-stop");
 			}
 			catch (JSchException e)
 			{
+				say("JSchException-start");
 				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
 				writer.println(Param.eToString(e));
 				writer.close();
 				e.printStackTrace();
+				say("JSchException-stop");
 			}
 			catch (ParseException e)
 			{
+				say("ParseException-start");
 				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
 				writer.println(Param.eToString(e));
 				writer.close();
 				e.printStackTrace();
+				say("ParseException-stop");
 			}
 			catch (XmlRpcException e)
 			{
+				say("XmlRpcException-start");
 				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
 				writer.println(Param.eToString(e));
 				writer.close();
 				e.printStackTrace();
+				say("XmlRpcException-stop");
 			}
 		}
 		catch (FileNotFoundException e)
-		{}
+		{
+			say("FileNotFoundException-start");
+			e.printStackTrace();
+			say("FileNotFoundException-stop");
+		}
 		catch (UnsupportedEncodingException e)
-		{}
-
-
+		{
+			say("UnsupportedEncodingException-start");
+			e.printStackTrace();
+			say("UnsupportedEncodingException-stop");
+		}
+		
+		try {
+			say("cloture-start");
+			cloture(args);
+			say("cloture-stop");
+		} catch (InterruptedException | IOException | SQLException e) {
+			say("clotureException-start");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+			say("clotureException-stop");
+		}	
+		
+		say("main-stop");
 	}
 	
+	private static void say(String string) {
+		System.out.println("-="+string+"=-");
+	}
+
 	/**
 	 * lancer les prochains hash serie: nbserieencours = nb hash de class serie
 	 * sans timestamp terminé nbmagnetachercher =
