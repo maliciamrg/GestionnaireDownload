@@ -5,6 +5,7 @@ bin/
 _old/
 log*.html
 log*.txt
+/last_log_*.html
 
 # AndroidIDE
 *.dex
