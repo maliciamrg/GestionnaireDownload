@@ -236,7 +236,7 @@ public static boolean Fileexists(String fichier) throws JSchException, IOExcepti
 	{
 		channelSftp.cd(directory);
 		Vector filelist = channelSftp.ls(directory);
-		for (int i = 0; i < filelist.size(); i++)
+		for (int i = 0 ; i < filelist.size(); i++)
 		{
 			LsEntry entry = (LsEntry) filelist.get(i);
 			String type = entry.getLongname().substring(13, 15);
@@ -245,7 +245,7 @@ public static boolean Fileexists(String fichier) throws JSchException, IOExcepti
 			{
 				ret.add(directory + Param.Fileseparator + filename);
 			}
-			if (type.compareTo(" 2") == 0 && !filename.equals(".") && !filename.equals(".."))
+			if ((type.compareTo(" 2") == 0 || type.compareTo(" 3") == 0  )&& !filename.equals(".") && !filename.equals(".."))
 			{
 				repertoire.add(directory + Param.Fileseparator + filename);
 			}

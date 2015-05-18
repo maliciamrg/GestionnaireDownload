@@ -70,7 +70,7 @@ public class transmission {
 	public static void supprimer_hash(String hash) throws JSONException,
 			IOException {
 		int torrentId = torrentIdOfHash(hash);
-		Param.client.removeTorrents(new Object[] { torrentId }, true);
+		Param.client.removeTorrents(new Object[] { torrentId }, false);
 	}
 
 	public static void resume_hash(String hash) throws JSONException,

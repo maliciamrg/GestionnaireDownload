@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +39,9 @@ import ca.benow.transmission.model.TorrentStatus.TorrentField;
 
 import com.jcraft.jsch.JSchException;
 import com.maliciamrg.homeFunction.*;
+import com.mysql.jdbc.PreparedStatement;
+
+import java.io.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -97,57 +101,141 @@ public class Main {
 	 * @throws Exception
 	 */
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args)
+	{
+		say("main-start");
 		(new File("error.txt")).delete();
-		try {
-			initialisation(args);
-			mise_a_jour_mpd(args);
-			List<String> arrayArgs = Arrays.asList(args);
-			if (arrayArgs.contains("--majbase")) {
-				alimentation_bdd(args);
+		try
+		{
+			try
+			{
+				initialisation(args);
+				mise_a_jour_mpd(args);
+				List<String> arrayArgs = Arrays.asList(args);
+				if (arrayArgs.contains("--majbase"))
+				{
+					say("majbase-start");
+					alimentation_bdd(args);
+					say("majbase-stop");
+				}
+				if (arrayArgs.contains("--gestiontransmission"))
+				{
+					say("gestiontransmission-start");
+					synchronisation_bdd_transmission();
+					transmisson(args);
+					lancerlesprochainshash(args);
+					say("gestiontransmission-stop");
+				}
+				if (arrayArgs.contains("--rangerlesrepertoires"))
+				{
+					say("rangerlesrepertoires-start");
+					// mettre l'indicateur "encours" de tout les episodes a zero
+					ArrayList<String> fileexclu = rangerdownload(args);
+					purgerrepertioiredetravail(args, fileexclu);
+					say("rangerlesrepertoires-stop");
+				}
+				if (arrayArgs.contains("--analyserrepertoire"))
+				{
+					say("analyserrepertoire-start");
+					analyserrepertoire(args);
+					say("analyserrepertoire-stop");
+				}
+	
 			}
-			if (arrayArgs.contains("--gestiontransmission")) {
-				transmisson(args);
-				lancerlesprochainshash(args);
+			catch (InterruptedException e)
+			{
+				say("InterruptedException-start");
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+				say("InterruptedException-stop");
 			}
-			if (arrayArgs.contains("--rangerlesrepertoires")) {
-				rangerdownload(args);
-				purgerrepertioiredetravail(args);
-				analyserrepertoire(args);
+			catch (NumberFormatException e)
+			{
+				say("NumberFormatException-start");
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+				say("NumberFormatException-stop");
 			}
-
-			cloture(args);
-		} catch (InterruptedException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (SQLException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (IOException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (JSchException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
-		} catch (ParseException e) {
-			PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
-			writer.println(Param.eToString(e));
-			writer.close();
-			e.printStackTrace();
+			catch (SQLException e)
+			{
+				say("SQLException-start");
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+				say("SQLException-stop");
+			}
+			catch (IOException e)
+			{
+				say("IOException-start");
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+				say("IOException-stop");
+			}
+			catch (JSchException e)
+			{
+				say("JSchException-start");
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+				say("JSchException-stop");
+			}
+			catch (ParseException e)
+			{
+				say("ParseException-start");
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+				say("ParseException-stop");
+			}
+			catch (XmlRpcException e)
+			{
+				say("XmlRpcException-start");
+				PrintWriter writer = new PrintWriter("error.txt", "UTF-8");
+				writer.println(Param.eToString(e));
+				writer.close();
+				e.printStackTrace();
+				say("XmlRpcException-stop");
+			}
 		}
+		catch (FileNotFoundException e)
+		{
+			say("FileNotFoundException-start");
+			e.printStackTrace();
+			say("FileNotFoundException-stop");
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			say("UnsupportedEncodingException-start");
+			e.printStackTrace();
+			say("UnsupportedEncodingException-stop");
+		}
+		
+		try {
+			say("cloture-start");
+			cloture(args);
+			say("cloture-stop");
+		} catch (InterruptedException | IOException | SQLException e) {
+			say("clotureException-start");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+			say("clotureException-stop");
+		}	
+		
+		say("main-stop");
+	}
+	
+	private static void say(String string) {
+		System.out.println("-="+string+"=-");
 	}
 
 	/**
@@ -356,6 +444,7 @@ public class Main {
 	 *             the SQL exception
 	 */
 	private static String getseriestathtml(String serie) throws SQLException {
+		System.out.println("getseriestathtml " + serie);
 		ResultSet rs = null;
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		rs = stmt.executeQuery("SELECT *" + " FROM episodes " + " WHERE " + "      serie = \"" + serie + "\"" + " ORDER BY " + "  airdate Desc" + "");
@@ -407,8 +496,7 @@ public class Main {
 		}
 		rs.close();
 
-		String imagestatseriehtml = "";
-		new HomeFunction().generate_image_resumer_serie(serie, strnbjourprochainepisodes, nbpresent, nbencours, nbabsent, nbavenir);
+		String imagestatseriehtml = new HomeFunction().generate_image_resumer_serie(serie, strnbjourprochainepisodes, nbpresent, nbencours, nbabsent, nbavenir);
 
 		mettreimagestatmajserieserie(serie, imagestatseriehtml);
 		String tableaustatseriehtml = Miseenforme(visu);
@@ -618,24 +706,40 @@ public class Main {
 	 *
 	 * @param args
 	 *            the args
+	 * @param listefichierexclu
 	 * @throws JSchException
 	 *             the j sch exception
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 * @throws InterruptedException
 	 *             the interrupted exception
+	 * @throws SQLException 
 	 */
-	private static void purgerrepertioiredetravail(String[] args) throws JSchException, IOException, InterruptedException {
+	private static void purgerrepertioiredetravail(String[] args, ArrayList<String> listefichierexclu) throws JSchException, IOException, InterruptedException, SQLException {
 		System.out.println("purgerrepertioiredetravail");
+
+		ArrayList<String> listfichiertransmission = new ArrayList<String>(0);
+		List<TorrentStatus> torrents = Param.client.getAllTorrents(new TorrentField[] { TorrentField.hashString, TorrentField.files, TorrentField.name,
+				TorrentField.percentDone, TorrentField.activityDate, TorrentField.eta });
+		for (TorrentStatus curr : torrents) {
+			JSONArray listFile = ((JSONArray) curr.getField(TorrentField.files));
+			int i = 0;
+			for (i = 0; i < listFile.length(); i++) {
+				JSONObject n = (JSONObject) listFile.get(i);
+				if (isvideo(n.getString("name"))) {
+					listfichiertransmission.add(Param.CheminTemporaireSerie() + n.getString("name"));
+					listfichiertransmission.add(Param.CheminTemporaireSerie() + n.getString("name") + ".part");
+				}
+			}
+		}
+
+		listefichierexclu.removeAll(listfichiertransmission);
+		for (String fileExclu : listefichierexclu) {
+			Ssh.executeAction("rm \"" + fileExclu + "\"");
+		}
+
+		// suprimer repertoire vide
 		if (Ssh.Fileexists(Param.CheminTemporaireTmp())) {
-			// deplacer fichier a la racine
-			// Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() +
-			// "\";find . -type f -iname '*.*' -exec mv '{}' \"" +
-			// Param.CheminTemporaireTmp() + "\" \\;");
-			// purge rep=ertzooire v,wide
-			// Ssh.actionexecChmodR777(Param.CheminTemporaireTmp() );
-			// Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() +
-			// "\";find . -type d -depth -exec rmdir 2>/dev/null '{}' \\;");
 			Ssh.executeAction("cd \"" + Param.CheminTemporaireTmp() + "\";find . -type d -empty -print -delete ");
 		}
 	}
@@ -653,16 +757,21 @@ public class Main {
 	 *             the j sch exception
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
+	 * @throws XmlRpcException
 	 */
-	private static void rangerdownload(String[] args) throws SQLException, InterruptedException, JSchException, IOException {
+	private static ArrayList<String> rangerdownload(String[] args) throws SQLException, InterruptedException, JSchException, IOException, XmlRpcException {
 		System.out.println("rangerdownload");
+
+		ArrayList<String> listefichierexclu = new ArrayList<String>(0);
+
 		// ranger les serie dans les sous repertoire de tmp
 		if (Ssh.getRemoteFileList(Param.CheminTemporaireSerie()).size() > 0) {
-			FileBot.rangerserie(Param.CheminTemporaireSerie(), Param.CheminTemporaireSerie(), Param.props.getProperty("Repertoire.Film"));
+			listefichierexclu = FileBot.rangerserie(Param.CheminTemporaireSerie(), Param.CheminTemporaireSerie(), Param.props.getProperty("Repertoire.Film"));
 		}
 
 		ResultSet rs = null;
 		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
 		rs = stmt.executeQuery("SELECT * " + " FROM series " + "  ");
 		while (rs.next()) {
 			String src = Param.CheminTemporaireSerie() + rs.getString("nom") + Param.Fileseparator;
@@ -674,15 +783,22 @@ public class Main {
 		}
 		rs.close();
 
+		/*
+		 * les films sont directioment deplaceer dans le bon repertoire par la
+		 * fonction rangerserie
+		 */
+
 		// if (Ssh.Fileexists(Param.CheminTemporaireFilm()))
 		// {
-		// if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size() > 0)
-		// {
-		// FileBot.rangerfilm(Param.CheminTemporaireFilm() ,
+		// if (Ssh.getRemoteFileList(Param.CheminTemporaireFilm()).size() > 0) {
+		// FileBot.rangerfilm(Param.CheminTemporaireFilm(),
 		// Param.RepertoireFilm);
 		// }
 		// }
 
+		// de mise a encours des episodes
+		stmt.executeUpdate("update episodes set encours = false "/*+"where timestamp_completer is not null"*/);
+		return listefichierexclu;
 	}
 
 	/**
@@ -705,7 +821,17 @@ public class Main {
 	 */
 	private static void analyserrepertoire(String[] args) throws SQLException, IOException, JSchException, InterruptedException, XmlRpcException {
 		System.out.println("analyserrepertoire");
-		String clausewhere = (args.length > 0) ? " WHERE nom = \"" + args[0] + "\"" : "";
+		
+		List<String> arrayArgs = Arrays.asList(args);
+		
+		ArrayList<String> argsclean = new ArrayList<String>(0);
+		for (int i = 0; i < args.length; i++) {
+			if (!args[i].substring(0, 2).equals("--")) {
+				argsclean.add(args[i]);
+			}
+		}
+		String[] argscleans = argsclean.toArray(new String[0]);
+		String clausewhere = (argscleans.length > 0) ? " WHERE nom = \"" + argscleans[0] + "\"" : "";
 
 		final List<Map<String, String>> listeret = new ArrayList<Map<String, String>>();
 		ResultSet rs = null;
@@ -715,10 +841,12 @@ public class Main {
 		while (rs.next()) {
 			Param.logger.debug(rs.getString("nom"));
 
-			Ssh.executeAction("find \"" + rs.getString("repertoire") + "\" -name \\*.nfo -exec rm {} \\;");
-			FileBot.rangerserie(rs.getString("repertoire"), Param.getlastPath(rs.getString("repertoire")), Param.props.getProperty("Repertoire.Film"));
-			Ssh.executeAction("cd \"" + rs.getString("repertoire") + "\";find . -type d -delete \\;");
-
+			if (arrayArgs.contains("--rangerlesrepertoires")) {
+				Ssh.executeAction("find \"" + rs.getString("repertoire") + "\" -name \\*.nfo -exec rm {} \\;");
+				FileBot.rangerserie(rs.getString("repertoire"), Param.getlastPath(rs.getString("repertoire")), Param.props.getProperty("Repertoire.Film"));
+				Ssh.executeAction("cd \"" + rs.getString("repertoire") + "\";find . -type d -delete \\;");
+			}
+			
 			getseriestathtml(rs.getString("nom"));
 
 			if ((Ssh.Fileexists(rs.getString("repertoire")))) {
@@ -775,18 +903,21 @@ public class Main {
 		rs.close();
 
 		for (Map<String, String> curr : listeret) {
+			Param.logger.debug("update : " + curr.get("serie") + " S" + curr.get("saison") + "E" + curr.get("episode") + " -> " + curr.get("chemin"));
 			int ret = stmt.executeUpdate("UPDATE episodes " + " set chemin_complet = \"" + curr.get("chemin") + "\"" + "   , timestamp_completer = \""
 					+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\"" + "WHERE " + " serie = \"" + curr.get("serie") + "\""
 					+ " and num_saison = \"" + curr.get("saison") + "\"" + " and num_episodes = \"" + curr.get("episode") + "\"" + " ");
 			String seriestathtml = getseriestathtml(curr.get("serie"));
-			if (Boolean.parseBoolean(Param.props.getProperty("WordPress.addpost"))) {
-				String NomFichier = curr.get("chemin").substring((Math.max(curr.get("chemin").lastIndexOf('/'), curr.get("chemin").lastIndexOf('\\'))) + 1);
-				WordPressHome.publishOnBlog(6, (new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour()) + "_" + NomFichier, NomFichier,
-						new String[] { curr.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") }, new String[] { "Serie" },
-						/* "http://home.daisy-street.fr/BibPerso/stream.php?flux=" */
-						"<a href=\"" + Param.props.getProperty("Url.StreamerInterne") + URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier
-								+ "</a>" + "\n" + seriestathtml + "");
-			}
+			// if
+			// (Boolean.parseBoolean(Param.props.getProperty("WordPress.addpost")))
+			// {
+			String NomFichier = curr.get("chemin").substring((Math.max(curr.get("chemin").lastIndexOf('/'), curr.get("chemin").lastIndexOf('\\'))) + 1);
+			WordPressHome.publishOnBlog(6, (new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour()) + "_" + NomFichier, NomFichier, new String[] {
+					curr.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") }, new String[] { "Serie" },
+			/* "http://home.daisy-street.fr/BibPerso/stream.php?flux=" */
+			"<a href=\"" + Param.props.getProperty("Url.StreamerInterne") + URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier + "</a>" + "\n"
+					+ seriestathtml + "");
+			// }
 		}
 	}
 
@@ -903,6 +1034,8 @@ public class Main {
 			Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			rs = stmt.executeQuery("SELECT * " + " FROM hash " + " WHERE " + "      hash = \"" + hash + "\"" + "  ");
 			while (rs.next()) {
+				JSONArray listFile = ((JSONArray) curr.getField(TorrentField.files));
+
 				if (rs.getDate("timestamp_termine") != null) {
 					transmission.supprimer_hash(hash);
 				} else {
@@ -910,7 +1043,6 @@ public class Main {
 					switch (rs.getString("classification")) {
 					case "serie":
 						nbfichierbruler = 0;
-						JSONArray listFile = (JSONArray) curr.getField(TorrentField.files);
 						int i = 0;
 						for (i = 0; i < listFile.length(); i++) {
 							JSONObject n = (JSONObject) listFile.get(i);
@@ -920,22 +1052,25 @@ public class Main {
 							} else {
 								Map<String, String> ret = conversionnom2episodes(n.getString("name"));
 								if (ret.get("serie").equals("") || ret.get("saison").equals("000") || ret.get("episode").equals("000")
-										|| episodesachemincomplet(ret)) {
+										|| episodesachemincomplet(ret)
+										|| (!n.get("bytesCompleted").equals(0) && n.get("bytesCompleted").equals(n.get("length")))) {
 									nbfichierbruler++;
 									transmission.cancelFilenameOfTorrent(hash, i);
 								} else {
 									transmission.uncancelFilenameOfTorrent(hash, i);
 									mettreepisodeaencours(ret.get("serie"), ret.get("saison"), ret.get("episode"), ret.get("sequentiel"));
-									// if (!n.get("bytesCompleted").equals(0))
+									// if (!n.get("bytesCompleted").equals(0) &&
+									// n.get("bytesCompleted").equals(n.get("length")))
 									// {
-									// if
-									// (n.get("bytesCompleted").equals(n.get("length")))
-									// {
-									// if (transmission.deplacer_fichier(hash,
-									// Param.CheminTemporaireSerie(), i))
-									// {
-									// nbfichierbruler ++;
+									// nbfichierbruler++;
+									// } else {
+
 									// }
+									// if
+									// (transmission.deplacer_fichier(hash,
+									// Param.CheminTemporaireSerie(),
+									// i))
+									// { }
 									// }
 									// else
 									// {
@@ -945,7 +1080,7 @@ public class Main {
 									// ret.get("episode") + " name:" +
 									// n.getString("name"));
 									// }
-									// }
+
 								}
 							}
 						}
@@ -1137,13 +1272,10 @@ public class Main {
 
 		mise_a_jour_liste_episodes(stmt);
 
-		// mettre l'indicateur "encours" de tout les episodes a zero
-		stmt.executeUpdate("update episodes set encours = false ");
-
-		synchronisation_bdd_transmission(stmt);
 	}
 
-	private static void synchronisation_bdd_transmission(Statement stmt) throws SQLException, IOException, JSONException {
+	private static void synchronisation_bdd_transmission() throws SQLException, IOException, JSONException {
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		ResultSet rs;
 
 		for (String hash : transmission.listhashTransmission()) {
@@ -1163,6 +1295,11 @@ public class Main {
 		while (rs.next()) {
 			if (!lstHash.contains(rs.getString("hash").toLowerCase())) {
 				rs.updateString("timestamp_termine", (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(Param.dateDuJour()));
+				if (rs.getString("nom") == null) {
+					rs.updateString("nom", "null");
+				} else {
+					rs.updateString("nom", Normalizer.normalize(rs.getString("nom"), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", ""));
+				}
 				rs.updateRow();
 			}
 		}
