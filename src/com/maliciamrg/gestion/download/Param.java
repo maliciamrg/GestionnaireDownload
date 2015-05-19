@@ -303,7 +303,9 @@ public class Param {
 		log4j_cheminComplet_debugtransmisson = workRepertoire + "log4j_debugtransmisson" + ".html";
 		log4j_cheminComplet_info = workRepertoire + "log4j_info" + ".html";
 		log4j_cheminComplet_warn = workRepertoire + "log4j_warn" + ".html";
-
+		
+		logger = Logger.getLogger(Main.class.getName());
+		
 		if (new File(log4j_cheminComplet_error).exists() 
 				|| new File(log4j_cheminComplet_debug).exists()
 				|| new File(log4j_cheminComplet_debugtransmisson).exists() 
@@ -312,7 +314,6 @@ public class Param {
 			throw new InterruptedException("Les fichier trace existe deja , annulation du lancement");
 		}
 
-		logger = Logger.getLogger(Main.class.getName());
 		LevelMatchFilter filterDebugOut = new LevelMatchFilter();
 		filterDebugOut.setLevelToMatch("DEBUG");
 		filterDebugOut.setAcceptOnMatch(false);
@@ -405,20 +406,30 @@ public class Param {
 	 * @throws InterruptedException
 	 *             the interrupted exception
 	 */
-	public static void clotureTrace() throws FileNotFoundException, IOException, InterruptedException {
+	public static void clotureTrace() throws InterruptedException, FileNotFoundException, IOException  {
 
 		printAllAppender();
 
 		Thread.sleep(500);
-		faMaster.close();
+		if (faMaster != null) {
+			faMaster.close();
+		}
 		Thread.sleep(500);
-		faDebug.close();
+		if (faDebug != null) {
+			faDebug.close();
+		}
 		Thread.sleep(500);
-		faDebugtrans.close();
+		if (faDebugtrans != null) {
+			faDebugtrans.close();
+		}
 		Thread.sleep(500);
-		faWarn.close();
+		if (faWarn != null) {
+			faWarn.close();
+		}
 		Thread.sleep(500);
-		faInfo.close();
+		if (faInfo != null) {
+			faInfo.close();
+		}
 		Thread.sleep(500);
 		logger.removeAllAppenders();
 

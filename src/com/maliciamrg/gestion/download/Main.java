@@ -1320,6 +1320,7 @@ public class Main {
 				+ " GROUP BY " + "  series.nom");
 		while (rs.next()) {
 			Object rsMaxDate = rs.getObject("MaxDate");
+			Object rsdatemajweb = rs.getObject("date_maj_web");
 			Param.logger.debug(rs.getString("nom") + " MaxDate = " + rs.getString("MaxDate") + Param.getDateDiff(Param.dateDuJour(), (Date) rsMaxDate)
 					+ Param.getDateDiff((Date) rsMaxDate, Param.dateJourP300) + " date_maj_web = " + rs.getString("date_maj_web")
 					+ Param.getDateDiff(Param.dateJourM30, rs.getDate("date_maj_web")));
@@ -1329,7 +1330,7 @@ public class Main {
 				// if ((rs.getDate("MaxDate")).after(Param.dateJourM300)) {
 				// FileBot.maj_liste_episodes(rs.getString("nom"));
 				// } else {
-				if ((rs.getDate("date_maj_web")).before(Param.dateJourM30)) {
+				if (rsdatemajweb == null || ((Date)rsdatemajweb).before(Param.dateJourM30)) {
 					FileBot.maj_liste_episodes(rs.getString("nom"));
 				}
 				// }
