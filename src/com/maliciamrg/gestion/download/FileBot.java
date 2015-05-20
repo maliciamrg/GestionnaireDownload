@@ -260,8 +260,9 @@ public class FileBot {
 		 */
 		ArrayList<String> arrayListEpisode = new ArrayList<String>(0);
 		arrayListEpisode.addAll(ret);
+		String serienet = serie.replaceAll("[^a-zA-Z0-9-.'() ]", "");
 		for (String lineEp : ret) {
-			if (lineEp.replaceAll("[^a-zA-Z0-9-.'() ]", "").startsWith(serie)) {
+			if (lineEp.replaceAll("[^a-zA-Z0-9-.'() ]", "").startsWith(serienet)) {
 				Param.logger.debug("serie- serieweb" + lineEp);
 			} else {
 				arrayListEpisode.remove(lineEp);

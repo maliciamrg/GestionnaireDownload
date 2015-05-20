@@ -854,7 +854,7 @@ public class Main {
 				ArrayList<String> files = Ssh.getRemoteFileList(rs.getString("repertoire"));
 				for (String file : files) {
 					if (isvideo(file.toString())) {
-						if (!fichierdanslabaseepisodes(file.toString())) {
+						//if (!fichierdanslabaseepisodes(file.toString())) {
 							Map<String, String> ret = new HashMap<String, String>();
 							ret = conversionnom2episodes(file.toString());
 							if (ret.get("serie").equals("") || ret.get("saison").equals("000") || ret.get("episode").equals("000")) {
@@ -863,11 +863,11 @@ public class Main {
 								if (!episodesachemincomplet(ret)) {
 									ret.put("chemin", file.toString());
 									listeret.add(ret);
-									Param.logger.debug("Present Ep:" + ret.get("serie") + " " + ret.get("saison") + "-" + ret.get("episode") + " File:"
+									Param.logger.debug("Present Ep:" + ret.get("serie") + " " + ret.get("saison") + "-" + ret.get("episode")+ "-" + ret.get("episodebis") + " File:"
 											+ file.toString());
 								}
 							}
-						}
+						//}
 					}
 				}
 
@@ -903,21 +903,32 @@ public class Main {
 		rs.close();
 
 		for (Map<String, String> curr : listeret) {
-			Param.logger.debug("update : " + curr.get("serie") + " S" + curr.get("saison") + "E" + curr.get("episode") + " -> " + curr.get("chemin"));
-			int ret = stmt.executeUpdate("UPDATE episodes " + " set chemin_complet = \"" + curr.get("chemin") + "\"" + "   , timestamp_completer = \""
-					+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\"" + "WHERE " + " serie = \"" + curr.get("serie") + "\""
-					+ " and num_saison = \"" + curr.get("saison") + "\"" + " and num_episodes = \"" + curr.get("episode") + "\"" + " ");
+			ArrayList<String> arryterms = new ArrayList<String>(0);
+			arryterms.add(curr.get("serie"));
+			arryterms.add( "S" + curr.get("saison"));
+
+			if (curr.get("episode")!=null && curr.get("episode") != "000")  {
+				Param.logger.debug("update : " + curr.get("serie") + " S" + curr.get("saison") + "E" + curr.get("episode") + " -> " + curr.get("chemin"));
+				int ret = stmt.executeUpdate("UPDATE episodes " + " set chemin_complet = \"" + curr.get("chemin") + "\"" + "   , timestamp_completer = \""
+						+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\"" + "WHERE " + " serie = \"" + curr.get("serie") + "\""
+						+ " and num_saison = \"" + curr.get("saison") + "\"" + " and num_episodes = \"" + curr.get("episode") + "\"" + " ");
+				arryterms.add("E" + curr.get("episode"));
+			}
+			if  (curr.get("episodebis")!=null && curr.get("episodebis") != "000")  {
+				Param.logger.debug("update : " + curr.get("serie") + " S" + curr.get("saison") + "E" + curr.get("episodebis") + " -> " + curr.get("chemin"));
+				int ret = stmt.executeUpdate("UPDATE episodes " + " set chemin_complet = \"" + curr.get("chemin") + "\"" + "   , timestamp_completer = \""
+						+ (new SimpleDateFormat("yyyy-MM-dd")).format(Param.dateDuJour()) + "\"" + "WHERE " + " serie = \"" + curr.get("serie") + "\""
+						+ " and num_saison = \"" + curr.get("saison") + "\"" + " and num_episodes = \"" + curr.get("episodebis") + "\"" + " ");
+				arryterms.add( "E" + curr.get("episodebis"));
+			}
 			String seriestathtml = getseriestathtml(curr.get("serie"));
-			// if
-			// (Boolean.parseBoolean(Param.props.getProperty("WordPress.addpost")))
-			// {
 			String NomFichier = curr.get("chemin").substring((Math.max(curr.get("chemin").lastIndexOf('/'), curr.get("chemin").lastIndexOf('\\'))) + 1);
-			WordPressHome.publishOnBlog(6, (new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour()) + "_" + NomFichier, NomFichier, new String[] {
-					curr.get("serie"), "S" + curr.get("saison"), "E" + curr.get("episode") }, new String[] { "Serie" },
-			/* "http://home.daisy-street.fr/BibPerso/stream.php?flux=" */
-			"<a href=\"" + Param.props.getProperty("Url.StreamerInterne") + URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier + "</a>" + "\n"
-					+ seriestathtml + "");
-			// }
+			WordPressHome.publishOnBlog(6, (new SimpleDateFormat("yyyyMMdd_HHmmSS")).format(Param.dateDuJour()) + "_" + NomFichier, NomFichier,
+					arryterms.toArray(new String[0]) , new String[] { "Serie" },
+					/* "http://home.daisy-street.fr/BibPerso/stream.php?flux=" */
+					"<a href=\"" + Param.props.getProperty("Url.StreamerInterne") + URLEncoder.encode(curr.get("chemin"), "UTF-8") + "\">" + NomFichier
+							+ "</a>" + "\n" + seriestathtml + "");
+
 		}
 	}
 
@@ -1157,15 +1168,29 @@ public class Main {
 		if (ret == null) {
 			return false;
 		}
-		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		ResultSet rs;
-		rs = stmt.executeQuery("SELECT * " + " FROM episodes " + " WHERE " + "      serie = \"" + ret.get("serie") + "\"" + "  and    num_saison = \""
-				+ ret.get("saison") + "\"" + "  and    num_episodes = \"" + ret.get("episode") + "\"" + "  and 	  not(isnull(chemin_complet))" + "");
-		while (rs.next()) {
-			return true;
+		boolean retour = true;
+		if (ret.get("episode")!=null && ret.get("episode") != "000") {
+			Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs;
+			rs = stmt.executeQuery("SELECT * " + " FROM episodes " + " WHERE " + "      serie = \"" + ret.get("serie") + "\"" + "  and    num_saison = \""
+					+ ret.get("saison") + "\"" + "  and    num_episodes = \"" + ret.get("episode") + "\"" + "  and 	  not(isnull(chemin_complet))" + "");
+			if (!rs.first()) {
+				retour = false;
+			}
+			rs.close();
 		}
-		rs.close();
-		return false;
+		if (ret.get("episodebis")!=null && ret.get("episodebis") != "000") {
+			Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs;
+			rs = stmt.executeQuery("SELECT * " + " FROM episodes " + " WHERE " + "      serie = \"" + ret.get("serie") + "\"" + "  and    num_saison = \""
+					+ ret.get("saison") + "\"" + "  and    num_episodes = \"" + ret.get("episodebis") + "\"" + "  and 	  not(isnull(chemin_complet))" + "");
+			if (!rs.first()) {
+				retour = false;
+			} 
+			rs.close();
+
+		}
+		return retour;
 	}
 
 	/**
