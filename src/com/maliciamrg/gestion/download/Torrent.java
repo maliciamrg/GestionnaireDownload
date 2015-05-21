@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -504,16 +505,16 @@ public class Torrent
 		// 4xx: client error, 5xx: server error. See:
 		// http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html.
 		boolean isError;
-		try
-		{
+//		try
+//		{
 			isError = connection.getResponseCode() >= 400;
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			Param.logger.error(Param.eToString(e));
-			return ret;
-		}
+//		}
+//		catch (IOException e)
+//		{
+//			e.printStackTrace();
+//			Param.logger.error(Param.eToString(e));
+//			return ret;
+//		}
 		//Param.logger.debug("connection.getResponseCode()=" + connection.getResponseCode());
 		// The normal input stream doesn't work in error-cases.
 		InputStream is = isError ? connection.getErrorStream() : connection.getInputStream();
