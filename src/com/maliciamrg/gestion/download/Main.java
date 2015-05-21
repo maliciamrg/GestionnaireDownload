@@ -1140,7 +1140,7 @@ public class Main {
 						break;
 					case "autres":
 						rs.updateString("nom", (String) curr.getField(TorrentField.name));
-						if (curr.getField(TorrentField.percentDone).equals(1)) {
+						if ((double)curr.getField(TorrentField.percentDone) > 0.995) {
 							if (transmission.all_fichier_absent(hash)) {
 								rs.updateString("classification", "effacer");
 								rs.updateRow();
