@@ -1267,6 +1267,16 @@ public class Main {
 				+ " magnet  VARCHAR(255) , " + " timestamp_ajout TIMESTAMP  , " + " timestamp_termine TIMESTAMP  , " + " PRIMARY KEY ( hash ) ,"
 				+ "         INDEX   ( timestamp_termine ) " + ") " + " ");
 
+		// Param.stmt.executeUpdate("DROP TABLE hash ");
+		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS question " 
+						   + "("
+						   + " question VARCHAR(255) not NULL , " 
+						   + " champsquestion VARCHAR(255) not null, " 
+						   + " champsreponse VARCHAR(255) not null F, "
+						   + " PRIMARY KEY     ( question , champsquestion ) "
+						   + ") " 
+						   + " ");
+		
 	}
 
 	/**

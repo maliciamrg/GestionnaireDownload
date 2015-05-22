@@ -126,6 +126,12 @@ public class FileBot {
 					Param.logger.debug("contradiction pour :" + spl[0]);
 					Param.logger.debug("filebot:" + spl[1]);
 					Param.logger.debug("perso  :" + destmod);
+					arraylist<String>  champsquestion = new arraylist<String>;
+					champsquestion.add(spl[0]);
+							champsquestion.add(spl[1]);
+							champsquestion.add(destmod);
+							
+					main.addquestion("[chxdpl]",champsquestion)
 				}
 			}
 			if (lineEp.startsWith("Read archive")) {
