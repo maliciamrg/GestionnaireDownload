@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
+import javax.crypto.Mac;
+
 import org.apache.xmlrpc.XmlRpcException;
 
 import com.jcraft.jsch.JSchException;
@@ -126,12 +128,12 @@ public class FileBot {
 					Param.logger.debug("contradiction pour :" + spl[0]);
 					Param.logger.debug("filebot:" + spl[1]);
 					Param.logger.debug("perso  :" + destmod);
-					arraylist<String>  champsquestion = new arraylist<String>;
+					ArrayList<String>  champsquestion = new ArrayList<String>(0);
 					champsquestion.add(spl[0]);
 							champsquestion.add(spl[1]);
 							champsquestion.add(destmod);
 							
-					main.addquestion("[chxdpl]",champsquestion)
+					Main.addquestion("[chxdpl]",champsquestion);
 				}
 			}
 			if (lineEp.startsWith("Read archive")) {

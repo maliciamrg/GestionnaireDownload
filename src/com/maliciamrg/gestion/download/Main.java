@@ -1,5 +1,7 @@
 package com.maliciamrg.gestion.download;
 
+
+
 /*
  * Copyright (c) 2015 by Malicia All rights reserved.
  * 
@@ -1140,7 +1142,7 @@ public class Main {
 						break;
 					case "autres":
 						rs.updateString("nom", (String) curr.getField(TorrentField.name));
-						if ((double)curr.getField(TorrentField.percentDone) > 0.995) {
+						if (Double.parseDouble(curr.getField(TorrentField.percentDone).toString()) > 0.995) {
 							if (transmission.all_fichier_absent(hash)) {
 								rs.updateString("classification", "effacer");
 								rs.updateRow();
@@ -1271,9 +1273,9 @@ public class Main {
 		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS question " 
 						   + "("
 						   + " question VARCHAR(255) not NULL , " 
-						   + " champsquestion VARCHAR(255) not null, " 
-						   + " champsreponse VARCHAR(255) not null F, "
-						   + " PRIMARY KEY     ( question , champsquestion ) "
+						   + " champsquestion TEXT not null, " 
+						   + " champsreponse TEXT not null , "
+						   + " PRIMARY KEY     ( question , champsquestion(255) ) "
 						   + ") " 
 						   + " ");
 		
@@ -1611,6 +1613,16 @@ public class Main {
 		}
 		return ret;
 
+	}
+
+	public static void addquestion(String question, ArrayList<String> champsquestion) throws SQLException {
+		Statement stmt = Param.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		stmt.executeUpdate("insert into question " + " ( question , champsquestion , champsreponse ) " 
+				+ "VALUE "
+				+ " (\"" + question + "\" ,"
+				+ " \"" + champsquestion.toString() + "\" ,"
+				+ " \"" + "vide" + "\"" + " ) "
+				+ " ON DUPLICATE KEY UPDATE question = question ;");
 	}
 
 }
