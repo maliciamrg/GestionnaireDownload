@@ -132,7 +132,7 @@ public class FileBot {
 					champsquestion.add(spl[1]);
 					champsquestion.add(destmod);
 							
-					Main.addquestion("[chxdpl]/nimpossible de choisir le nom pour le renomage pour/n"+spl[0],champsquestion);
+					Main.addquestion("[chxdpl]\nimpossible de choisir le nom pour le renomage pour\n"+spl[0],champsquestion);
 				}
 			}
 			if (lineEp.startsWith("Read archive")) {
