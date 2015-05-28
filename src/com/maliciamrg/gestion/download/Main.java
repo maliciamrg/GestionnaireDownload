@@ -1274,8 +1274,8 @@ public class Main {
 						   + "("
 						   + " question VARCHAR(255) not NULL , " 
 						   + " champsquestion TEXT not null, " 
-						   + " champsreponse TEXT not null , "
-						   + " PRIMARY KEY     ( question , champsquestion(255) ) "
+						   + " champsreponse TEXT , "
+						   + " PRIMARY KEY     ( question ) "
 						   + ") " 
 						   + " ");
 		
