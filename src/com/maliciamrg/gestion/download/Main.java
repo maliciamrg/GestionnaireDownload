@@ -1622,7 +1622,7 @@ public class Main {
 				+ " (\"" + question + "\" ,"
 				+ " \"" + champsquestion.toString() + "\" ,"
 				+ " \"" + "vide" + "\"" + " ) "
-				+ " ON DUPLICATE KEY UPDATE question = question ;");
+				+ " ON DUPLICATE KEY UPDATE champsquestion  = champsquestion  ;");
 	}
 
 }
