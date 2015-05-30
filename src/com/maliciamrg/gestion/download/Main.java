@@ -1274,8 +1274,8 @@ public class Main {
 						   + "("
 						   + " question VARCHAR(255) not NULL , " 
 						   + " champsquestion TEXT not null, " 
-						   + " champsreponse TEXT not null , "
-						   + " PRIMARY KEY     ( question , champsquestion(255) ) "
+						   + " champsreponse TEXT , "
+						   + " PRIMARY KEY     ( question ) "
 						   + ") " 
 						   + " ");
 		
@@ -1622,7 +1622,7 @@ public class Main {
 				+ " (\"" + question + "\" ,"
 				+ " \"" + champsquestion.toString() + "\" ,"
 				+ " \"" + "vide" + "\"" + " ) "
-				+ " ON DUPLICATE KEY UPDATE question = question ;");
+				+ " ON DUPLICATE KEY UPDATE champsquestion  = champsquestion  ;");
 	}
 
 }

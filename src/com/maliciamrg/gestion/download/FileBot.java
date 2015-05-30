@@ -129,11 +129,10 @@ public class FileBot {
 					Param.logger.debug("filebot:" + spl[1]);
 					Param.logger.debug("perso  :" + destmod);
 					ArrayList<String>  champsquestion = new ArrayList<String>(0);
-					champsquestion.add(spl[0]);
-							champsquestion.add(spl[1]);
-							champsquestion.add(destmod);
+					champsquestion.add(spl[1]);
+					champsquestion.add(destmod);
 							
-					Main.addquestion("[chxdpl]",champsquestion);
+					Main.addquestion("[chxdpl]\nimpossible de choisir le nom pour le renomage pour\n"+spl[0],champsquestion);
 				}
 			}
 			if (lineEp.startsWith("Read archive")) {
