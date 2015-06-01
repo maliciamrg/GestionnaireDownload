@@ -241,7 +241,7 @@ public class Param {
 		dateHighValue = (new SimpleDateFormat("dd/mm/yyyy")).parse("31/12/2099");
 
 		Calendar usaCal = Calendar.getInstance();
-		usaCal.add(Calendar.HOUR_OF_DAY, -49);
+		usaCal.add(Calendar.HOUR_OF_DAY, -15);
 		dateDuJourUsa = usaCal.getTime();
 
 		Calendar JourP7 = Calendar.getInstance();
