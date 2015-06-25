@@ -64,6 +64,7 @@ public class WordPressHome
 	 */
 	public static void publishOnBlog(int numBlog, String title, String Resume, String[] motcle, String[] categorie, String billet) throws XmlRpcException, MalformedURLException
 	{
+		if (1==1){return;}
 		System.out.println("WordPressHome.publishOnBlog:"+title);
 		if (tableBlog.size() - 1 < numBlog)
 		{
