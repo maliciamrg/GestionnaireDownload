@@ -23,3 +23,14 @@ log*.txt
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+# ignore_for_eclipse
+/bin/
+.classpath
+.project
+
+# ignore_for_eclipse
+/bin/
+.classpath
+.project
+
+
